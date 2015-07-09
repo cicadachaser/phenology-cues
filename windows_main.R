@@ -10,16 +10,17 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
 }else{setwd("C:\\Users\\lhyang\\Dropbox\\Phenology simulation")} #laptop
 
 source("windows_subs.R")
-######################################
-# Choosing threshold values
-######################################
+
+######################
+# Setting parameters #
+######################
 
 y1.lo<-12 #lowest `healthy temperature' value
 y1.hi<-21 #Highest `healthy temperature' value
 y2.lo<-30 # minimum `healthy rainfall'
 y2.hi<-85 #max `healthy reainfall'
-graphics=FALSE
 generations=24
+duration=1
 
 #input data, this is just a placeholder of monthly climate data for now
 dat<-read.csv("davis.csv", header=T)
@@ -54,19 +55,16 @@ W<-2*(Wr-mean(range(Wr)))/(max(Wr)-min(Wr)) #defining the combined fitness lands
 ##intialize a population of N individuals
 N<-40
 t.start<-sample(seq(0,12,0.1),N,replace=T)
-t.duration<-sample(seq(0.1,6,0.1),N,replace=T) #random durations
-#! I'm thinking maybe swap to treating t.duration as constant?
-pop<-as.data.frame(cbind(t.start,t.duration))
-pop<-pop[order(t.start),]
-pop<-selection2(pop,W)
+pop<-as.data.frame(t.start)
+pop<-selection(pop,duration,W)
 pophistory<-list(pop) #initialize the population history
 
 ## Run Simulation
-pophistory=runSim(pop=pop,y1=y1,y2=y2,month=month,y1.opt=y2.opt,y2.opt=y2.opt,generations=generations)
+pophistory=runSim(pop=pop,y1=y1,y2=y2,month=month,y1.opt=y2.opt,y2.opt=y2.opt,duration=duration,generations=generations)
 
 #plot t.start vs. t. duration
 dev.new(height=8, width=8)
 par(mar=c(1, 1, 1, 1) + 0.1, mfrow=c(6,4))
 for(h in 1:generations){
-  with(pophistory[[h]],plot(t.start,t.duration,xlim=c(0,12),ylim=c(0,6)))
+  with(pophistory[[h]],hist(t.start,breaks=20,main=paste("hist of start time, generation",h)))
 }

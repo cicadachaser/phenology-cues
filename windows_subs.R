@@ -1,14 +1,14 @@
-fitness<-function(t.start,t.duration,W){ # fitness is the sum of W over the lifespan
+fitness<-function(t.start,duration,W){ # fitness is the sum of W over the lifespan
   #Function for giving fitness of individuals based on their start time, duration, and the W.
   #Inputs:
   #  t.start: vector of start times, one per individual
-  #  t.duration: vector of duration times, one per individual
+  #  t.duration: single number for duration
   #  W: vector of the `goodness of environment'
   #Returns:
   #  res: vector of the fitnesses of each individual
   #
   ind.start<-round((t.start*length(W))/12)
-  ind.duration<-round((t.duration*length(W))/12)
+  ind.duration<-round((duration*length(W))/12)
   ind.end<-ind.start+ind.duration
   wtemp=rep(W,2) #! make a double-long W to simplify summing fitness.
   res=rep(-1000,times=length(ind.start)); #create a place to store results, fill with arbitrary identifable number
@@ -18,77 +18,34 @@ fitness<-function(t.start,t.duration,W){ # fitness is the sum of W over the life
   return(res)
 }
 
-selection1<-function(newpop,W){
-  #Function for carrying out `hard selection' - individuals that have fitness lower than the mid-range do not reproduce.
-  #Inputs:
-  #  newpop: data frame with two columns (t.start and t.duration), and a row for every individual
-  #  W: vector of goodness of environment, to pass to fitness() function
-  #Returns:
-  #  newpop: a matrix with the traits and fitness of each individual. Has 6 columns - t.start,
-  #     t.duration, Wi, Ws, Wp, and Wnum
-  #
-  newWi<-mapply(fitness,newpop$t.start,newpop$t.duration,MoreArgs=list(W=W)) #MoreArgs argument lets us pass extra bits to mapply
-  newWs<-2*((newWi)-mean(range(newWi)))/(max(newWi)-min(newWi)) #rescaled between -1 and 1, centered on the mid-range
-  newWsurv<-newWs*(newWs>0) #Wsurv: all individuals with Ws<0 have zero fitness #!vectorized this: ~10x faster, maybe a bit less readible.
-  newWp<-newWsurv/sum(newWsurv) #Wp is the proportional fitness after mortality
-  #newWnum<-round(N*newWp) #Wnum is the integer number of offspring for each individual, population maintained at N
-  newWnum=t(rmultinom(1,size=N,prob=newWp)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
-  newpop<-cbind(newpop,newWi,newWs,newWp,newWnum)
-  colnames(newpop)<-c("t.start","t.duration","Wi","Ws","Wp","Wnum")
-  return(newpop)
-}
-
-#selection2 "soft selection" all individuals reproduce, with variable fitness
-#function expands a two-col dataframe with t. start and t. duration into a 6-col with fitness measures
-selection2<-function(newpop,W){
+selection<-function(newpop,duration,W){
   #Function for carrying out `soft selection' - all individuals reproduce, with variable fitness.
   #Inputs:
   #  newpop: data frame with two columns (t.start and t.duration), and a row for every individual
   #  W: vector of goodness of environment, to pass to fitness() function
+  #  duration: lifespan of organisms
   #Returns:
-  #  newpop: a matrix with 6 columns - t.start, t.duration, Wi, Ws, Wp, and Wnum
+  #  newpop: a matrix with 5 columns - t.start, Wi, Ws, Wp, and Wnum
   #
-  newWi<-mapply(fitness,newpop$t.start,newpop$t.duration,MoreArgs=list(W=W))
+  #newWi<-mapply(fitness,newpop$t.start,MoreArgs=list(duration=duration,W=W))
+  newWi=fitness(t.start=newpop$t.start,duration=duration,W=W)
   newWs<-(newWi-min(newWi))/(max(newWi)-min(newWi)) #rescaled between 0 and 1, centered on the mid-range
   newWsurv<-newWs*(newWs>0) #newWsurv: all individuals survive (some may have zero fitness, none have neg fitness)
   newWp<-newWsurv/sum(newWsurv) #Wp is the proportional fitness after mortality
 #   newWnum<-round(N*newWp) #Wnum is the integer number of offspring for each individual, population maintained at N
   newWnum=(rmultinom(1,size=N,prob=newWp)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
   newpop<-cbind(newpop,newWi,newWs,newWp,newWnum)
-  colnames(newpop)<-c("t.start","t.duration","Wi","Ws","Wp","Wnum")
-  return(newpop)
-}
-
-#selection3 "tunable selection" survival cut-off can be determined by the user
-#function expands a two-col dataframe with t. start and t. duration into a 6-col with fitness measures
-selection3<-function(newpop,cutoff,W){
-  #Function for carrying out selection with a custom cutoff - all individuals reproduce, with variable fitness.
-  #Inputs:
-  #  newpop: data frame with two columns (t.start and t.duration), and a row for every individual
-  #  cutoff: fitness below which individuals don't reproduce.
-  #  W: vector of goodness of environment, to pass to fitness() function
-  #Returns:
-  #  newpop: a matrix with 6 columns - t.start, t.duration, Wi, Ws, Wp, and Wnum
-  #
-  newWi<-mapply(fitness,newpop$t.start,newpop$t.duration,MoreArgs=list(W=W))
-  newWs<-qunif((newWi-min(newWi))/(max(newWi)-min(newWi)),min=-1,max=1) #rescaled between -1 and 1, centered on the median
-  newWsurv<-newWs*(newWs>max(0,cutoff)) #Wsurv: all individuals with Ws<cutoff (or zero) have zero fitness
-  newWp<-newWsurv/sum(newWsurv) #Wp is the proportional fitness after mortality
-#   newWnum<-round(N*newWp) #Wnum is the integer number of offspring for each individual, population maintained at N
-  newWnum=(rmultinom(1,size=N,prob=newWp)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
-  newpop<-cbind(newpop,newWi,newWs,newWp,newWnum)
-  colnames(newpop)<-c("t.start","t.duration","Wi","Ws","Wp","Wnum")
+  colnames(newpop)<-c("t.start","Wi","Ws","Wp","Wnum")
   return(newpop)
 }
 
 
 #! Added tuning parameter
 #! Made function take vectors, return a matrix of new start and new duration
-mutation<-function(t.start,t.duration,sd.start=0.5,sd.dur=0.5){
+mutation<-function(t.start,sd.start=0.5,sd.dur=0.5){
   #Function that creates random offspring with variable t.start and t.duration values
   #Inputs:
   #  t.start: vector of starting times, one for each individual
-  #  t.duration: vector of durations, one for each individual
   #  sd.start: standard deviation for mutation of start time
   #  sd.dur: standard deviation for mutation of duration
   #Returns
@@ -98,10 +55,8 @@ mutation<-function(t.start,t.duration,sd.start=0.5,sd.dur=0.5){
   #consider not rounding? The initial values aren't integers
   new.t.start<-new.t.start*(new.t.start>0) #return negative values to zero
   new.t.start<-((new.t.start-1) %% 12)+1 #wrapping t.start - using modulo operator for speed. It's a cool function, but gives zeros unless you offset with -1 and then +1
-  new.t.duration<-t.duration+round(rnorm(length(t.start),mean=0,sd=sd.dur),1) #Gaussian random mutation; adjust sd for "mutation rate"
   #consider not rounding? The initial values aren't integers
-  new.t.duration<-new.t.duration*(new.t.duration>0) #return near zero or negative values to 0.1
-  return(cbind(new.t.start,new.t.duration))
+  return(new.t.start)
 }
 
 reproduction<-function(pop){
@@ -111,17 +66,18 @@ reproduction<-function(pop){
   #Returns:
   #  Next generation as a data frame.
   repop<-pop[pop$Wnum>0,]
-  expandpop<-data.frame(t.start=rep(0,N),t.duration=rep(0,N))
+  expandpop<-data.frame(t.start=rep(0,N))
   ind=1
   for(i in 1:nrow(repop)){
-    for (j in 1:repop[i,6]) {
-      expandpop[ind,]<-c(repop[i,1],repop[i,2])
+    for (j in 1:repop$Wnum[i]) {
+      expandpop[ind,]<-c(repop$t.start[i])
       ind=ind+1
     }
   }
-  newpop = mutation(expandpop[,1],expandpop[,2]) #remove initial placeholder row
-  colnames(newpop)<-c("t.start","t.duration")
-  return(data.frame(newpop))
+  newpop = mutation(expandpop[,1]) #remove initial placeholder row
+  t.start=newpop #to simplify naming - REMOVE WHEN POP HAS MORE THAN ONE COLUMN
+  #colnames(newpop)<-c("t.start")
+  return(data.frame(t.start))
 }
 
 #environmental variation function
@@ -136,10 +92,9 @@ envar<-function(y1,y2,month,y1.opt,y2.opt,sd=.5){
   #Returns
   #  W: vector of immediate fitness-gains for all points in time.
   #
-  newy1<-y1+round(rnorm(1,mean=0,sd=sd),0) # add or subtract 1 from each month (as in `wet yr')
-  newy2<-y2+round(rnorm(1,mean=0,sd=sd),0)
+  newy1<-y1+rnorm(1,mean=0,sd=sd) 
+  newy2<-y2+rnorm(1,mean=0,sd=sd)
   #! Some alternative ways to add variation: 
-  #!   Don't need round(), as temp and precip are continuous variables.
   #!   Can use sample() with a vector of probabilities to specify likelihood of 
   #!     various different increases/decreases (if want discrete variations).
   #!   Could have offset years, where monthly averages occur late or early
@@ -159,7 +114,7 @@ envar<-function(y1,y2,month,y1.opt,y2.opt,sd=.5){
 }
 
 
-runSim<-function(pop,y1,y2,month,y1.opt,y2.opt,generations=24,graphics=FALSE){
+runSim<-function(pop,y1,y2,month,y1.opt,y2.opt,duration, generations=24,graphics=FALSE){
   #Function that actually runs the simulation (calling the other functions above)
   #Inputs:
   #  pop: initial population
@@ -180,19 +135,9 @@ runSim<-function(pop,y1,y2,month,y1.opt,y2.opt,generations=24,graphics=FALSE){
     #inter-annual variation
     W<-envar(y1=y1,y2=y2,month=month,y1.opt=y1.opt,y2.opt=y2.opt)
     #selection
-    newpop<-selection2(newpop,W)
+    newpop<-selection(newpop,duration,W)
     pophistory[[g+1]]<-newpop
-    pop<-newpop
-    #add arrows for each individual
-    xlines<-pop$t.start
-    ylines<-2*(newpop$Ws-mean(c(min(pop$Ws),max(pop$Ws))))/(max(pop$Ws)-min(pop$Ws)) #rescale height of arrow between -1 and 1
-    if(graphics==TRUE){
-      dev.new(height=4, width=8)
-      par(mar=c(4, 4, 1, 1) + 0.1)
-      plot(xv2,W,type="l",xaxp=c(0, 12, 12))
-      abline(h=0,lty=3)
-      arrows(xlines,ylines,x1=(pop$t.start+pop$t.duration),lty=1,length=.1)
-    }
+    pop<-newpop   
   }
   return(pophistory)
 }
