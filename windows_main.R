@@ -7,13 +7,15 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
   }else{
     setwd("C:\\Repos\\phenology-cues") #desktop
   }
-}else{setwd("C:\\Users\\lhyang\\Dropbox\\Phenology simulation")} #laptop
+}else{
+  if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
+    setwd("C:\\Users\\lhyang.ent-yang01\\SkyDrive\\Phenology simulation\\phenology-cues")#desktop
+  }else{  
+    setwd("C:\\Users\\lhyang\\Skydrive\\Phenology simulation\\phenology-cues")} #laptop
+}
+  
 
 source("windows_subs.R")
-
-#Testing Git, Github, RStudio integration
-
-paste("Hello World.")
 
 ######################
 # Setting parameters #
