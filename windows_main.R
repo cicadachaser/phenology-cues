@@ -11,6 +11,10 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
 
 source("windows_subs.R")
 
+#Testing Git, Github, RStudio integration
+
+paste("Hello World.")
+
 ######################
 # Setting parameters #
 ######################
