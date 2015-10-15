@@ -14,7 +14,6 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
     setwd("C:\\Users\\lhyang\\Skydrive\\Phenology simulation\\phenology-cues")} #laptop
 }
   
-
 source("windows_subs.R")
 
 ######################
@@ -40,7 +39,7 @@ yv1<-predict(model1,data.frame(month=xv1))
 
 #fitness function
 y1.opt<-mean(c(y1.lo,y1.hi)) #optimal temp value is at mid-point
-W1r<-dnorm(yv1,mean=y1.opt,sd=y1.opt)
+W1r<-dnorm(yv1,mean=y1.opt,sd=y1.opt) #higher W values for conditions near the opt 
 W1<-(W1r-min(W1r))/(max(W1r)-min(W1r)) #rescaled between 0 to 1
 
 ##second niche dimension (e.g. precipitation)
@@ -51,7 +50,7 @@ yv2<-predict(model2,data.frame(month=xv2))
 
 #fitness function
 y2.opt<-mean(c(y2.lo,y2.hi)) #optimal value is at mid-point
-W2r<-dnorm(yv2,mean=y2.opt,sd=y2.opt)
+W2r<-dnorm(yv2,mean=y2.opt,sd=y2.opt) #higher W values for conditions near the opt
 W2<-(W2r-min(W2r))/(max(W2r)-min(W2r)) #rescaled between 0 to 1
 
 ##combining two fitness curves
