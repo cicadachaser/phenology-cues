@@ -1,0 +1,9 @@
+Notes on individs
+
+Currently going to go with 
+
+E= b0+b1*day+b2*temp+b3*precip.
+
+emerge when E>some constant. Constant doesn't matter, choose 100 to avoid working with very small coefs.
+
+In the future, consider adding cumulative temp and cumulative precip
