@@ -1,21 +1,31 @@
-fitness<-function(t.start,duration,W){ # fitness is the sum of W over the lifespan
+#Updated through "fitness" function
+
+
+emergence<-function(year,indiv){
+  #Indiv (individual) has four important attributes
+  # $b.const, $b.day, $b.temp, $b.precip
+  # calculating emergence value as E= b.const+b.day*day+b.temp*temp+b.precip*precip
+  # Then finding the first day when the calculated E is greater than 100 (100 chosen for arbitrary convenience)
+  temp.E=(indiv$b.const+indiv$b.day*year$day+indiv$b.temp*year$tmean+indiv$b.precip*year$precip)
+  return(min(c(min(which(temp.E>100)),365)))
+}
+
+fitness<-function(year,individs,duration){ # fitness is the sum of W over the lifespan
+  #FOR SIMPLICITY, ASSUMING END OF YEAR MEANS DEATH. CHANGE IF APPROPRIATE.
   #Function for giving fitness of individuals based on their start time, duration, and the W.
   #Inputs:
-  #  t.start: vector of start times, one per individual
-  #  t.duration: single number for duration
-  #  W: vector of the `goodness of environment'
+  #  year: data frame of climate and fitness information for current year
+  #  individs: matrix of individuals, with each row corresponding to an individual, rows $b.const, $b.day, $b.temp, $b.precip
+  #  duration: number of days organism is alive
   #Returns:
   #  res: vector of the fitnesses of each individual
   #
-  ind.start<-round((t.start*length(W))/12)
-  ind.duration<-round((duration*length(W))/12)
-  ind.end<-ind.start+ind.duration
-  wtemp=rep(W,2) #! make a double-long W to simplify summing fitness.
-  res=rep(-1000,times=length(ind.start)); #create a place to store results, fill with arbitrary identifable number
-  for(i in 1:length(ind.start)){
-    res[i]=sum(wtemp[ind.start[i]:ind.end[i]])
+  fit=rep(0,length(indvids[,1]))
+  for(i.indiv in 1:length(fit)){
+    start=emergence(year,indiv=individs[i.indiv,])
+    fit[i.indiv]=sum(year$fit.daily[start:min(c(start+duration-1,365))])
   }
-  return(res)
+  return(fit)
 }
 
 selection<-function(newpop,duration,W){
@@ -32,7 +42,7 @@ selection<-function(newpop,duration,W){
   newWs<-(newWi-min(newWi))/(max(newWi)-min(newWi)) #rescaled between 0 and 1, centered on the mid-range
   newWsurv<-newWs*(newWs>0) #newWsurv: all individuals survive (some may have zero fitness, none have neg fitness)
   newWp<-newWsurv/sum(newWsurv) #Wp is the proportional fitness after mortality
-#   newWnum<-round(N*newWp) #Wnum is the integer number of offspring for each individual, population maintained at N
+  #   newWnum<-round(N*newWp) #Wnum is the integer number of offspring for each individual, population maintained at N
   newWnum=(rmultinom(1,size=N,prob=newWp)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
   newpop<-cbind(newpop,newWi,newWs,newWp,newWnum)
   colnames(newpop)<-c("t.start","Wi","Ws","Wp","Wnum")
