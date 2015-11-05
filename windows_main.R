@@ -1,6 +1,11 @@
 #clear all variables
 rm(list=ls())
-library(Cairo)
+
+#libraries
+library(timeDate)
+library(Cairo) #I'm not sure if we need this with the plotting removed
+
+#System identification
 if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
   if(Sys.info()[1]=="Linux"){
     setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
@@ -27,8 +32,15 @@ y2.hi<-85 #max `healthy reainfall'
 generations=24
 duration=1
 
-#input data, this is just a placeholder of monthly climate data for now
-dat<-read.csv("davis.csv", header=T)
+#input data
+> davis.daily<-read.csv("davis-data/626713.csv", header=T)
+> davis.daily$DATE2<-as.Date(as.character(davis.daily$DATE),format="%Y %m %d")
+> davis.daily$JULIAN<-julian(davis.daily$DATE2,origin=as.Date("1892-12-31"))
+> davis.daily$YEAR<-as.numeric(substr(davis.daily$DATE,1,4))
+> davis.daily$MONTH<-as.numeric(substr(davis.daily$DATE,5,6))
+> davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8))
+> davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")]
+#dat<-read.csv("davis.csv", header=T) #this is just a placeholder of monthly climate data for now
 
 ##first niche dimension (e.g. temperature)
 y1<-dat$tmean
