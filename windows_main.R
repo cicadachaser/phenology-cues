@@ -33,13 +33,13 @@ generations=24
 duration=1
 
 #input data
-> davis.daily<-read.csv("davis-data/626713.csv", header=T)
-> davis.daily$DATE2<-as.Date(as.character(davis.daily$DATE),format="%Y %m %d")
-> davis.daily$JULIAN<-julian(davis.daily$DATE2,origin=as.Date("1892-12-31"))
-> davis.daily$YEAR<-as.numeric(substr(davis.daily$DATE,1,4))
-> davis.daily$MONTH<-as.numeric(substr(davis.daily$DATE,5,6))
-> davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8))
-> davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")]
+davis.daily<-read.csv("davis-data/626713.csv", header=T)
+davis.daily$DATE2<-as.Date(as.character(davis.daily$DATE),format="%Y %m %d")
+davis.daily$JULIAN<-julian(davis.daily$DATE2,origin=as.Date("1892-12-31"))
+davis.daily$YEAR<-as.numeric(substr(davis.daily$DATE,1,4))
+davis.daily$MONTH<-as.numeric(substr(davis.daily$DATE,5,6))
+davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8))
+davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")]
 #dat<-read.csv("davis.csv", header=T) #this is just a placeholder of monthly climate data for now
 
 ##first niche dimension (e.g. temperature)
