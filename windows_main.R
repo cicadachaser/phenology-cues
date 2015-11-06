@@ -57,8 +57,6 @@ for (i in 1:length(davis.yearnames)){
 davis.daily<-unsplit(davis.yearlist,davis.daily$YEAR)
 davis.daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=davis.daily, mean)
 
-#### stopped here, still need to intialize TMAX.SS and make other sum of sq vectors....
-
 davis.yearvar<-data.frame(row.names=davis.yearnames) #dataframe to hold environmental variability
 
 for (i in 1:length(davis.yearnames)){
