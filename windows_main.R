@@ -33,13 +33,39 @@ generations=24
 duration=1
 
 #input data
-davis.daily<-read.csv("davis-data/626713.csv", header=T)
-davis.daily$DATE2<-as.Date(as.character(davis.daily$DATE),format="%Y %m %d")
-davis.daily$JULIAN<-julian(davis.daily$DATE2,origin=as.Date("1892-12-31"))
-davis.daily$YEAR<-as.numeric(substr(davis.daily$DATE,1,4))
-davis.daily$MONTH<-as.numeric(substr(davis.daily$DATE,5,6))
-davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8))
-davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")]
+davis.daily<-read.csv("davis-data/626713.csv", header=T, na.strings="-9999")
+davis.daily$PRCP<-davis.daily$PCRP/10 #precips are reported in tenths of mm
+davis.daily$TMAX<-davis.daily$TMAX/10 #temps are reported in tenths of degree C
+davis.daily$TMIN<-davis.daily$TMIN/10 #temps are reported in tenths of degree C
+davis.daily$DATE2<-as.Date(as.character(davis.daily$DATE),format="%Y %m %d") #DATE2 is date formatted
+davis.daily$JULIAN<-julian(davis.daily$DATE2,origin=as.Date("1892-12-31")) #1893-01-01 is day 1...
+davis.daily$YEAR<-as.numeric(substr(davis.daily$DATE,1,4)) #simple field for year
+davis.daily$MONTH<-as.numeric(substr(davis.daily$DATE,5,6)) #simple field for month
+davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8)) #simple field for day
+davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")] #simplified dataframe
+
+davis.yearlist<-split(davis.daily,davis.daily$YEAR) #list of each year separated
+
+davis.yearnames<-unique(davis.daily$YEAR) #gives a list of all the years in the data
+
+#calculates the "day of year", i.e. Jan 1 is 1, and 12/31 is 365 
+#adds a DAY.OF.YEAR column to each dataframe in the year list
+for (i in 1:length(davis.yearnames)){
+  davis.yearlist[[i]]$DAY.OF.YEAR<-julian(davis.yearlist[[i]]$DATE2, origin=as.Date(paste(davis.yearnames[i],"01","01",sep="-")))+1 #add +1 so that the first day of the year is 1, not zero. 
+}
+
+davis.daily<-unsplit(davis.yearlist,davis.daily$YEAR)
+davis.daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=davis.daily, mean)
+
+#### stopped here, still need to intialize TMAX.SS and make other sum of sq vectors....
+
+for (i in 1:length(davis.yearnames)){
+  comparison<-merge(davis.yearlist[[i]],davis.daily.means,by="DAY.OF.YEAR")
+  TMAX.SS[i]<-sum(comparison$TMAX.x-comparison$TMAX.y)^2
+}
+
+
+
 #dat<-read.csv("davis.csv", header=T) #this is just a placeholder of monthly climate data for now
 
 ##first niche dimension (e.g. temperature)
