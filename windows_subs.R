@@ -6,11 +6,11 @@ emergence<-function(year,indiv){
   # $b.const, $b.day, $b.temp, $b.precip
   # calculating emergence value as E= b.const+b.day*day+b.temp*temp+b.precip*precip
   # Then finding the first day when the calculated E is greater than 100 (100 chosen for arbitrary convenience)
-  temp.E=(indiv$b.const+indiv$b.day*year$day+indiv$b.temp*year$tmean+indiv$b.precip*year$precip)
-  return(min(c(min(which(temp.E>100)),365)))
+  E=(indiv$b.const+indiv$b.day*year$day+indiv$b.temp*year$tmean+indiv$b.precip*year$precip)
+  return(min(c(min(which(E>100)),365))) #find the first day where emergence value is greater than 100 (or the last day of the year)
 }
 
-fitness<-function(year,individs,duration){ # fitness is the sum of W over the lifespan
+fitness<-function(year,newpop,duration){ # fitness is the sum of W over the lifespan
   #FOR SIMPLICITY, ASSUMING END OF YEAR MEANS DEATH. CHANGE IF APPROPRIATE.
   #Function for giving fitness of individuals based on their start time, duration, and the W.
   #Inputs:
@@ -20,15 +20,15 @@ fitness<-function(year,individs,duration){ # fitness is the sum of W over the li
   #Returns:
   #  res: vector of the fitnesses of each individual
   #
-  fit=rep(0,length(indvids[,1]))
+  fit=rep(0,length(newpop[,1]))
   for(i.indiv in 1:length(fit)){
-    start=emergence(year,indiv=individs[i.indiv,])
+    start=emergence(year,indiv=newpop[i.indiv,])
     fit[i.indiv]=sum(year$fit.daily[start:min(c(start+duration-1,365))])
   }
   return(fit)
 }
 
-selection<-function(newpop,duration,W){
+selection<-function(newpop,duration,year,N){
   #Function for carrying out `soft selection' - all individuals reproduce, with variable fitness.
   #Inputs:
   #  newpop: data frame with two columns (t.start and t.duration), and a row for every individual
@@ -38,9 +38,10 @@ selection<-function(newpop,duration,W){
   #  newpop: a matrix with 5 columns - t.start, Wi, Ws, Wp, and Wnum
   #
   #newWi<-mapply(fitness,newpop$t.start,MoreArgs=list(duration=duration,W=W))
-  newWi=fitness(t.start=newpop$t.start,duration=duration,W=W)
+  newWi=fitness(year=year,newpop=newpop,duration=duration)
   newWs<-(newWi-min(newWi))/(max(newWi)-min(newWi)) #rescaled between 0 and 1, centered on the mid-range
   newWsurv<-newWs*(newWs>0) #newWsurv: all individuals survive (some may have zero fitness, none have neg fitness)
+    #That line should be unneccessary, since I don't think we can end up with negative fitness under current schema
   newWp<-newWsurv/sum(newWsurv) #Wp is the proportional fitness after mortality
   #   newWnum<-round(N*newWp) #Wnum is the integer number of offspring for each individual, population maintained at N
   newWnum=(rmultinom(1,size=N,prob=newWp)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
@@ -52,21 +53,22 @@ selection<-function(newpop,duration,W){
 
 #! Added tuning parameter
 #! Made function take vectors, return a matrix of new start and new duration
-mutation<-function(t.start,sd.start=0.5,sd.dur=0.5){
+mutation<-function(poptraits,sds,mutrate,N){
   #Function that creates random offspring with variable t.start and t.duration values
   #Inputs:
-  #  t.start: vector of starting times, one for each individual
-  #  sd.start: standard deviation for mutation of start time
-  #  sd.dur: standard deviation for mutation of duration
+  #  poptraits: just the traits for the current population
+  #  sds: 1-d data frame of standard deviations for the various traits. Has values $const, $day, $temp, $precip
+  #  mutrate: 1-d data frame for frequency of mutation for each of the traits. Has values $const, $day, $temp, $precip
   #Returns
   #  2-dimensional matrix of new starting times and new durations.
   #
-  new.t.start<-t.start+round(rnorm(length(t.start),mean=0,sd=sd.start),1) #Gaussian random mutation; adjust sd for "mutation rate"
-  #consider not rounding? The initial values aren't integers
-  new.t.start<-new.t.start*(new.t.start>0) #return negative values to zero
-  new.t.start<-((new.t.start-1) %% 12)+1 #wrapping t.start - using modulo operator for speed. It's a cool function, but gives zeros unless you offset with -1 and then +1
-  #consider not rounding? The initial values aren't integers
-  return(new.t.start)
+  mat.runif=matrix(runif(dim(sds)[2]*N),dim(sds)[2]) #generate matrix of random uniform numbers for testing
+  test.mutate=cbind(seq(mutrate$const,N),seq(mutrate$day,N),seq(mutrate$temp,N),seq(mutrate$precip,N)) #THESE NEED TO BE IN THE SAME ORDER AS THE POPULATIONS
+  mat.mutate=mat.runif<test.mutate # which traits of which individuals mutated?
+  vals.mutate=cbind(rnorm(n=N,mean=0,sd=sds$const),rnorm(n=N,mean=0,sd=sds$day),
+                    rnorm(n=N,mean=0,sd=sds$temp),rnorm(n=N,mean=0,sd=sds$precip))# Generate random mutations for all traits of all individuals. THESE NEED TO BE IN THE SAME ORDER AS THE POPULATIONS
+  poptraits=poptraits+mat.mutate*vals.mutate #Take current population, add mutations only for individuals and traits that mutated.  
+  return(poptraits)
 }
 
 reproduction<-function(pop){
@@ -76,55 +78,52 @@ reproduction<-function(pop){
   #Returns:
   #  Next generation as a data frame.
   repop<-pop[pop$Wnum>0,]
-  expandpop<-data.frame(t.start=rep(0,N))
+  expandpop<-data.frame(b.const=rep(0,N),b.day=rep(0,N),b.temp=rep(0,N),b.precip=rep(0,N))
   ind=1
   for(i in 1:nrow(repop)){
     for (j in 1:repop$Wnum[i]) {
-      expandpop[ind,]<-c(repop$t.start[i])
+      expandpop[ind,]<-c(repop$b.const[i],repop$b.day[i],repop$b.temp[i],repop$b.precip[i])
       ind=ind+1
     }
   }
-  newpop = mutation(expandpop[,1]) #remove initial placeholder row
-  t.start=newpop #to simplify naming - REMOVE WHEN POP HAS MORE THAN ONE COLUMN
-  #colnames(newpop)<-c("t.start")
-  return(data.frame(t.start))
+  return(expandpop)
 }
 
-#environmental variation function
-envar<-function(y1,y2,month,y1.opt,y2.opt,sd=.5){
-  #Function for adding noise to environment and generating a fine-grain resolution environmental `goodness' metric W
-  #Inputs:
-  #  y1: vector of monthly averages of temp
-  #  y2: vector of monthly average precip
-  #  y1.opt: optimal temp value
-  #  y2.opt: optimal precip value
-  #  sd:standard deviation defining the amount of variation between years, defaults to 0.5
-  #Returns
-  #  W: vector of immediate fitness-gains for all points in time.
-  #
-  newy1<-y1+rnorm(1,mean=0,sd=sd) 
-  newy2<-y2+rnorm(1,mean=0,sd=sd)
-  #! Some alternative ways to add variation: 
-  #!   Can use sample() with a vector of probabilities to specify likelihood of 
-  #!     various different increases/decreases (if want discrete variations).
-  #!   Could have offset years, where monthly averages occur late or early
-  model1<-loess(newy1~month, span=.35); #create model for smoothing the year across months
-  xv1<-seq(0,12,0.0001)
-  yv1<-predict(model1,data.frame(month=xv1))# create smooth year
-  model2<-loess(newy2~month, span=.35);
-  xv2<-seq(0,12,0.0001)
-  yv2<-predict(model2,data.frame(month=xv2))
-  W1r<-dnorm(yv1,mean=y1.opt,sd=y1.opt) #Fitness as a function of temp - distance from optimal temp over time.
-  W1<-(W1r-min(W1r))/(max(W1r)-min(W1r)) #rescaled between 0 to 1
-  W2r<-dnorm(yv2,mean=y2.opt,sd=y2.opt) #Fitness as a function of precip
-  W2<-(W2r-min(W2r))/(max(W2r)-min(W2r)) #rescaled between 0 to 1
-  Wr<-W1*W2 #raw fitness - multiply fitness by precip and temp
-  W<-2*(Wr-mean(range(Wr)))/(max(Wr)-min(Wr)) #defining the combined fitness landscale, rescaled between -1 and 1 to prevent long-lived strategies
-  return(W)
-}
+# #environmental variation function
+# envar<-function(y1,y2,month,y1.opt,y2.opt,sd=.5){
+#   #Function for adding noise to environment and generating a fine-grain resolution environmental `goodness' metric W
+#   #Inputs:
+#   #  y1: vector of monthly averages of temp
+#   #  y2: vector of monthly average precip
+#   #  y1.opt: optimal temp value
+#   #  y2.opt: optimal precip value
+#   #  sd:standard deviation defining the amount of variation between years, defaults to 0.5
+#   #Returns
+#   #  W: vector of immediate fitness-gains for all points in time.
+#   #
+#   newy1<-y1+rnorm(1,mean=0,sd=sd) 
+#   newy2<-y2+rnorm(1,mean=0,sd=sd)
+#   #! Some alternative ways to add variation: 
+#   #!   Can use sample() with a vector of probabilities to specify likelihood of 
+#   #!     various different increases/decreases (if want discrete variations).
+#   #!   Could have offset years, where monthly averages occur late or early
+#   model1<-loess(newy1~month, span=.35); #create model for smoothing the year across months
+#   xv1<-seq(0,12,0.0001)
+#   yv1<-predict(model1,data.frame(month=xv1))# create smooth year
+#   model2<-loess(newy2~month, span=.35);
+#   xv2<-seq(0,12,0.0001)
+#   yv2<-predict(model2,data.frame(month=xv2))
+#   W1r<-dnorm(yv1,mean=y1.opt,sd=y1.opt) #Fitness as a function of temp - distance from optimal temp over time.
+#   W1<-(W1r-min(W1r))/(max(W1r)-min(W1r)) #rescaled between 0 to 1
+#   W2r<-dnorm(yv2,mean=y2.opt,sd=y2.opt) #Fitness as a function of precip
+#   W2<-(W2r-min(W2r))/(max(W2r)-min(W2r)) #rescaled between 0 to 1
+#   Wr<-W1*W2 #raw fitness - multiply fitness by precip and temp
+#   W<-2*(Wr-mean(range(Wr)))/(max(Wr)-min(Wr)) #defining the combined fitness landscale, rescaled between -1 and 1 to prevent long-lived strategies
+#   return(W)
+# }
 
 
-runSim<-function(pop,y1,y2,month,y1.opt,y2.opt,duration, generations=24,graphics=FALSE){
+runSim<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,graphics=FALSE){
   #Function that actually runs the simulation (calling the other functions above)
   #Inputs:
   #  pop: initial population
@@ -138,16 +137,18 @@ runSim<-function(pop,y1,y2,month,y1.opt,y2.opt,duration, generations=24,graphics
   #Returns
   #  pophistory: list where each element represents the full population data frame for each generation
   #
-  pophistory<-list(pop) #initialize the population history
+  pop=startpop
+  pophistory<-list(startpop) #initialize the population history
   for(g in 1:generations){
     #reproduction
+    cur.year=years.list[[years.ind[g]]]
     newpop<-reproduction(pop)
+    newpop<-mutation(newpop,sds,mutrate,N)
     #inter-annual variation
-    W<-envar(y1=y1,y2=y2,month=month,y1.opt=y1.opt,y2.opt=y2.opt)
     #selection
-    newpop<-selection(newpop,duration,W)
+    newpop<-selection(newpop,duration,cur.year,N)
     pophistory[[g+1]]<-newpop
-    pop<-newpop   
+    pop<-newpop
   }
   return(pophistory)
 }
