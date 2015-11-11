@@ -3,7 +3,10 @@
 
 #clear all variables
 rm(list=ls())
+#Load libraries
 library(Cairo)
+
+#Set appropriate working directory
 if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
   if(Sys.info()[1]=="Linux"){
     setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
@@ -16,40 +19,38 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
   }else{  
     setwd("C:\\Users\\lhyang\\Skydrive\\Phenology simulation\\phenology-cues")} #laptop
 }
+#Load sources file(s)
 source("windows_subs.R")
 
-##################
-# Run parameters #
-##################
+#########################
+# Simulation parameters #
+#########################
 generations=24
 duration=10
 best.temp=15; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=55; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
 N=40 #number of individuals 
-start<-as.data.frame(
+start<-data.frame(  #this represents the min and max values used when randomly assigning initial values to the population 
   constmin=0,constmax=50,
   daymin=0,daymax=5,
   tempmin=0,tempmax=20,
-  precipmin=0,precipmax=5
-) #this represents the min and max values used when randomly assigning initial values to the population 
-sds<-( #standard deviations for trait mutations. Currently set so that variance = max initial trait value
+  precipmin=0,precipmax=5) 
+sds<-data.frame( #standard deviations for trait mutations. Currently set so that variance = max initial trait value
   const=sqrt(start$constmax),
   day=sqrt(start$daymax),
   temp=sqrt(start$tempmax),
-  precip=sqrt(start$precipmax)
-)
-mutrate<-( #probability of each trait mutating in an individual. Mutations are independent of one another
+  precip=sqrt(start$precipmax))
+mutrate<-data.frame( #probability of each trait mutating in an individual. Mutations are independent of one another
   const=.1,
   day=.1,
   temp=.1,
-  precip=.1
-)
+  precip=.1)
 
 
 
-############################
-# Import sequence of years #
-############################
+######################################################
+# Import sequence of years - LOUIE'S STUFF GOES HERE #
+######################################################
 years.list=NULL #Replace this with code to grab a list of data frames. Each data frame is a year.
 # Each year data frame has $day, $precip, $tmean, $tmax, $tmin
 # This will be the same list for all configurations of years - this is essentially just our year database
@@ -73,24 +74,16 @@ for(i.year in 1:length(years.list)){
 #######################
 # initializing population
 #######################
-
-
 ##intialize a population of N individuals
-# $b.const, $b.day, $b.temp, $b.precip  
-b.const<-sample(seq(start$constmin,start$constmax,0.1),N,replace=T)
-b.day<-sample(seq(start$daymin,start$daymax,0.1),N,replace=T)
-b.temp<-sample(seq(start$tempmin,start$tempmax,0.1),N,replace=T)
-b.precip<-sample(seq(start$precipmin,start$precipmax,0.1),N,replace=T)
-pop<-as.data.frame(b.const,b.day,b.temp,b.precip)
-pop<-selection(pop,duration,W)
-pophistory<-list(pop) #initialize the population history
+# Their min and max values are determined by the start$ parameters
+b.const<-runif(n=N,min=start$constmin,max=start$constmax)
+b.day<-runif(n=N,min=start$daymin,max=start$daymax)
+b.temp<-runif(n=N,min=start$tempmin,max=start$tempmax)
+b.precip<-runif(n=N,min=start$precipmin,max=start$precipmax)
+pop<-data.frame(b.const,b.day,b.temp,b.precip)
+pop<-selection(newpop,duration,cur.year,N)
 
 ## Run Simulation
-pophistory=runSim(pop=pop,y1=y1,y2=y2,month=month,y1.opt=y2.opt,y2.opt=y2.opt,duration=duration,generations=generations, N=N, years.list=years.list,years.index=years.index)
-
-#plot t.start vs. t. duration
-dev.new(height=8, width=8)
-par(mar=c(1, 1, 1, 1) + 0.1, mfrow=c(6,4))
-for(h in 1:generations){
-  with(pophistory[[h]],hist(t.start,breaks=20,main=paste("hist of start time, generation",h)))
-}
+pophistory=runSim(startpop=pop,years.list=years.list,
+                  years.ind=years.ind,N=N,duration=duration,
+                  sds=sds,mutrate=mutrate,generations=generations)
