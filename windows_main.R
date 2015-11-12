@@ -9,7 +9,6 @@ library(timeDate)
 library(Cairo) #I'm not sure if we need this with the plotting removed
 
 #Set appropriate working directory
->>>>>>> refs/remotes/origin/master
 if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
   if(Sys.info()[1]=="Linux"){
     setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
@@ -63,12 +62,13 @@ davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX"
 
 davis.yearlist<-split(davis.daily,davis.daily$YEAR) #list of each year separated
 goodyears=NULL
+davis.yearnames<-unique(davis.daily$YEAR)
 for(iyear in davis.yearnames){
   nacount=sum(sum(is.na(davis.yearlist[[as.character(iyear)]])))
   daycount=dim(davis.yearlist[[as.character(iyear)]])[1]
   if(nacount==0 & daycount>364){goodyears=c(goodyears,iyear)}
 }
-davis.yearlist=davis.yearlist[[as.character(goodyears)]]
+davis.yearlist=davis.yearlist[as.character(goodyears)]
 
 davis.yearnames<-goodyears #gives a list of all the years in the data
 
@@ -77,6 +77,8 @@ davis.yearnames<-goodyears #gives a list of all the years in the data
 for (i in 1:length(davis.yearnames)){
   davis.yearlist[[i]]$DAY.OF.YEAR<-julian(davis.yearlist[[i]]$DATE2, origin=as.Date(paste(davis.yearnames[i],"01","01",sep="-")))+1 #add +1 so that the first day of the year is 1, not zero. 
 }
+
+########## COLLIN NEEDS TO FIX BELOW THIS
 
 davis.daily<-unsplit(davis.yearlist,davis.daily$YEAR)
 davis.daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=davis.daily, mean)
