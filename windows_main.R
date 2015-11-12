@@ -9,6 +9,7 @@ library(timeDate)
 library(Cairo) #I'm not sure if we need this with the plotting removed
 
 #Set appropriate working directory
+>>>>>>> refs/remotes/origin/master
 if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
   if(Sys.info()[1]=="Linux"){
     setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
