@@ -8,8 +8,8 @@ rm(list=ls())
 library(timeDate)
 library(Cairo) #I'm not sure if we need this with the plotting removed
 
-#System identification
-
+#Set appropriate working directory
+>>>>>>> refs/remotes/origin/master
 if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
   if(Sys.info()[1]=="Linux"){
     setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
@@ -103,7 +103,6 @@ for (i in 1:length(davis.yearnames)){
 #dat<-read.csv("davis.csv", header=T) #this is just a placeholder of monthly climate data for now
 
 ### End revisions 11/6/2015 ###
-
 
 ######################################################
 # Import sequence of years - LOUIE'S STUFF GOES HERE #
