@@ -61,8 +61,15 @@ davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8)) #simple field for day
 davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")] #simplified dataframe
 
 davis.yearlist<-split(davis.daily,davis.daily$YEAR) #list of each year separated
+goodyears=NULL
+for(iyear in davis.yearnames){
+  nacount=sum(sum(is.na(davis.yearlist[[as.character(iyear)]])))
+  daycount=dim(davis.yearlist[[as.character(iyear)]])[1]
+  if(nacount==0 & daycount>364){goodyears=c(goodyears,iyear)}
+}
+davis.yearlist=davis.yearlist[[as.character(goodyears)]]
 
-davis.yearnames<-unique(davis.daily$YEAR) #gives a list of all the years in the data
+davis.yearnames<-goodyears #gives a list of all the years in the data
 
 #calculates the "day of year", i.e. Jan 1 is 1, and 12/31 is 365 
 #adds a DAY.OF.YEAR column to each dataframe in the year list
