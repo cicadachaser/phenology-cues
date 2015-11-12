@@ -1,3 +1,6 @@
+#CURRENTLY IN THE "SLOW AND CORRECT" STAGE
+#optimize AFTER we confirm it works
+
 #clear all variables
 rm(list=ls())
 
@@ -5,7 +8,7 @@ rm(list=ls())
 library(timeDate)
 library(Cairo) #I'm not sure if we need this with the plotting removed
 
-#System identification
+#Set appropriate working directory
 if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
   if(Sys.info()[1]=="Linux"){
     setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
@@ -18,19 +21,32 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
   }else{  
     setwd("C:\\Users\\lhyang\\Skydrive\\Phenology simulation\\phenology-cues")} #laptop
 }
-  
+#Load sources file(s)
 source("windows_subs.R")
 
-######################
-# Setting parameters #
-######################
-
-y1.lo<-12 #lowest `healthy temperature' value
-y1.hi<-21 #Highest `healthy temperature' value
-y2.lo<-30 # minimum `healthy rainfall'
-y2.hi<-85 #max `healthy reainfall'
+#########################
+# Simulation parameters #
+#########################
 generations=24
-duration=1
+duration=10
+best.temp=15; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
+best.precip=55; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
+N=40 #number of individuals 
+start<-data.frame(  #this represents the min and max values used when randomly assigning initial values to the population 
+  constmin=0,constmax=50,
+  daymin=0,daymax=5,
+  tempmin=0,tempmax=20,
+  precipmin=0,precipmax=5) 
+sds<-data.frame( #standard deviations for trait mutations. Currently set so that variance = max initial trait value
+  const=sqrt(start$constmax),
+  day=sqrt(start$daymax),
+  temp=sqrt(start$tempmax),
+  precip=sqrt(start$precipmax))
+mutrate<-data.frame( #probability of each trait mutating in an individual. Mutations are independent of one another
+  const=.1,
+  day=.1,
+  temp=.1,
+  precip=.1)
 
 #input data
 davis.daily<-read.csv("davis-data/626713.csv", header=T, na.strings="-9999")
@@ -87,47 +103,42 @@ for (i in 1:length(davis.yearnames)){
 
 ### End revisions 11/6/2015 ###
 
+######################################################
+# Import sequence of years - LOUIE'S STUFF GOES HERE #
+######################################################
+years.list=NULL #Replace this with code to grab a list of data frames. Each data frame is a year.
+# Each year data frame has $day, $precip, $tmean, $tmax, $tmin
+# This will be the same list for all configurations of years - this is essentially just our year database
+years.index=NULL # This is the list of which year.list data to use for each generation of the model
 
-##first niche dimension (e.g. temperature)
-y1<-dat$tmean
-month<-dat$month
-model1<-loess(y1~month, span=.35);
-xv1<-seq(0,12,0.0001)
-yv1<-predict(model1,data.frame(month=xv1))
 
-#fitness function
-y1.opt<-mean(c(y1.lo,y1.hi)) #optimal temp value is at mid-point
-W1r<-dnorm(yv1,mean=y1.opt,sd=y1.opt) #higher W values for conditions near the opt 
-W1<-(W1r-min(W1r))/(max(W1r)-min(W1r)) #rescaled between 0 to 1
 
-##second niche dimension (e.g. precipitation)
-y2<-dat$precip
-model2<-loess(y2~month, span=.35);
-xv2<-seq(0,12,0.0001)
-yv2<-predict(model2,data.frame(month=xv2))
+######################
+# Fitness generation #
+######################
+#For now, daily incremental fitness will be found by multiplying two gaussian functions together:
+#  one for temp, that's maximized at best.temp with sd tempsd
+#  the other for precip that's maximized at best.precip with sd precipsd
+# We will then normalize the results to vary from 0 to 1
+for(i.year in 1:length(years.list)){
+  daily.fit=dnorm(years.list[[i.year]]$tmax,mean=best.temp,sd=sd.temp)*dnorm(years.list[[i.year]]$precip,mean=best.precip,sd=sd.precip)
+  daily.fit=(daily.fit-min(daily.fit))/(max(daily.fit)-min(daily.fit))
+  years.list[[i.year]]=cbind(years.list[[i.year]], fit.daily=daily.fit)
+}
 
-#fitness function
-y2.opt<-mean(c(y2.lo,y2.hi)) #optimal value is at mid-point
-W2r<-dnorm(yv2,mean=y2.opt,sd=y2.opt) #higher W values for conditions near the opt
-W2<-(W2r-min(W2r))/(max(W2r)-min(W2r)) #rescaled between 0 to 1
-
-##combining two fitness curves
-Wr<-W1*W2 #raw fitness
-W<-2*(Wr-mean(range(Wr)))/(max(Wr)-min(Wr)) #defining the combined fitness landscale, rescaled between -1 and 1 to prevent long-lived strategies
-
+#######################
+# initializing population
+#######################
 ##intialize a population of N individuals
-N<-40
-t.start<-sample(seq(0,12,0.1),N,replace=T)
-pop<-as.data.frame(t.start)
-pop<-selection(pop,duration,W)
-pophistory<-list(pop) #initialize the population history
+# Their min and max values are determined by the start$ parameters
+b.const<-runif(n=N,min=start$constmin,max=start$constmax)
+b.day<-runif(n=N,min=start$daymin,max=start$daymax)
+b.temp<-runif(n=N,min=start$tempmin,max=start$tempmax)
+b.precip<-runif(n=N,min=start$precipmin,max=start$precipmax)
+pop<-data.frame(b.const,b.day,b.temp,b.precip)
+pop<-selection(newpop,duration,cur.year,N)
 
 ## Run Simulation
-pophistory=runSim(pop=pop,y1=y1,y2=y2,month=month,y1.opt=y2.opt,y2.opt=y2.opt,duration=duration,generations=generations)
-
-#plot t.start vs. t. duration
-dev.new(height=8, width=8)
-par(mar=c(1, 1, 1, 1) + 0.1, mfrow=c(6,4))
-for(h in 1:generations){
-  with(pophistory[[h]],hist(t.start,breaks=20,main=paste("hist of start time, generation",h)))
-}
+pophistory=runSim(startpop=pop,years.list=years.list,
+                  years.ind=years.ind,N=N,duration=duration,
+                  sds=sds,mutrate=mutrate,generations=generations)
