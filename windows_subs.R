@@ -11,7 +11,7 @@ emergence<-function(year,indiv){
   # Output:
   #  day (Julian) of emergence
   E=(rep(indiv$b.const,length(year[,1]))+indiv$b.day*year$day+indiv$b.temp*year$tmax+indiv$b.precip*year$precip)
-  return(min(c(min(which(E>100)),365))) #find the first day where emergence value is greater than 100 (or the last day of the year)
+  return(min(c(min(which(E>100),365)))) #find the first day where emergence value is greater than 100 (or the last day of the year)
 }
 
 fitness<-function(year,newpop,duration){ 
@@ -26,11 +26,13 @@ fitness<-function(year,newpop,duration){
   #  fit: vector of the fitnesses of each individual
   #
   fit=rep(0,length(newpop[,1]))
+  evect=fit
   for(i.indiv in 1:length(fit)){
     start=emergence(year,indiv=newpop[i.indiv,])
     fit[i.indiv]=sum(year$fit.daily[start:min(c(start+duration-1,365))])
+    evect[i.indiv]=start
   }
-  return(fit)
+  return(data.frame(fit=fit,emerge=evect))
 }
 
 selection<-function(newpop,duration,year,N){
@@ -44,15 +46,18 @@ selection<-function(newpop,duration,year,N){
   #  newpop: a matrix with the current population traits, plus raw fitness (Wi),
   #     rescaled fitness(Ws), proportional fitness after mortality(Wp), and number of offspring (Wnum)
   #
-  newWi=fitness(year=year,newpop=newpop,duration=duration)
-  newWs<-(newWi-min(newWi))/(max(newWi)-min(newWi)) #rescaled between 0 and 1, centered on the mid-range
+  print(newpop)
+  out=fitness(year=year,newpop=newpop,duration=duration)
+  print(out)
+  newWi=out$fit
+  newWs<-(newWi-min(newWi))/(max(newWi)-min(newWi)+.0001) #rescaled between 0 and 1, centered on the mid-range
   newWsurv<-newWs*(newWs>0) #newWsurv: all individuals survive (some may have zero fitness, none have neg fitness)
     #That line should be unneccessary, since I don't think we can end up with negative fitness under current schema
-  newWp<-newWsurv/sum(newWsurv) #Wp is the proportional fitness after mortality
+  newWp<-newWsurv/(sum(newWsurv)+.0001)+.00001 #Wp is the proportional fitness after mortality
   newWnum=(rmultinom(1,size=N,prob=newWp)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
   init.colnames=colnames(newpop)
-  newpop<-cbind(newpop,newWi,newWs,newWp,newWnum)
-  colnames(newpop)<-c(init.colnames,"Wi","Ws","Wp","Wnum")
+  newpop<-cbind(newpop,out$emerge,newWi,newWs,newWp,newWnum)
+  colnames(newpop)<-c(init.colnames,"emerge","Wi","Ws","Wp","Wnum")
   return(newpop)
 }
 
