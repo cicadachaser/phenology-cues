@@ -61,8 +61,15 @@ davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8)) #simple field for day
 davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")] #simplified dataframe
 
 davis.yearlist<-split(davis.daily,davis.daily$YEAR) #list of each year separated
-goodyears=NULL
+#calculates the "day of year", i.e. Jan 1 is 1, and 12/31 is 365 
+#adds a DAY.OF.YEAR column to each dataframe in the year list
 davis.yearnames<-unique(davis.daily$YEAR)
+for (i in 1:length(davis.yearnames)){
+  davis.yearlist[[i]]$DAY.OF.YEAR<-julian(davis.yearlist[[i]]$DATE2, origin=as.Date(paste(davis.yearnames[i],"01","01",sep="-")))+1 #add +1 so that the first day of the year is 1, not zero. 
+}
+yearlist.store=davis.yearlist
+goodyears=NULL
+
 for(iyear in davis.yearnames){
   nacount=sum(sum(is.na(davis.yearlist[[as.character(iyear)]])))
   daycount=dim(davis.yearlist[[as.character(iyear)]])[1]
@@ -72,16 +79,20 @@ davis.yearlist=davis.yearlist[as.character(goodyears)]
 
 davis.yearnames<-goodyears #gives a list of all the years in the data
 
-#calculates the "day of year", i.e. Jan 1 is 1, and 12/31 is 365 
-#adds a DAY.OF.YEAR column to each dataframe in the year list
-for (i in 1:length(davis.yearnames)){
-  davis.yearlist[[i]]$DAY.OF.YEAR<-julian(davis.yearlist[[i]]$DATE2, origin=as.Date(paste(davis.yearnames[i],"01","01",sep="-")))+1 #add +1 so that the first day of the year is 1, not zero. 
-}
 
-########## COLLIN NEEDS TO FIX BELOW THIS
 
-davis.daily<-unsplit(davis.yearlist,davis.daily$YEAR)
-davis.daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=davis.daily, mean)
+
+davis.daily<-unsplit(yearlist.store,davis.daily$YEAR) #using legacy "yearlist.store" to make unsplit happy
+# DAY.OF.YEAR=rep(0,dim(davis.daily)[1])
+# for(i in 1:length(DAY.OF.YEAR)){
+#   DAY.OF.YEAR[i]=sprintf("%02d%02d",davis.daily[i,"MONTH"],davis.daily[i,"DAY"])
+#   
+# }
+
+# davis.daily=cbind(davis.daily, DAY.OF.YEAR)
+
+# davis.daily<-unsplit(davis.daily,davis.daily$YEAR)
+davis.daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=davis.daily[davis.daily$YEAR %in% goodyears,], mean)
 
 davis.yearvar<-data.frame(row.names=davis.yearnames) #dataframe to hold environmental variability
 
@@ -108,10 +119,7 @@ for (i in 1:length(davis.yearnames)){
   davis.yearvar[i,"TMIN.DEL"]<-sum(comparison$TMIN.x-comparison$TMIN.y,na.rm=T)/davis.yearvar[i,"TMIN.N"]
   davis.yearvar[i,"PRCP.DEL"]<-sum(comparison$PRCP.x-comparison$PRCP.y,na.rm=T)/davis.yearvar[i,"PRCP.N"]
 }
-
-#dat<-read.csv("davis.csv", header=T) #this is just a placeholder of monthly climate data for now
-
-### End revisions 11/6/2015 ###
+########## COLLIN NEEDS TO FIX BELOW THIS
 
 ######################################################
 # Import sequence of years - LOUIE'S STUFF GOES HERE #
