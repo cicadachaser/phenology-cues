@@ -28,7 +28,7 @@ source("windows_subs.R")
 # Simulation parameters #
 #########################
 #generations has been removed. instead simulation runs for the number of years in years.index
-runNumber=3
+runNumber=99
 duration=10
 best.temp=15; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=55; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
@@ -136,15 +136,14 @@ for(i.year in 1:length(years.list)){
   newyear=years.list[[i.year]]
   newyear=newyear[,c("DAY.OF.YEAR","TMAX","PRCP")]
   colnames(newyear)<-c("day","tmax","precip")
-  daily.fit=dnorm(newyear$tmax,mean=best.temp,sd=sd.temp)*dnorm(newyear$precip,mean=best.precip,sd=sd.precip)
-  daily.fit=(daily.fit-min(daily.fit))/(max(daily.fit)-min(daily.fit))
+  daily.fit=dnorm(years.list[[i.year]]$DAY.OF.YEAR,mean=150,sd=100)
   years.list[[i.year]]=cbind(newyear, fit.daily=daily.fit)
 }
 
 
 # Each year data frame has $day, $precip, $tmean, $tmax, $tmin
 # This will be the same list for all configurations of years - this is essentially just our year database
-years.index=rep(c(1,2,3,4,5,6,7,8,9,10),10) # This is the list of which year.list data to use for each generation of the model
+years.index=rep(c(1,2,3,4,5,6,7,8,9,10),50) # This is the list of which year.list data to use for each generation of the model
 
 
 

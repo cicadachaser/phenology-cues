@@ -27,9 +27,10 @@ fitness<-function(year,newpop,duration){
   #
   fit=rep(0,length(newpop[,1]))
   evect=fit
+  wrappingfit=rep(year$fit.daily,2)
   for(i.indiv in 1:length(fit)){
     start=emergence(year,indiv=newpop[i.indiv,])
-    fit[i.indiv]=sum(year$fit.daily[start:min(c(start+duration-1,365))])
+    fit[i.indiv]=sum(wrappingfit[start:(start+duration-1)])
     evect[i.indiv]=start
   }
   return(data.frame(fit=fit,emerge=evect))
