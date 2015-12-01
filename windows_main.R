@@ -28,6 +28,7 @@ source("windows_subs.R")
 # Simulation parameters #
 #########################
 #generations has been removed. instead simulation runs for the number of years in years.index
+runNumber=1
 duration=10
 best.temp=15; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=55; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
@@ -167,6 +168,61 @@ pophistory=runSim(startpop=pop,years.list=years.list,
                   sds=sds,mutrate=mutrate,generations=length(years.index[-1]))
 #we've already used year 1 in initiating the pop
 
+###################################
+#Saving our results
+###################################
+#Turn results from list to data frame
+pophist.table <-do.call(rbind.data.frame, pophistory)
+
+
+#handle folder making and moving
+#Set appropriate working directory
+if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
+  if(Sys.info()[1]=="Linux"){
+    setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
+  }else{
+    setwd("C:\\Repos\\phenology-cues") #desktop
+  }
+}else{
+  if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
+    setwd("C:\\Users\\lhyang.ent-yang01\\SkyDrive\\Phenology simulation\\phenology-cues")#desktop
+  }else{  
+    setwd("C:\\Users\\lhyang\\Skydrive\\Phenology simulation\\phenology-cues")} #laptop
+}
+setwd("results")
+resultsdir=sprintf("resRun%d",runNumber)
+dir.create(resultsdir,showWarnings = FALSE)
+setwd(resultsdir)
+write.table(pophist.table,file=paste("pophist_run",runNumber,".csv",sep=""),sep=",")
+parnames=c(
+  "b.const",
+  "b.day",
+  "b.precip",
+  "b.temp",
+  "bestprecip",
+  "best.temp",
+  "duration",
+  "N",
+  "sd.precip",
+  "sd.temp"
+)
+parvals=get(parnames)
+meta=sprintf("%s has value %f",parnames,parvals)
+sink(paste("par_values_run",runNumber,".txt",sep=""))
+cat("Parameters for simulation. Weather from davis data. \n")
+for(i in meta){cat(paste(i,"\n"))}
+cat(" sds= \n")
+print(sds)
+cat("\n mutrate=\n")
+print(mutrate)
+cat("\n start=\n")
+print(start)
+cat("\n goodyears=\n")
+print(goodyears)
+cat("\n years.index=\n")
+print(years.index)
+sink()
+
 plotting=FALSE
 if(plotting){
   windows()
@@ -176,3 +232,9 @@ if(plotting){
   windows()
   hist(pophistory[[11]]$emerge,breaks=20)
 }
+
+net.fit=NULL
+# for(i.year in 1:10)
+ for(i.day in 1:365){net.fit=c(net.fit,sum(years.list[[10]]$fit.daily[i.day:min(i.day+10,365)]))}
+plot(net.fit,type="l")
+hist(pophistory[[1]]$emerge,breaks=360,add=TRUE)

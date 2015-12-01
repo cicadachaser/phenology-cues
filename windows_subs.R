@@ -46,9 +46,7 @@ selection<-function(newpop,duration,year,N){
   #  newpop: a matrix with the current population traits, plus raw fitness (Wi),
   #     rescaled fitness(Ws), proportional fitness after mortality(Wp), and number of offspring (Wnum)
   #
-  print(newpop)
   out=fitness(year=year,newpop=newpop,duration=duration)
-  print(out)
   newWi=out$fit
   newWs<-(newWi-min(newWi))/(max(newWi)-min(newWi)+.0001) #rescaled between 0 and 1, centered on the mid-range
   newWsurv<-newWs*(newWs>0) #newWsurv: all individuals survive (some may have zero fitness, none have neg fitness)
@@ -116,14 +114,14 @@ runSim<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,generation
   #  pophistory: list where each element represents the full population data frame for each generation
   #
   pop=startpop
-  pophistory<-list(startpop) #initialize the population history
+  pophistory<-list(cbind(startpop, gen=rep(1,N))) #initialize the population history
   for(g in 1:generations){
     #reproduction
     cur.year=years.list[[years.ind[g]]]
     newpop<-reproduction(pop)
     newpop<-mutation(newpop,sds,mutrate,N)
     newpop<-selection(newpop,duration,cur.year,N)
-    pophistory[[g+1]]<-newpop
+    pophistory[[g+1]]<-cbind(newpop, gen=rep(g+1,N))
     pop<-newpop
   }
   return(pophistory)

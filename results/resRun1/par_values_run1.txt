@@ -1,0 +1,55 @@
+Parameters for simulation. Weather from davis data. 
+b.const has value 4.208692 
+b.day has value 4.236108 
+b.precip has value 2.443704 
+b.temp has value 4.777393 
+bestprecip has value 0.422144 
+best.temp has value 1.252285 
+duration has value 3.338400 
+N has value 3.594980 
+sd.precip has value 4.145944 
+sd.temp has value 0.669717 
+b.const has value 2.594266 
+b.day has value 0.485937 
+b.precip has value 3.082048 
+b.temp has value 2.079521 
+bestprecip has value 2.675381 
+best.temp has value 0.217234 
+duration has value 0.888822 
+N has value 2.580150 
+sd.precip has value 0.915911 
+sd.temp has value 1.052529 
+b.const has value 4.300787 
+b.day has value 4.985062 
+b.precip has value 1.697136 
+b.temp has value 3.894999 
+bestprecip has value 2.468057 
+best.temp has value 0.570097 
+duration has value 2.566943 
+N has value 0.723181 
+sd.precip has value 4.829766 
+sd.temp has value 3.386544 
+b.const has value 2.534909 
+b.day has value 4.078225 
+b.precip has value 3.136569 
+b.temp has value 3.299131 
+bestprecip has value 3.465384 
+best.temp has value 4.322000 
+duration has value 2.882744 
+N has value 3.716675 
+sd.precip has value 2.727442 
+sd.temp has value 1.347258 
+ sds= 
+     const      day     temp   precip
+1 2.236068 1.414214 3.162278 1.414214
+
+ mutrate=
+  const day temp precip
+1   0.1 0.1  0.1    0.1
+
+ start=
+  constmin constmax daymin daymax tempmin tempmax precipmin precipmax
+1        0        5      0      2       0      10         0         2
+
+ years.index=
+ [1]  1  2  3  4  5  6  7  8  9 10
