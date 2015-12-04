@@ -102,7 +102,15 @@ for (i in 1:length(davis.yearnames)){
   davis.yearvar[i,"PRCP.DEL"]<-sum(comparison$PRCP.x-comparison$PRCP.y,na.rm=T)/davis.yearvar[i,"PRCP.N"]
 }
 
-plot(davis.daily$JULIAN,davis.daily$TMAX)
+#temporary plots checking that the data are mostly complete
+plot(davis.daily$JULIAN,davis.daily$TMAX) 
+plot(davis.daily$JULIAN,is.na(davis.daily$TMAX))
+#however, there are 143 missing rows
+max(davis.daily$JULIAN)-length(davis.daily$JULIAN)
+plot(match(seq(1:max(davis.daily$JULIAN)),davis.daily$JULIAN,nomatch=0))
+
+#amelia scripting in progress
+#amelia(davis.daily)
 
 # END IMPUTATION BRANCH REVISIONS
 
