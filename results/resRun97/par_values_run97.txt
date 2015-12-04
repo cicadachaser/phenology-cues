@@ -1,0 +1,75 @@
+Parameters for simulation. Weather from davis data. 
+b.const has value 1.318872 
+b.day has value 1.590623 
+b.precip has value 0.626179 
+b.temp has value 1.278114 
+bestprecip has value 1.645297 
+best.temp has value 0.874507 
+duration has value 2.070701 
+N has value 0.787281 
+sd.precip has value 0.835813 
+sd.temp has value 1.416313 
+b.const has value 1.950971 
+b.day has value 1.030389 
+b.precip has value 0.255078 
+b.temp has value 0.272995 
+bestprecip has value 1.448282 
+best.temp has value 2.572619 
+duration has value 1.487233 
+N has value 1.476030 
+sd.precip has value 2.429865 
+sd.temp has value 1.849025 
+b.const has value 1.143568 
+b.day has value 2.713264 
+b.precip has value 0.322860 
+b.temp has value 0.249575 
+bestprecip has value 1.873777 
+best.temp has value 2.169878 
+duration has value 2.661316 
+N has value 2.200468 
+sd.precip has value 1.148155 
+sd.temp has value 0.172442 
+b.const has value 1.101548 
+b.day has value 2.576297 
+b.precip has value 0.855220 
+b.temp has value 1.784427 
+bestprecip has value 2.016019 
+best.temp has value 0.074052 
+duration has value 2.324677 
+N has value 2.818788 
+sd.precip has value 2.803329 
+sd.temp has value 0.812965 
+ sds= 
+  const day temp precip
+1     3   1    5      1
+
+ mutrate=
+  const day temp precip
+1   0.5 0.5  0.5    0.5
+
+ start=
+  constmin constmax daymin daymax tempmin tempmax precipmin precipmax
+1        0        3      0      1       0       5         0         1
+
+ goodyears=
+ [1] 1909 1912 1914 1924 1925 1926 1927 1928 1929 1932 1934 1935 1937 1938 1940 1941 1945 1947 1949
+[20] 1951 1952 1954 1955 1956 1957 1958 1959 1960 1961 1962 1963 1964 1965 1966 1967 1968 1969 1970
+[39] 1971 1972 1973 1974 1975 1976 1977 1978 1979 1980 1982 1985 1986 1987 1988 1994 2001 2008
+
+ years.index=
+  [1]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2
+ [33]  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4
+ [65]  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6
+ [97]  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8
+[129]  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10
+[161]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2
+[193]  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4
+[225]  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6
+[257]  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8
+[289]  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10
+[321]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2
+[353]  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4
+[385]  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6
+[417]  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8
+[449]  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10
+[481]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10

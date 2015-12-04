@@ -28,7 +28,7 @@ source("windows_subs.R")
 # Simulation parameters #
 #########################
 #generations has been removed. instead simulation runs for the number of years in years.index
-runNumber=98
+runNumber=97
 duration=10
 best.temp=15; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=55; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
@@ -39,10 +39,10 @@ start<-data.frame(  #this represents the min and max values used when randomly a
   tempmin=0,tempmax=5,
   precipmin=0,precipmax=1) 
 sds<-data.frame( #standard deviations for trait mutations. Currently set so that variance = max initial trait value
-  const=sqrt(start$constmax),
-  day=sqrt(start$daymax),
-  temp=sqrt(start$tempmax),
-  precip=sqrt(start$precipmax))
+  const=(start$constmax),
+  day=(start$daymax),
+  temp=(start$tempmax),
+  precip=(start$precipmax))
 mutrate<-data.frame( #probability of each trait mutating in an individual. Mutations are independent of one another
   const=.5,
   day=.5,
