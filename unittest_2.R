@@ -251,7 +251,7 @@ for(curgen in seq(2,length(years.index),length=5)){
   plot(meanFit,type='l',ylim=c(0,max(meanFit)*1.2))
   # plot(1,1,type='n',ylim=c(0,max(arheight)*1.05),xlim=c(0,365))
   arrows(y0=jitter(arheight,factor=1.5),x0=emergeDay,x1=emergeDay+duration-1,length=.1)
-  dev.print(pdf,paste("dailyfit-run",runNumber,"-gen",curgen,".pdf",sep=""))
+  dev.print(pdf,paste("dailyfit-run",runNumber,"-gen",curgen,"-meanfit.pdf",sep=""))
   
   plot(meanFitSum,type='l',ylim=c(0,max(meanFitSum)*1.2),
        main=paste("Mean fitness gained, gen",curgen),
@@ -261,7 +261,19 @@ for(curgen in seq(2,length(years.index),length=5)){
        cex.main=1.3)
   arheight=jitter(rep(max(meanFitSum)*1.05,N),factor=.8)
   arrows(y0=arheight+.05*max(meanFitSum),x0=emergeDay,y1=arheight,length=.1)
-  dev.print(pdf,paste("dailyfitSum-run",runNumber,"-gen",curgen,".pdf",sep=""))
+  dev.print(pdf,paste("dailyfitSum-run",runNumber,"-gen",curgen,"-meanfit.pdf",sep=""))
+  
+  #now calculate the fitSum for THIS YEAR ONLY
+  FitSum=c(meanFitSum,sum(rep(meanFit,2)[i.day:(i.day+duration-1)]))
+  plot(meanFitSum,type='l',ylim=c(0,max(meanFitSum)*1.2),
+       main=paste("Mean fitness gained, gen",curgen),
+       ylab="Fitness gained",
+       xlab="Julian date",
+       cex.lab=1.3,
+       cex.main=1.3)
+  arheight=jitter(rep(max(meanFitSum)*1.05,N),factor=.8)
+  arrows(y0=arheight+.05*max(meanFitSum),x0=emergeDay,y1=arheight,length=.1)
+  dev.print(pdf,paste("dailyfitSum-run",runNumber,"-gen",curgen,"-meanfit.pdf",sep=""))
 }
 
 #Calculating changes in mean fitness through time
