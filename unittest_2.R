@@ -264,16 +264,19 @@ for(curgen in seq(2,length(years.index),length=5)){
   dev.print(pdf,paste("dailyfitSum-run",runNumber,"-gen",curgen,"-meanfit.pdf",sep=""))
   
   #now calculate the fitSum for THIS YEAR ONLY
-  FitSum=c(meanFitSum,sum(rep(meanFit,2)[i.day:(i.day+duration-1)]))
-  plot(meanFitSum,type='l',ylim=c(0,max(meanFitSum)*1.2),
-       main=paste("Mean fitness gained, gen",curgen),
+  FitSum=NULL
+  for(i.day in 1:365){
+    FitSum=c(FitSum,sum(rep(years.list[[curgen]]$fit.daily,2)[i.day:(i.day+duration-1)]))
+  }
+  plot(FitSum,type='l',ylim=c(0,max(FitSum)*1.2),
+       main=paste("Fitness gained this year, gen",curgen),
        ylab="Fitness gained",
        xlab="Julian date",
        cex.lab=1.3,
        cex.main=1.3)
-  arheight=jitter(rep(max(meanFitSum)*1.05,N),factor=.8)
-  arrows(y0=arheight+.05*max(meanFitSum),x0=emergeDay,y1=arheight,length=.1)
-  dev.print(pdf,paste("dailyfitSum-run",runNumber,"-gen",curgen,"-meanfit.pdf",sep=""))
+  arheight=jitter(rep(max(FitSum)*1.05,N),factor=.8)
+  arrows(y0=arheight+.05*max(FitSum),x0=emergeDay,y1=arheight,length=.1)
+  dev.print(pdf,paste("dailyfitSum-run",runNumber,"-gen",curgen,"-actualfit.pdf",sep=""))
 }
 
 #Calculating changes in mean fitness through time
@@ -319,8 +322,7 @@ for(i.gen in 1:length(years.index)){
   covarmax["b.temp"]=max(years.list[[years.index[i.gen]]]$tmax)
   covarmax["b.precip"]=max(years.list[[years.index[i.gen]]]$precip)
   for(cur.par in c("b.const","b.day","b.temp","b.precip")){
-    coef.indiv[index:(index+N-1),cur.par]=abs(curhist[,cur.par])/covarmax[cur.par]
-    
+    coef.indiv[index:(index+N-1),cur.par]=abs(curhist[,cur.par])*covarmax[cur.par]
   }
   index=index+N
 }
