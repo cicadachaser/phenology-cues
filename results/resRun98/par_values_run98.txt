@@ -1,75 +1,71 @@
 Parameters for simulation. Weather from davis data. 
-b.const has value 0.337280 
-b.day has value 1.730300 
-b.precip has value 1.458153 
-b.temp has value 0.752529 
-bestprecip has value 0.466315 
-best.temp has value 2.145196 
-duration has value 0.419201 
-N has value 1.128399 
-sd.precip has value 0.893665 
-sd.temp has value 2.477655 
-b.const has value 2.747943 
-b.day has value 0.359422 
-b.precip has value 1.505566 
-b.temp has value 2.237835 
-bestprecip has value 0.052826 
-best.temp has value 0.708546 
-duration has value 1.642639 
-N has value 2.851339 
-sd.precip has value 0.073946 
-sd.temp has value 2.963002 
-b.const has value 0.098450 
-b.day has value 1.153309 
-b.precip has value 2.091883 
-b.temp has value 1.118310 
-bestprecip has value 1.242299 
-best.temp has value 2.466732 
-duration has value 0.804134 
-N has value 0.973551 
-sd.precip has value 0.190971 
-sd.temp has value 2.608882 
-b.const has value 0.117017 
-b.day has value 1.195078 
-b.precip has value 0.034244 
-b.temp has value 2.224003 
-bestprecip has value 0.947110 
-best.temp has value 1.556071 
-duration has value 2.575169 
-N has value 1.338265 
-sd.precip has value 0.991332 
-sd.temp has value 1.313884 
+b.const has value 77.190566 
+b.day has value 54.006825 
+b.precip has value 90.142875 
+b.temp has value 55.080439 
+bestprecip has value 87.293922 
+best.temp has value 76.878736 
+duration has value 67.781771 
+N has value 90.370978 
+sd.precip has value 92.354224 
+sd.temp has value 62.321714 
+b.const has value 64.848320 
+b.day has value 0.230212 
+b.precip has value 83.363361 
+b.temp has value 93.017364 
+bestprecip has value 24.690517 
+best.temp has value 93.481550 
+duration has value 48.713118 
+N has value 75.440949 
+sd.precip has value 71.886566 
+sd.temp has value 84.593046 
+b.const has value 51.663031 
+b.day has value 56.550880 
+b.precip has value 64.613270 
+b.temp has value 74.685011 
+bestprecip has value 96.239676 
+best.temp has value 10.565070 
+duration has value 42.671662 
+N has value 12.785084 
+sd.precip has value 89.491383 
+sd.temp has value 21.012299 
+b.const has value 31.505476 
+b.day has value 3.850734 
+b.precip has value 51.712880 
+b.temp has value 32.008464 
+bestprecip has value 81.639645 
+best.temp has value 57.196092 
+duration has value 14.653456 
+N has value 11.979247 
+sd.precip has value 70.800322 
+sd.temp has value 24.789731 
+b.const has value 86.934205 
+b.day has value 80.076027 
+b.precip has value 77.353635 
+b.temp has value 28.270015 
+bestprecip has value 39.310488 
+best.temp has value 46.207734 
+duration has value 32.039294 
+N has value 40.681292 
+sd.precip has value 0.551332 
+sd.temp has value 75.247847 
  sds= 
-     const day     temp precip
-1 1.732051   1 2.236068      1
+  const day temp precip
+1   100   3    5      1
 
  mutrate=
   const day temp precip
-1   0.5 0.5  0.5    0.5
+1   0.1 0.1  0.1    0.1
 
  start=
   constmin constmax daymin daymax tempmin tempmax precipmin precipmax
-1        0        3      0      1       0       5         0         1
+1        0      100      0      3       0       5         0         1
 
  goodyears=
- [1] 1909 1912 1914 1924 1925 1926 1927 1928 1929 1932 1934 1935 1937 1938 1940 1941 1945 1947 1949
-[20] 1951 1952 1954 1955 1956 1957 1958 1959 1960 1961 1962 1963 1964 1965 1966 1967 1968 1969 1970
-[39] 1971 1972 1973 1974 1975 1976 1977 1978 1979 1980 1982 1985 1986 1987 1988 1994 2001 2008
+ [1] 1909 1912 1914 1924 1925 1926 1927 1928 1929 1932 1934 1935 1937 1938 1940 1941 1945 1947 1949 1951
+[21] 1952 1954 1955 1956 1957 1958 1959 1960 1961 1962 1963 1964 1965 1966 1967 1968 1969 1970 1971 1972
+[41] 1973 1974 1975 1976 1977 1978 1979 1980 1982 1985 1986 1987 1988 1994 2001 2008
 
  years.index=
-  [1]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2
- [33]  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4
- [65]  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6
- [97]  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8
-[129]  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10
-[161]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2
-[193]  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4
-[225]  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6
-[257]  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8
-[289]  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10
-[321]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2
-[353]  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4
-[385]  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6
-[417]  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8
-[449]  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10
-[481]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10
+ [1]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4
+[35]  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10

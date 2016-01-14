@@ -1,0 +1,71 @@
+Parameters for simulation. Weather from davis data. 
+b.const has value 10.862812 
+b.day has value 27.258759 
+b.precip has value 71.388470 
+b.temp has value 28.693563 
+bestprecip has value 89.178667 
+best.temp has value 46.271205 
+duration has value 46.229771 
+N has value 89.484479 
+sd.precip has value 60.061123 
+sd.temp has value 63.812713 
+b.const has value 93.531700 
+b.day has value 2.443409 
+b.precip has value 83.917057 
+b.temp has value 69.916891 
+bestprecip has value 27.767445 
+best.temp has value 37.595671 
+duration has value 39.183960 
+N has value 61.870026 
+sd.precip has value 22.200918 
+sd.temp has value 20.346185 
+b.const has value 61.186417 
+b.day has value 86.818775 
+b.precip has value 55.964494 
+b.temp has value 32.426984 
+bestprecip has value 98.205236 
+best.temp has value 38.780517 
+duration has value 24.056584 
+N has value 26.976535 
+sd.precip has value 56.091589 
+sd.temp has value 75.299224 
+b.const has value 8.748423 
+b.day has value 99.470712 
+b.precip has value 31.963412 
+b.temp has value 46.609115 
+bestprecip has value 92.964436 
+best.temp has value 67.472773 
+duration has value 85.312022 
+N has value 91.095132 
+sd.precip has value 69.526612 
+sd.temp has value 48.105201 
+b.const has value 25.514919 
+b.day has value 51.229356 
+b.precip has value 45.372336 
+b.temp has value 13.991268 
+bestprecip has value 68.196190 
+best.temp has value 11.239915 
+duration has value 91.107171 
+N has value 81.059131 
+sd.precip has value 33.794638 
+sd.temp has value 0.774039 
+ sds= 
+  const day temp precip
+1   100   3    5      1
+
+ mutrate=
+  const day temp precip
+1   0.1 0.1  0.1    0.1
+
+ start=
+  constmin constmax daymin daymax tempmin tempmax precipmin precipmax
+1        0      100      0      3       0       5         0         1
+
+ goodyears=
+ [1] 1909 1912 1914 1924 1925 1926 1927 1928 1929 1932 1934 1935 1937 1938 1940 1941 1945 1947 1949
+[20] 1951 1952 1954 1955 1956 1957 1958 1959 1960 1961 1962 1963 1964 1965 1966 1967 1968 1969 1970
+[39] 1971 1972 1973 1974 1975 1976 1977 1978 1979 1980 1982 1985 1986 1987 1988 1994 2001 2008
+
+ years.index=
+ [1]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2
+[33]  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10

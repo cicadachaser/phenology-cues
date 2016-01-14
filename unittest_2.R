@@ -1,0 +1,366 @@
+#UNIT TEST:
+# EVERY YEAR HAS THE GAUSSIAN FITNESS CURVE BASED ON DAY OF YEAR
+# IN THIS TEST, ALL CUES ARE ALSO CONSTANTS
+
+#clear all variables
+rm(list=ls())
+
+#libraries
+library(timeDate)
+library(Cairo) #I'm not sure if we need this with the plotting removed
+
+#Set appropriate working directory
+if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
+  if(Sys.info()[1]=="Linux"){
+    setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
+  }else{
+    setwd("C:\\Repos\\phenology-cues") #desktop
+  }
+}else{
+  if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
+    setwd("C:\\Users\\lhyang.ent-yang01\\SkyDrive\\Phenology simulation\\phenology-cues")#desktop
+  }else{  
+    setwd("C:\\Users\\lhyang\\Skydrive\\Phenology simulation\\phenology-cues")} #laptop
+}
+#Load sources file(s)
+source("windows_subs.R")
+
+#########################
+# Simulation parameters #
+#########################
+#generations has been removed. instead simulation runs for the number of years in years.index
+runNumber=99999
+duration=10
+best.temp=15; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
+best.precip=55; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
+N=50 #number of individuals 
+start<-data.frame(  #this represents the min and max values used when randomly assigning initial values to the population 
+  constmin=0,constmax=100,
+  daymin=0,daymax=3,
+  tempmin=0,tempmax=5,
+  precipmin=0,precipmax=1) 
+sds<-data.frame( #standard deviations for trait mutations. Currently set so that variance = max initial trait value
+  const=(start$constmax),
+  day=(start$daymax),
+  temp=(start$tempmax),
+  precip=(start$precipmax))
+mutrate<-data.frame( #probability of each trait mutating in an individual. Mutations are independent of one another
+  const=.1,
+  day=.1,
+  temp=.1,
+  precip=.1)
+
+#input data
+davis.daily<-read.csv("davis-data/626713.csv", header=T, na.strings="-9999")
+davis.daily$PRCP<-davis.daily$PRCP/10 #precips are reported in tenths of mm
+davis.daily$TMAX<-davis.daily$TMAX/10 #temps are reported in tenths of degree C
+davis.daily$TMIN<-davis.daily$TMIN/10 #temps are reported in tenths of degree C
+davis.daily$DATE2<-as.Date(as.character(davis.daily$DATE),format="%Y %m %d") #DATE2 is date formatted
+davis.daily$JULIAN<-julian(davis.daily$DATE2,origin=as.Date("1892-12-31")) #1893-01-01 is day 1...
+davis.daily$YEAR<-as.numeric(substr(davis.daily$DATE,1,4)) #simple field for year
+davis.daily$MONTH<-as.numeric(substr(davis.daily$DATE,5,6)) #simple field for month
+davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8)) #simple field for day
+davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")] #simplified dataframe
+
+davis.yearlist<-split(davis.daily,davis.daily$YEAR) #list of each year separated
+#calculates the "day of year", i.e. Jan 1 is 1, and 12/31 is 365 
+#adds a DAY.OF.YEAR column to each dataframe in the year list
+davis.yearnames<-unique(davis.daily$YEAR)
+for (i in 1:length(davis.yearnames)){
+  davis.yearlist[[i]]$DAY.OF.YEAR<-julian(davis.yearlist[[i]]$DATE2, origin=as.Date(paste(davis.yearnames[i],"01","01",sep="-")))+1 #add +1 so that the first day of the year is 1, not zero. 
+}
+yearlist.store=davis.yearlist
+goodyears=NULL
+
+for(iyear in davis.yearnames){
+  nacount=sum(sum(is.na(davis.yearlist[[as.character(iyear)]])))
+  daycount=dim(davis.yearlist[[as.character(iyear)]])[1]
+  if(nacount==0 & daycount>364){goodyears=c(goodyears,iyear)}
+}
+davis.yearlist=davis.yearlist[as.character(goodyears)]
+
+davis.yearnames<-goodyears #gives a list of all the years in the data
+
+
+
+
+davis.daily<-unsplit(yearlist.store,davis.daily$YEAR) #using legacy "yearlist.store" to make unsplit happy
+# DAY.OF.YEAR=rep(0,dim(davis.daily)[1])
+# for(i in 1:length(DAY.OF.YEAR)){
+#   DAY.OF.YEAR[i]=sprintf("%02d%02d",davis.daily[i,"MONTH"],davis.daily[i,"DAY"])
+#   
+# }
+
+# davis.daily=cbind(davis.daily, DAY.OF.YEAR)
+
+# davis.daily<-unsplit(davis.daily,davis.daily$YEAR)
+davis.daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=davis.daily[davis.daily$YEAR %in% goodyears,], mean)
+
+davis.yearvar<-data.frame(row.names=davis.yearnames) #dataframe to hold environmental variability
+
+for (i in 1:length(davis.yearnames)){
+  #temporary dataframe to compare with mean conditions
+  #this creates a VAR.x for each year and a VAR.y for the daily means
+  comparison<-merge(davis.yearlist[[i]],davis.daily.means,by="DAY.OF.YEAR") 
+  #number of complete cases (is.na=F) for each year
+  davis.yearvar[i,"TMAX.N"]<-sum(complete.cases(davis.yearlist[[i]]$TMAX))
+  davis.yearvar[i,"TMIN.N"]<-sum(complete.cases(davis.yearlist[[i]]$TMIN))
+  davis.yearvar[i,"PRCP.N"]<-sum(complete.cases(davis.yearlist[[i]]$PRCP))
+  #sum of squared differences with an average year - how weird is each year?
+  #some years have incomplete data, so this is the mean SS per observed day
+  davis.yearvar[i,"TMAX.SS"]<-(sum(comparison$TMAX.x-comparison$TMAX.y,na.rm=T)^2)/davis.yearvar[i,"TMAX.N"]
+  davis.yearvar[i,"TMIN.SS"]<-(sum(comparison$TMIN.x-comparison$TMIN.y,na.rm=T)^2)/davis.yearvar[i,"TMIN.N"]
+  davis.yearvar[i,"PRCP.SS"]<-(sum(comparison$PRCP.x-comparison$PRCP.y,na.rm=T)^2)/davis.yearvar[i,"PRCP.N"]
+  #CV within years - how variable is each year?
+  davis.yearvar[i,"TMAX.CV"]<-sd(comparison$TMAX.x,na.rm=T)/mean(comparison$TMAX.x,na.rm=T)
+  davis.yearvar[i,"TMIN.CV"]<-sd(comparison$TMIN.x,na.rm=T)/mean(comparison$TMIN.x,na.rm=T)
+  davis.yearvar[i,"PRCP.CV"]<-sd(comparison$PRCP.x,na.rm=T)/mean(comparison$PRCP.x,na.rm=T)
+  #sum of differences (not squared) with an average year - how hot/wet is each year?
+  #some years have incomplete data, so this is the mean difference per observed day
+  davis.yearvar[i,"TMAX.DEL"]<-sum(comparison$TMAX.x-comparison$TMAX.y,na.rm=T)/davis.yearvar[i,"TMAX.N"]
+  davis.yearvar[i,"TMIN.DEL"]<-sum(comparison$TMIN.x-comparison$TMIN.y,na.rm=T)/davis.yearvar[i,"TMIN.N"]
+  davis.yearvar[i,"PRCP.DEL"]<-sum(comparison$PRCP.x-comparison$PRCP.y,na.rm=T)/davis.yearvar[i,"PRCP.N"]
+}
+
+######################################################
+# Import sequence of years - LOUIE'S STUFF GOES HERE #
+######################################################
+years.list=davis.yearlist #Replace this with code to grab a list of data frames. Each data frame is a year.
+######################
+# Fitness generation #
+######################
+#In this test, fitness is a gauss function centered on day 150
+for(i.year in 1:length(years.list)){
+  newyear=years.list[[i.year]]
+  newyear=newyear[,c("DAY.OF.YEAR","TMAX","PRCP")]
+  newyear[,2:3]<-1
+  colnames(newyear)<-c("day","tmax","precip")
+  daily.fit=dnorm(years.list[[i.year]]$DAY.OF.YEAR,mean=150,sd=100)
+  years.list[[i.year]]=cbind(newyear, fit.daily=daily.fit)
+}
+
+
+# Each year data frame has $day, $precip, $tmean, $tmax, $tmin
+# This will be the same list for all configurations of years - this is essentially just our year database
+years.index=rep(c(1,2,3,4,5,6,7,8,9,10),5) # This is the list of which year.list data to use for each generation of the model
+
+
+
+
+
+#######################
+# initializing population
+#######################
+##intialize a population of N individuals
+# Their min and max values are determined by the start$ parameters
+b.const<-runif(n=N,min=start$constmin,max=start$constmax)
+b.day<-runif(n=N,min=start$daymin,max=start$daymax)
+b.temp<-runif(n=N,min=start$tempmin,max=start$tempmax)
+b.precip<-runif(n=N,min=start$precipmin,max=start$precipmax)
+newpop<-data.frame(b.const,b.day,b.temp,b.precip)
+pop<-selection(newpop,duration,year=years.list[[1]],N)
+
+## Run Simulation
+pophistory=runSim(startpop=pop,years.list=years.list,
+                  years.ind=years.index,N=N,duration=duration,
+                  sds=sds,mutrate=mutrate,generations=length(years.index[-1]))
+#we've already used year 1 in initiating the pop
+
+###################################
+#Saving our results
+###################################
+#Turn results from list to data frame
+pophist.table <-do.call(rbind.data.frame, pophistory)
+
+
+#handle folder making and moving
+#Set appropriate working directory
+if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
+  if(Sys.info()[1]=="Linux"){
+    setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
+  }else{
+    setwd("C:\\Repos\\phenology-cues") #desktop
+  }
+}else{
+  if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
+    setwd("C:\\Users\\lhyang.ent-yang01\\SkyDrive\\Phenology simulation\\phenology-cues")#desktop
+  }else{  
+    setwd("C:\\Users\\lhyang\\Skydrive\\Phenology simulation\\phenology-cues")} #laptop
+}
+setwd("results")
+resultsdir=sprintf("resRun%d",runNumber)
+dir.create(resultsdir,showWarnings = FALSE)
+setwd(resultsdir)
+write.table(pophist.table,file=paste("pophist_run",runNumber,".csv",sep=""),sep=",")
+parnames=c(
+  "b.const",
+  "b.day",
+  "b.precip",
+  "b.temp",
+  "bestprecip",
+  "best.temp",
+  "duration",
+  "N",
+  "sd.precip",
+  "sd.temp"
+)
+parvals=get(parnames)
+meta=sprintf("%s has value %f",parnames,parvals)
+sink(paste("par_values_run",runNumber,".txt",sep=""))
+cat("Parameters for simulation. Weather from davis data. \n")
+for(i in meta){cat(paste(i,"\n"))}
+cat(" sds= \n")
+print(sds)
+cat("\n mutrate=\n")
+print(mutrate)
+cat("\n start=\n")
+print(start)
+cat("\n goodyears=\n")
+print(goodyears)
+cat("\n years.index=\n")
+print(years.index)
+sink()
+
+save(list=c("pophistory","years.list","years.index"),file="dat.RData")
+
+
+##############################
+# Plotting
+##############################
+
+yearFit=NULL
+for(i in years.index){
+  curfits=years.list[[i]]$fit.daily
+  if(length(curfits)==366){curfits=curfits[-366]} #to handle leap years, remove least useful day
+  yearFit=rbind(yearFit,curfits)
+}
+par(mar=c(5,5,4,3))
+meanFit=apply(yearFit,2,mean)
+meanFitSum=NULL
+for(i.day in 1:365){
+  meanFitSum=c(meanFitSum,sum(rep(meanFit,2)[i.day:(i.day+duration-1)]))
+}
+
+# par(mfrow=c(1,1))
+x11(width=9,height=6)
+for(curgen in seq(2,length(years.index),length=5)){
+  #arheight=pophistory[[length(curgen)]]$Wi
+  curgen=round(curgen)
+  arheight=rep(max(meanFit)*1.1,N)
+  emergeDay=pophistory[[curgen]]$emerge
+  plot(meanFit,type='l',ylim=c(0,max(meanFit)*1.2))
+  # plot(1,1,type='n',ylim=c(0,max(arheight)*1.05),xlim=c(0,365))
+  arrows(y0=jitter(arheight,factor=1.5),x0=emergeDay,x1=emergeDay+duration-1,length=.1)
+  dev.print(pdf,paste("dailyfit-run",runNumber,"-gen",curgen,".pdf",sep=""))
+  
+  plot(meanFitSum,type='l',ylim=c(0,max(meanFitSum)*1.2),
+       main=paste("Mean fitness gained, gen",curgen),
+       ylab="Fitness gained",
+       xlab="Julian date",
+       cex.lab=1.3,
+       cex.main=1.3)
+  arheight=jitter(rep(max(meanFitSum)*1.05,N),factor=.8)
+  arrows(y0=arheight+.05*max(meanFitSum),x0=emergeDay,y1=arheight,length=.1)
+  dev.print(pdf,paste("dailyfitSum-run",runNumber,"-gen",curgen,".pdf",sep=""))
+}
+
+#Calculating changes in mean fitness through time
+meanfit=rep(0,length(years.index))
+maxfit=meanfit
+for(curgen in 1:length(years.index)){
+  meanfit[curgen]=mean(pophistory[[curgen]]$Wi)
+  cur.fitness=years.list[[years.index[curgen]]]$fit.daily
+  cur.fitness.durated=rep(0,365)
+  for(i.day in 1:length(cur.fitness.durated)){cur.fitness.durated[i.day]=sum(cur.fitness[i.day:min(i.day+duration-1,365)])}
+  maxfit[curgen]=max(cur.fitness.durated)
+}
+plot(maxfit,type='l',col='red',
+     main=paste("Mean fitness through time for run",runNumber),
+     ylab="generation",
+     xlab="Raw mean fitness",
+     sub="red is maximum possible",
+     ylim=c(0,max(maxfit))
+)
+points(1:length(meanfit),meanfit,type='l',ylim=c(0,.04))
+dev.print(pdf,paste("meanfitThroughTime_wMax-run",runNumber,"-gen",curgen,".pdf",sep=""))
+
+plot(meanfit,type="l",
+     main=paste("Mean fitness through time for run",runNumber),
+     ylab="generation",
+     xlab="Raw mean fitness"
+)
+dev.print(pdf,paste("meanfitThroughTime-run",runNumber,"-gen",curgen,".pdf",sep=""))
+
+#Looking at coef changes through time
+# Scale by the maximum effect size within each year - the "day" coefficient should be much smaller than the const just because it can be multiplied by something up to 365
+coef.indiv=matrix(data=0,ncol=6,nrow=N*length(years.index),
+                  dimnames = list(NULL,c("gen","b.const","b.day","b.temp","b.precip","relfit")))
+index=1
+for(i.gen in 1:length(years.index)){
+  curhist=pophistory[[i.gen]]
+  coef.indiv[index:(index+N-1),"gen"]=rep(i.gen,N)
+  coef.indiv[index:(index+N-1),"relfit"]=curhist$Ws
+  covarmax=c("b.const"=0,"b.day"=0,"b.temp"=0,"b.precip"=0)
+  #This will store the maximum covariable value for this year - max temp, max day, precip, etc. 
+  covarmax["b.const"]=1
+  covarmax["b.day"]=max(years.list[[years.index[i.gen]]]$day)
+  covarmax["b.temp"]=max(years.list[[years.index[i.gen]]]$tmax)
+  covarmax["b.precip"]=max(years.list[[years.index[i.gen]]]$precip)
+  for(cur.par in c("b.const","b.day","b.temp","b.precip")){
+    coef.indiv[index:(index+N-1),cur.par]=abs(curhist[,cur.par])/covarmax[cur.par]
+    
+  }
+  index=index+N
+}
+x11(width=9,height=6)
+par(mar=c(5,5,4,4))
+
+plot(coef.indiv[,"gen"],coef.indiv[,"b.const"],pch=20,
+     main="Scaled effect of b.const param",
+     xlab="generation",
+     ylab="relative weight",
+     cex.lab=1.4,cex.main=1.4)
+dev.print(pdf,paste("rel-bconst-run",runNumber,".pdf",sep=""))
+plot(coef.indiv[,"gen"],coef.indiv[,"b.day"],pch=20,
+     main="Scaled effect of b.day param",
+     xlab="generation",
+     ylab="relative weight",
+     cex.lab=1.4,cex.main=1.4)
+dev.print(pdf,paste("rel-bday-run",runNumber,".pdf",sep=""))
+plot(coef.indiv[,"gen"],coef.indiv[,"b.temp"],pch=20,
+     main="Scaled effect of b.temp param",
+     xlab="generation",
+     ylab="relative weight",
+     cex.lab=1.4,cex.main=1.4)
+dev.print(pdf,paste("rel-temp-run",runNumber,".pdf",sep=""))
+plot(coef.indiv[,"gen"],coef.indiv[,"b.precip"],pch=20,
+     main="Scaled effect of b.precip param",
+     xlab="generation",
+     ylab="relative weight",
+     cex.lab=1.4,cex.main=1.4)
+dev.print(pdf,paste("rel-precip-run",runNumber,".pdf",sep=""))
+
+#Plot it all in one
+x11()
+par(mfrow=c(4,1))
+plot(coef.indiv[,"gen"],coef.indiv[,"b.const"],pch=20,
+     main="Scaled effect of b.const param",
+     xlab="generation",
+     ylab="relative weight",
+     cex.lab=1.4,cex.main=1.4)
+plot(coef.indiv[,"gen"],coef.indiv[,"b.day"],pch=20,
+     main="Scaled effect of b.day param",
+     xlab="generation",
+     ylab="relative weight",
+     cex.lab=1.4,cex.main=1.4)
+plot(coef.indiv[,"gen"],coef.indiv[,"b.temp"],pch=20,
+     main="Scaled effect of b.temp param",
+     xlab="generation",
+     ylab="relative weight",
+     cex.lab=1.4,cex.main=1.4)
+plot(coef.indiv[,"gen"],coef.indiv[,"b.precip"],pch=20,
+     main="Scaled effect of b.precip param",
+     xlab="generation",
+     ylab="relative weight",
+     cex.lab=1.4,cex.main=1.4)
+dev.print(pdf,paste("allCoefs",runNumber,".pdf",sep=""))
