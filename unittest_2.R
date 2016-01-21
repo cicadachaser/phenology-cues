@@ -318,9 +318,9 @@ for(i.gen in 1:length(years.index)){
   covarmax=c("b.const"=0,"b.day"=0,"b.temp"=0,"b.precip"=0)
   #This will store the maximum covariable value for this year - max temp, max day, precip, etc. 
   covarmax["b.const"]=1
-  covarmax["b.day"]=max(years.list[[years.index[i.gen]]]$day)
-  covarmax["b.temp"]=max(years.list[[years.index[i.gen]]]$tmax)
-  covarmax["b.precip"]=max(years.list[[years.index[i.gen]]]$precip)
+  covarmax["b.day"]=mean(years.list[[years.index[i.gen]]]$day)
+  covarmax["b.temp"]=mean(years.list[[years.index[i.gen]]]$tmax)
+  covarmax["b.precip"]=mean(years.list[[years.index[i.gen]]]$precip)
   for(cur.par in c("b.const","b.day","b.temp","b.precip")){
     coef.indiv[index:(index+N-1),cur.par]=abs(curhist[,cur.par])*covarmax[cur.par]
   }
