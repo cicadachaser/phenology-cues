@@ -80,9 +80,8 @@ plot(davis.daily$JULIAN,davis.daily$TMAX)
 plot(davis.daily$JULIAN,is.na(davis.daily$TMAX))
 #however, there are 143 missing rows
 max(davis.daily$JULIAN)-length(davis.daily$JULIAN)
-
-
-match(seq(1:max(davis.daily$JULIAN)),davis.daily$JULIAN)
+#this is a list of the missing JULIAN days
+missing.days<-which((seq(1:max(davis.daily$JULIAN)) %in% davis.daily$JULIAN)=="FALSE")
 
 
 
