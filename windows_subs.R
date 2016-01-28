@@ -3,18 +3,18 @@
 
 emergence<-function(year,indiv){
   #Function for calculating the emergence day of the given individual in the given year.
-  #  Calculates emergence value as E= b.const+b.day*day+b.temp*temp+b.precip*precip
+  #  Calculates emergence value as E= b.day*day+b.temp*temp+b.precip*precip
   # Then finds the first day when the calculated E is greater than 100 (100 chosen for arbitrary convenience)
   # Inputs:
-  #  Indiv: (individual) has four important attributes: $b.const, $b.day, $b.temp, $b.precip
+  #  Indiv: (individual) has three important attributes: $b.day, $b.temp, $b.precip
   #  year: current year data. Includes columns $day, $tmax, $precip
   # Output:
   #  day (Julian) of emergence
-  E=(rep(indiv$b.const,length(year[,1]))+indiv$b.day*year$day+indiv$b.temp*year$tmax+indiv$b.precip*year$precip)
+  E=(indiv$b.day*year$day+indiv$b.temp*year$temp+indiv$b.precip*year$precip)
   return(min(c(min(which(E>100),365)))) #find the first day where emergence value is greater than 100 (or the last day of the year)
 }
 
-fitness<-function(year,newpop,duration){ 
+fitness<-function(year,newpop,duration){
   #Function for giving fitness of individuals based on their start time, duration, and the W.
   # fitness is the sum of W over the lifespan
   #FOR SIMPLICITY, ASSUMING END OF YEAR MEANS DEATH. CHANGE IF APPROPRIATE.
@@ -25,8 +25,7 @@ fitness<-function(year,newpop,duration){
   #Returns:
   #  fit: vector of the fitnesses of each individual
   #
-  fit=rep(0,length(newpop[,1]))
-  evect=fit
+  evect=fit=rep(0,length(newpop[,1]))
   wrappingfit=rep(year$fit.daily,2)
   for(i.indiv in 1:length(fit)){
     start=emergence(year,indiv=newpop[i.indiv,])
@@ -51,7 +50,7 @@ selection<-function(newpop,duration,year,N){
   newWi=out$fit
   newWs<-(newWi-min(newWi))/(max(newWi)-min(newWi)+.0001) #rescaled between 0 and 1, centered on the mid-range
   newWsurv<-newWs*(newWs>0) #newWsurv: all individuals survive (some may have zero fitness, none have neg fitness)
-    #That line should be unneccessary, since I don't think we can end up with negative fitness under current schema
+  #That line should be unneccessary, since I don't think we can end up with negative fitness under current schema
   newWp<-newWsurv/(sum(newWsurv)+.0001)+.00001 #Wp is the proportional fitness after mortality
   newWnum=(rmultinom(1,size=N,prob=newWp)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
   init.colnames=colnames(newpop)
@@ -72,11 +71,11 @@ mutation<-function(poptraits,sds,mutrate,N){
   #  2-dimensional matrix of the new (post-mutation) traits of the population
   #
   mat.runif=matrix(runif(length(sds[1,])*N),nrow=N, ncol=length(sds[1,])) #generate matrix of random uniform numbers for testing
-  test.mutate=cbind(seq(mutrate$const,N),seq(mutrate$day,N),seq(mutrate$temp,N),seq(mutrate$precip,N)) #THESE NEED TO BE IN THE SAME ORDER AS THE POPULATIONS
+  test.mutate=cbind(seq(mutrate$day,N),seq(mutrate$temp,N),seq(mutrate$precip,N)) #THESE NEED TO BE IN THE SAME ORDER AS THE POPULATIONS
   mat.mutate=mat.runif<test.mutate # which traits of which individuals mutated?
-  vals.mutate=cbind(rnorm(n=N,mean=0,sd=sds$const),rnorm(n=N,mean=0,sd=sds$day),
+  vals.mutate=cbind(rnorm(n=N,mean=0,sd=sds$day),
                     rnorm(n=N,mean=0,sd=sds$temp),rnorm(n=N,mean=0,sd=sds$precip))# Generate random mutations for all traits of all individuals. THESE NEED TO BE IN THE SAME ORDER AS THE POPULATIONS
-  poptraits=poptraits+mat.mutate*vals.mutate #Take current population, add mutations only for individuals and traits that mutated.  
+  poptraits=poptraits+mat.mutate*vals.mutate #Take current population, add mutations only for individuals and traits that mutated.
   return(poptraits)
 }
 
@@ -88,11 +87,11 @@ reproduction<-function(pop){
   #Returns:
   #  Next generation as a data frame.
   repop<-pop[pop$Wnum>0,]
-  expandpop<-data.frame(b.const=rep(0,N),b.day=rep(0,N),b.temp=rep(0,N),b.precip=rep(0,N))
+  expandpop<-data.frame(b.day=rep(0,N),b.temp=rep(0,N),b.precip=rep(0,N))
   ind=1
   for(i in 1:nrow(repop)){
     for (j in 1:repop$Wnum[i]) {
-      expandpop[ind,]<-c(repop$b.const[i],repop$b.day[i],repop$b.temp[i],repop$b.precip[i])
+      expandpop[ind,]<-c(repop$b.day[i],repop$b.temp[i],repop$b.precip[i])
       ind=ind+1
     }
   }
@@ -104,7 +103,7 @@ runSim<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,generation
   #Inputs:
   #  startpop: initial population
   #  years.list: List of dataframes for daily information on each year (MUST INCLUDE DAILY FITNESS)
-  #  years.ind: vector of indices for the year to use for each generation. 
+  #  years.ind: vector of indices for the year to use for each generation.
   #  N: number of individuals in the population
   #  duration: number of days all individuals is in an emerged state
   #  sds: standard deviation for the distribution of mutation sizes for each trait
@@ -126,4 +125,206 @@ runSim<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,generation
     pop<-newpop
   }
   return(pophistory)
+}
+
+######################
+# Analysis Functions #
+######################
+
+#####
+
+actTraitEff<-function(years.index,years.list,pophistory){
+  #  Function for calculating the actual effect size of each coefficient for each indiv
+  #    This is done by finding the conditions when each individual emerged, and calculating the effect of each coefficient on that day.
+  #  Inputs:
+  coef.indiv=matrix(data=0,ncol=6,nrow=N*length(years.index),
+                    dimnames = list(NULL,c("gen","b.day","b.temp","b.precip","relfit","emerge")))
+  index=1
+  for(i.gen in 1:length(years.index)){
+    curhist=pophistory[[i.gen]] #store the current year of population date
+    curyear=years.list[[years.index[[i.gen]]]] #store the current year of envi conditions
+    coef.indiv[index:(index+N-1),"gen"]=rep(i.gen,N)
+    coef.indiv[index:(index+N-1),"relfit"]=curhist$Ws
+    coef.indiv[index:(index+N-1),"emerge"]=curhist$emerge
+    for(i.indiv in 1:N){
+      cur.econd=curyear[curhist$emerge[i.indiv],] #grab the envi conditions of the day of emergence of current indiv
+      coef.indiv[index,"b.day"]=cur.econd$day*curhist[i.indiv,"b.day"]
+      coef.indiv[index,"b.temp"]=cur.econd$temp*curhist[i.indiv,"b.temp"]
+      coef.indiv[index,"b.precip"]=cur.econd$precip*curhist[i.indiv,"b.precip"]
+      index=index+1
+    }
+  }
+  return(coef.indiv)
+}
+
+meanTraitEff<-function(years.index,years.list,pophistory){
+  #  Function for calculating the "mean effect size" of each coefficient for each indiv
+  #    This is done by multiplying the coefficient of each individual by the mean of the appropriate environmental effect for the appropriate generation
+  #  Inputs:
+  coef.indiv=matrix(data=0,ncol=5,nrow=N*length(years.index),
+                    dimnames = list(NULL,c("gen","b.day","b.temp","b.precip","relfit")))
+  index=1
+  for(i.gen in 1:length(years.index)){
+    curhist=pophistory[[i.gen]]
+    coef.indiv[index:(index+N-1),"gen"]=rep(i.gen,N)
+    coef.indiv[index:(index+N-1),"relfit"]=curhist$Ws
+    covarmean=c("b.const"=0,"b.day"=0,"b.temp"=0,"b.precip"=0)
+    #This will store the maximum covariable value for this year - max temp, max day, precip, etc.
+    covarmean["b.day"]=mean(years.list[[years.index[i.gen]]]$day)
+    covarmean["b.temp"]=mean(years.list[[years.index[i.gen]]]$temp)
+    covarmean["b.precip"]=mean(years.list[[years.index[i.gen]]]$precip)
+    for(cur.par in c("b.day","b.temp","b.precip")){
+      coef.indiv[index:(index+N-1),cur.par]=abs(curhist[,cur.par])*covarmean[cur.par]
+    }
+    index=index+N
+  }
+  return(coef.indiv)
+}
+
+####################################
+# Year generation functions
+####################################
+
+yeargen.const<-function(numYears){
+  #generate a sequence of years with identical, gaussian fitness curves, and constant envi conditions.
+  #In this test, fitness is a gauss function centered on day 150
+  modelYear=data.frame(day=1:365,temp=rep(20,365),precip=rep(.5,365),fit.daily=dnorm(1:365,mean=150,sd=100))
+  years.list=list(modelYear)
+  # Each year data frame has $day, $precip, $tmean, $tmax, $tmin
+  # This will be the same list for all configurations of years - this is essentially just our year database
+  years.index=rep(1,numYears) # This is the list of which year.list data to use for each generation of the model
+  return(list("years.list"=years.list,"years.index"=years.index))
+}
+
+yeargen.rand<-function(numYears){
+  #generate a sequence of years with identical, gaussian fitness curves, and randomly fluctuating envi conditions.
+  #In this test, fitness is a gauss function centered on day 150
+  modelYear=data.frame(day=1:365,temp=runif(n=365,min=0,max=40),precip=rexp(n=365,rate=10),fit.daily=dnorm(1:365,mean=150,sd=100))
+  years.list=list(modelYear)
+  for(i in 2:max(numYears,100)){
+    years.list[[i]]=data.frame(day=1:365,temp=runif(n=365,min=0,max=40),precip=rexp(n=365,rate=10),fit.daily=dnorm(1:365,mean=150,sd=100))
+  }
+  # Each year data frame has $day, $precip, $tmean, $tmax, $tmin
+  # This will be the same list for all configurations of years - this is essentially just our year database
+  years.index=rep(1:100,length.out=numYears) # This is the list of which year.list data to use for each generation of the model
+  return(list("years.list"=years.list,"years.index"=years.index))
+}
+
+yeargen.davistest<-function(numYears,best.temp,sd.temp,best.precip,sd.precip){
+  #Then we use the davis input data, and take some of the "good years" - ie no NANs - for our populations
+  #input data
+  davis.daily<-read.csv("davis-data/626713.csv", header=T, na.strings="-9999")
+  davis.daily$PRCP<-davis.daily$PRCP/10 #precips are reported in tenths of mm
+  davis.daily$TMAX<-davis.daily$TMAX/10 #temps are reported in tenths of degree C
+  davis.daily$TMIN<-davis.daily$TMIN/10 #temps are reported in tenths of degree C
+  davis.daily$DATE2<-as.Date(as.character(davis.daily$DATE),format="%Y %m %d") #DATE2 is date formatted
+  davis.daily$JULIAN<-julian(davis.daily$DATE2,origin=as.Date("1892-12-31")) #1893-01-01 is day 1...
+  davis.daily$YEAR<-as.numeric(substr(davis.daily$DATE,1,4)) #simple field for year
+  davis.daily$MONTH<-as.numeric(substr(davis.daily$DATE,5,6)) #simple field for month
+  davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8)) #simple field for day
+  davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")] #simplified dataframe
+  davis.yearlist<-split(davis.daily,davis.daily$YEAR) #list of each year separated
+  #calculates the "day of year", i.e. Jan 1 is 1, and 12/31 is 365
+  #adds a DAY.OF.YEAR column to each dataframe in the year list
+  davis.yearnames<-unique(davis.daily$YEAR)
+  for (i in 1:length(davis.yearnames)){
+    davis.yearlist[[i]]$DAY.OF.YEAR<-julian(davis.yearlist[[i]]$DATE2, origin=as.Date(paste(davis.yearnames[i],"01","01",sep="-")))+1 #add +1 so that the first day of the year is 1, not zero.
+  }
+  yearlist.store=davis.yearlist
+  goodyears=NULL
+  for(iyear in davis.yearnames){
+    nacount=sum(sum(is.na(davis.yearlist[[as.character(iyear)]])))
+    daycount=dim(davis.yearlist[[as.character(iyear)]])[1]
+    if(nacount==0 & daycount>364){goodyears=c(goodyears,iyear)}
+  }
+  davis.yearlist=davis.yearlist[as.character(goodyears)]
+  davis.yearnames<-goodyears #gives a list of all the years in the data
+  davis.daily<-unsplit(yearlist.store,davis.daily$YEAR) #using legacy "yearlist.store" to make unsplit happy
+  # DAY.OF.YEAR=rep(0,dim(davis.daily)[1])
+  # for(i in 1:length(DAY.OF.YEAR)){
+  #   DAY.OF.YEAR[i]=sprintf("%02d%02d",davis.daily[i,"MONTH"],davis.daily[i,"DAY"])
+  #
+  # }
+  # davis.daily=cbind(davis.daily, DAY.OF.YEAR)
+  # davis.daily<-unsplit(davis.daily,davis.daily$YEAR)
+  davis.daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=davis.daily[davis.daily$YEAR %in% goodyears,], mean)
+  davis.yearvar<-data.frame(row.names=davis.yearnames) #dataframe to hold environmental variability
+  for (i in 1:length(davis.yearnames)){
+    #temporary dataframe to compare with mean conditions
+    #this creates a VAR.x for each year and a VAR.y for the daily means
+    comparison<-merge(davis.yearlist[[i]],davis.daily.means,by="DAY.OF.YEAR")
+    #number of complete cases (is.na=F) for each year
+    davis.yearvar[i,"TMAX.N"]<-sum(complete.cases(davis.yearlist[[i]]$TMAX))
+    davis.yearvar[i,"TMIN.N"]<-sum(complete.cases(davis.yearlist[[i]]$TMIN))
+    davis.yearvar[i,"PRCP.N"]<-sum(complete.cases(davis.yearlist[[i]]$PRCP))
+    #sum of squared differences with an average year - how weird is each year?
+    #some years have incomplete data, so this is the mean SS per observed day
+    davis.yearvar[i,"TMAX.SS"]<-(sum(comparison$TMAX.x-comparison$TMAX.y,na.rm=T)^2)/davis.yearvar[i,"TMAX.N"]
+    davis.yearvar[i,"TMIN.SS"]<-(sum(comparison$TMIN.x-comparison$TMIN.y,na.rm=T)^2)/davis.yearvar[i,"TMIN.N"]
+    davis.yearvar[i,"PRCP.SS"]<-(sum(comparison$PRCP.x-comparison$PRCP.y,na.rm=T)^2)/davis.yearvar[i,"PRCP.N"]
+    #CV within years - how variable is each year?
+    davis.yearvar[i,"TMAX.CV"]<-sd(comparison$TMAX.x,na.rm=T)/mean(comparison$TMAX.x,na.rm=T)
+    davis.yearvar[i,"TMIN.CV"]<-sd(comparison$TMIN.x,na.rm=T)/mean(comparison$TMIN.x,na.rm=T)
+    davis.yearvar[i,"PRCP.CV"]<-sd(comparison$PRCP.x,na.rm=T)/mean(comparison$PRCP.x,na.rm=T)
+    #sum of differences (not squared) with an average year - how hot/wet is each year?
+    #some years have incomplete data, so this is the mean difference per observed day
+    davis.yearvar[i,"TMAX.DEL"]<-sum(comparison$TMAX.x-comparison$TMAX.y,na.rm=T)/davis.yearvar[i,"TMAX.N"]
+    davis.yearvar[i,"TMIN.DEL"]<-sum(comparison$TMIN.x-comparison$TMIN.y,na.rm=T)/davis.yearvar[i,"TMIN.N"]
+    davis.yearvar[i,"PRCP.DEL"]<-sum(comparison$PRCP.x-comparison$PRCP.y,na.rm=T)/davis.yearvar[i,"PRCP.N"]
+    ######################
+    # Fitness generation #
+    ######################
+    #For now, daily incremental fitness will be found by multiplying two gaussian functions together:
+    #  one for temp, that's maximized at best.temp with sd tempsd
+    #  the other for precip that's maximized at best.precip with sd precipsd
+    # We will then normalize the results to vary from 0 to 1
+    years.list=davis.yearlist
+    for(i.year in 1:length(years.list)){
+      newyear=years.list[[i.year]]
+      newyear=newyear[,c("DAY.OF.YEAR","TMAX","PRCP")]
+      colnames(newyear)<-c("day","tmax","precip")
+      daily.fit=dnorm(newyear$tmax,mean=best.temp,sd=sd.temp)*dnorm(newyear$precip,mean=best.precip,sd=sd.precip)
+      daily.fit=(daily.fit-min(daily.fit))/(max(daily.fit)-min(daily.fit))
+      years.list[[i.year]]=cbind(newyear, fit.daily=daily.fit)
+    }
+    # Each year data frame has $day, $precip, $tmean, $tmax, $tmin
+    # This will be the same list for all configurations of years - this is essentially just our year database
+  }
+  years.index=rep(c(1,2,3,4,5,6,7,8,9,10),length.out=numYears) # This is the list of which year.list data to use for each generation of the model
+  years.list=davis.yearlist #Replace this with code to grab a list of data frames. Each data frame is a year.
+  return(list("years.index"=years.index,"years.list"=years.list))
+}
+######################
+# Plotting Functions #
+######################
+
+traitplot<-function(indivs,traitName){
+  #Function for plotting trait values through time
+  #Inputs:
+  #  generations: vector of the generation of each individual to be plotted
+  #  traivals: vector of the trait value of interest of each individ to be plotted
+  #  mainlabel: label for the main graph
+  #  ylabel: label for Y axis
+  plot(jitter(indivs[,"gen"]),indivs[,traitName],pch=1,
+       main=paste("Expected effect size of,",traitName),
+       xlab="Generation",
+       ylab=paste(traitName,"effect size"),
+       cex.lab=1.4,cex.main=1.4)
+}
+emergePlot<-function(indivs,traitName){
+  #Function for plotting trait values through time
+  #Inputs:
+  #  generations: vector of the generation of each individual to be plotted
+  #  traivals: vector of the trait value of interest of each individ to be plotted
+  #  mainlabel: label for the main graph
+  #  ylabel: label for Y axis
+  generations=indivs[,"gen"]
+  plot(jitter(generations),indivs[,traitName],type='n',
+       main=paste("Actual effect size of,",traitName),
+       xlab="Generation",
+       ylab=paste(traitName,"effect size"),
+       cex.lab=1.4,cex.main=1.4)
+  #Plot the "emerge before last day" indivs
+  points(jitter(generations[indivs[,"emerge"]>364]),indivs[indivs[,"emerge"]>364,traitName],pch=3,col='blue')
+  points(jitter(generations[indivs[,"emerge"]<365]),indivs[indivs[,"emerge"]<365,traitName],pch=1)
 }

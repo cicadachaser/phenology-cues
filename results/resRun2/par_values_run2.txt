@@ -1,61 +1,26 @@
 Parameters for simulation. Weather from davis data. 
-b.const has value 2.844323 
-b.day has value 0.502853 
-b.precip has value 1.764412 
-b.temp has value 2.595922 
-bestprecip has value 1.033053 
-best.temp has value 0.132351 
-duration has value 2.740230 
-N has value 2.025268 
-sd.precip has value 1.804426 
-sd.temp has value 2.665267 
-b.const has value 1.304996 
-b.day has value 1.485648 
-b.precip has value 1.699611 
-b.temp has value 1.650784 
-bestprecip has value 0.756561 
-best.temp has value 2.443404 
-duration has value 1.655416 
-N has value 2.628192 
-sd.precip has value 0.998824 
-sd.temp has value 1.798490 
-b.const has value 2.815373 
-b.day has value 0.762666 
-b.precip has value 2.102536 
-b.temp has value 0.580167 
-bestprecip has value 1.792270 
-best.temp has value 0.768225 
-duration has value 1.862688 
-N has value 2.698095 
-sd.precip has value 1.520721 
-sd.temp has value 1.139625 
-b.const has value 1.920170 
-b.day has value 1.789314 
-b.precip has value 1.695656 
-b.temp has value 0.184160 
-bestprecip has value 0.054481 
-best.temp has value 0.390917 
-duration has value 0.403927 
-N has value 1.287505 
-sd.precip has value 1.167391 
-sd.temp has value 0.601892 
+best.precip has value 55.000000 
+best.temp has value 55.000000 
+duration has value 55.000000 
+N has value 55.000000 
  sds= 
-     const day     temp precip
-1 1.732051   1 2.236068      1
+  day     temp   precip
+1  10 3.162278 3.162278
 
  mutrate=
   const day temp precip
-1   0.1 0.1  0.1    0.1
+1   0.5 0.5  0.5    0.5
 
  start=
-  constmin constmax daymin daymax tempmin tempmax precipmin precipmax
-1        0        3      0      1       0       5         0         1
-
- goodyears=
- [1] 1909 1912 1914 1924 1925 1926 1927 1928 1929 1932 1934 1935 1937 1938 1940 1941 1945 1947 1949
-[20] 1951 1952 1954 1955 1956 1957 1958 1959 1960 1961 1962 1963 1964 1965 1966 1967 1968 1969 1970
-[39] 1971 1972 1973 1974 1975 1976 1977 1978 1979 1980 1982 1985 1986 1987 1988 1994 2001 2008
+  daymin daymax tempmin tempmax precipmin precipmax
+1      0    100       0      10         0        10
 
  years.index=
- [1]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10  1  2
-[33]  3  4  5  6  7  8  9 10  1  2  3  4  5  6  7  8  9 10
+  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ [67] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+[133] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+[199] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+[265] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+[331] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+[397] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+[463] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1

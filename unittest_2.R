@@ -29,7 +29,7 @@ source("windows_subs.R")
 # Simulation parameters #
 #########################
 #generations has been removed. instead simulation runs for the number of years in years.index
-runNumber=99999
+runNumber=80
 duration=10
 best.temp=15; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=55; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
@@ -317,10 +317,10 @@ for(i.gen in 1:length(years.index)){
   coef.indiv[index:(index+N-1),"relfit"]=curhist$Ws
   covarmax=c("b.const"=0,"b.day"=0,"b.temp"=0,"b.precip"=0)
   #This will store the maximum covariable value for this year - max temp, max day, precip, etc. 
-  covarmax["b.const"]=1
-  covarmax["b.day"]=mean(years.list[[years.index[i.gen]]]$day)
-  covarmax["b.temp"]=mean(years.list[[years.index[i.gen]]]$tmax)
-  covarmax["b.precip"]=mean(years.list[[years.index[i.gen]]]$precip)
+  covarmean["b.const"]=1
+  covarmean["b.day"]=mean(years.list[[years.index[i.gen]]]$day)
+  covarmean["b.temp"]=mean(years.list[[years.index[i.gen]]]$tmax)
+  covarmean["b.precip"]=mean(years.list[[years.index[i.gen]]]$precip)
   for(cur.par in c("b.const","b.day","b.temp","b.precip")){
     coef.indiv[index:(index+N-1),cur.par]=abs(curhist[,cur.par])*covarmax[cur.par]
   }
