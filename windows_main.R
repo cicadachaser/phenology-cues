@@ -5,6 +5,38 @@
 
 #clear all variables
 rm(list=ls())
+#########################
+# Simulation parameters #
+#########################
+runType="unitTestRand" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
+#unitTestConst is for running the population through a unit test with the same gaussian fitness every year
+#and constant environmental conditions
+#unitTestRand will be for running the populations through a
+#unit test with the same gaussian fitness every year and random envi conditions
+#standard is for running the populations through a set of replications of the first 10 good years of the davis data
+runNumber=12
+duration=10
+numYears=5000
+best.temp=15; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
+best.precip=55; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
+N=40 #number of individuals
+start<-data.frame(  #this represents the min and max values used when randomly assigning initial values to the population
+  daymin=0,daymax=100,
+  tempmin=0,tempmax=10,
+  precipmin=0,precipmax=10)
+sds<-data.frame( #standard deviations for trait mutations. Currently set so that variance = max initial trait value
+  day=sqrt(start$daymax),
+  temp=sqrt(start$tempmax),
+  precip=sqrt(start$precipmax))
+mutrate<-data.frame( #probability of each trait mutating in an individual. Mutations are independent of one another
+  const=.5,
+  day=.5,
+  temp=.5,
+  precip=.5)
+
+#######################################
+# Handling libraries and source files #
+#######################################
 
 #libraries
 library(timeDate)
@@ -26,35 +58,7 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
 #Load sources file(s)
 source("windows_subs.R")
 
-#########################
-# Simulation parameters #
-#########################
-runType="unitTestRand" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
-#unitTestConst is for running the population through a unit test with the same gaussian fitness every year
-#and constant environmental conditions
-#unitTestRand will be for running the populations through a
-#unit test with the same gaussian fitness every year and random envi conditions
-#standard is for running the populations through a set of replications of the first 10 good years of the davis data
 
-runNumber=12
-duration=10
-numYears=1000
-best.temp=15; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
-best.precip=55; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
-N=40 #number of individuals
-start<-data.frame(  #this represents the min and max values used when randomly assigning initial values to the population
-  daymin=0,daymax=100,
-  tempmin=0,tempmax=10,
-  precipmin=0,precipmax=10)
-sds<-data.frame( #standard deviations for trait mutations. Currently set so that variance = max initial trait value
-  day=sqrt(start$daymax),
-  temp=sqrt(start$tempmax),
-  precip=sqrt(start$precipmax))
-mutrate<-data.frame( #probability of each trait mutating in an individual. Mutations are independent of one another
-  const=.5,
-  day=.5,
-  temp=.5,
-  precip=.5)
 
 ###############################
 # Generate environmental data #
@@ -85,15 +89,17 @@ b.precip<-runif(n=N,min=start$precipmin,max=start$precipmax)
 newpop<-data.frame(b.day,b.temp,b.precip)
 pop<-selection(newpop,duration,year=years.list[[1]],N)
 
-## Run Simulation
+###########################
+## Running the Simulation #
+###########################
 pophistory=runSim(startpop=pop,years.list=years.list,
                   years.ind=years.index,N=N,duration=duration,
                   sds=sds,mutrate=mutrate,generations=length(years.index[-1]))
-#we've already used year 1 in initiating the pop
+#Note: we've already used year 1 in initiating the pop
 
-###################################
-#Saving our results
-###################################
+#####################
+#Saving our results #
+#####################
 #Set appropriate working directory
 if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
   if(Sys.info()[1]=="Linux"){
@@ -110,9 +116,9 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
 #We have a "save data" script called windows_save.R
 source("windows_save.R")
 
-##############################
-# Plotting
-##############################
+############
+# Plotting #
+############
 
 yearFit=NULL
 for(i in years.index){
@@ -127,18 +133,14 @@ for(i.day in 1:365){
   meanFitSum=c(meanFitSum,sum(rep(meanFit,2)[i.day:(i.day+duration-1)]))
 }
 
-# par(mfrow=c(1,1))
 x11(width=9,height=6)
 for(curgen in seq(2,length(years.index),length=5)){
-  #arheight=pophistory[[length(curgen)]]$Wi
   curgen=round(curgen)
   arheight=rep(max(meanFit)*1.1,N)
   emergeDay=pophistory[[curgen]]$emerge
   plot(meanFit,type='l',ylim=c(0,max(meanFit)*1.2))
-  # plot(1,1,type='n',ylim=c(0,max(arheight)*1.05),xlim=c(0,365))
   arrows(y0=jitter(arheight,factor=1.5),x0=emergeDay,x1=emergeDay+duration-1,length=.1)
   dev.print(pdf,paste("dailyfit-run",runNumber,"-gen",curgen,"-meanfit.pdf",sep=""))
-
   plot(meanFitSum,type='l',ylim=c(0,max(meanFitSum)*1.2),
        main=paste("Mean fitness gained, gen",curgen),
        ylab="Fitness gained",
