@@ -47,7 +47,11 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
   if(Sys.info()[1]=="Linux"){
     setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
   }else{
+    if(Sys.info()["nodename"]=="DESKTOP-D6QSU8F"){
+      setwd("G:\\Repos\\phenology-cues") #desktop
+    }else{
     setwd("C:\\Repos\\phenology-cues") #desktop
+    }
   }
 }else{
   if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
@@ -105,7 +109,11 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
   if(Sys.info()[1]=="Linux"){
     setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
   }else{
-    setwd("C:\\Repos\\phenology-cues") #desktop
+    if(Sys.info()["nodename"]=="DESKTOP-D6QSU8F"){
+      setwd("G:\\Repos\\phenology-cues") #desktop
+    }else{
+      setwd("C:\\Repos\\phenology-cues") #desktop
+    }
   }
 }else{
   if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){

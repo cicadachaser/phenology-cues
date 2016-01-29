@@ -304,7 +304,14 @@ traitplot<-function(indivs,traitName){
   #  generations: vector of the generation of each individual to be plotted
   #  traivals: vector of the trait value of interest of each individ to be plotted
   #  mainlabel: label for the main graph
-  #  ylabel: label for Y axis
+  maxCount=100 #maximum number of years to count
+  generations=indivs[,"gen"]
+  if(length(unique(generations))>maxCount){
+    viewGens=floor(seq(min(generations),max(generations),length.out=maxCount))
+    goodInd=generations %in% viewGens
+    generations=generations[goodInd]
+    indivs=indivs[goodInd,]
+  } #  ylabel: label for Y axis
   plot(jitter(indivs[,"gen"]),indivs[,traitName],pch=1,
        main=paste("Expected effect size of,",traitName),
        xlab="Generation",
@@ -318,7 +325,14 @@ emergePlot<-function(indivs,traitName){
   #  traivals: vector of the trait value of interest of each individ to be plotted
   #  mainlabel: label for the main graph
   #  ylabel: label for Y axis
+  maxCount=100 #maximum number of years to count
   generations=indivs[,"gen"]
+  if(length(unique(generations))>maxCount){
+    viewGens=floor(seq(min(generations),max(generations),length.out=maxCount))
+    goodInd=generations %in% viewGens
+    generations=generations[goodInd]
+    indivs=indivs[goodInd,]
+  }
   plot(jitter(generations),indivs[,traitName],type='n',
        main=paste("Actual effect size of,",traitName),
        xlab="Generation",
