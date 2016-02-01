@@ -5,6 +5,7 @@
 
 #clear all variables
 rm(list=ls())
+ptm <-proc.time()
 #########################
 # Simulation parameters #
 #########################
@@ -238,3 +239,4 @@ emergePlot(indivs=act.eff,trait="b.day")
 emergePlot(indivs=act.eff,trait="b.temp")
 emergePlot(indivs=act.eff,trait="b.precip")
 dev.print(pdf,paste("coefs-all-actual-run",runNumber,".pdf",sep=""))
+proc.time()-ptm
