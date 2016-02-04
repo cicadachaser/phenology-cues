@@ -1,6 +1,5 @@
 #Updated through "fitness" function
 
-
 emergence<-function(year,indiv){
   #Function for calculating the emergence day of the given individual in the given year.
   #  Calculates emergence value as E= b.day*day+b.temp*temp+b.precip*precip
@@ -26,7 +25,7 @@ fitness<-function(year,newpop,duration){
   #  fit: vector of the fitnesses of each individual
   #
   evect=fit=rep(0,length(newpop[,1]))
-  wrappingfit=rep(year$fit.daily,2)
+  wrappingfit=c(year$fit.daily,rep(0,duration))
   for(i.indiv in 1:length(fit)){
     start=emergence(year,indiv=newpop[i.indiv,])
     fit[i.indiv]=sum(wrappingfit[start:(start+duration-1)])
@@ -132,8 +131,24 @@ runSim<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,generation
 ######################
 
 #####
+actTraitVals<-function(pophistory,numYears,N){
+  coef.indiv=matrix(data=0,ncol=6,nrow=N*numYears,
+                    dimnames = list(NULL,c("gen","b.day","b.temp","b.precip","relfit","emerge")))
+  index=1
+  for(i.gen in 1:numYears){
+    curhist=pophistory[[i.gen]]
+    coef.indiv[index:(index+N-1),"gen"]=rep(i.gen,N)
+    coef.indiv[index:(index+N-1),"relfit"]=curhist$Ws
+    coef.indiv[index:(index+N-1),"emerge"]=curhist$emerge
+    coef.indiv[index:(index+N-1),"b.day"]=curhist$b.day
+    coef.indiv[index:(index+N-1),"b.temp"]=curhist$b.temp
+    coef.indiv[index:(index+N-1),"b.precip"]=curhist$b.precip
+    index=index+N
+  }
+  return(coef.indiv)
+}
 
-actTraitEff<-function(years.index,years.list,pophistory){
+actTraitEff<-function(years.index,years.list,pophistory,N){
   #  Function for calculating the actual effect size of each coefficient for each indiv
   #    This is done by finding the conditions when each individual emerged, and calculating the effect of each coefficient on that day.
   #  Inputs:
@@ -157,7 +172,7 @@ actTraitEff<-function(years.index,years.list,pophistory){
   return(coef.indiv)
 }
 
-meanTraitEff<-function(years.index,years.list,pophistory){
+meanTraitEff<-function(years.index,years.list,pophistory,N){
   #  Function for calculating the "mean effect size" of each coefficient for each indiv
   #    This is done by multiplying the coefficient of each individual by the mean of the appropriate environmental effect for the appropriate generation
   #  Inputs:
@@ -298,7 +313,31 @@ yeargen.davistest<-function(numYears,best.temp,sd.temp,best.precip,sd.precip){
 # Plotting Functions #
 ######################
 
-traitplot<-function(indivs,traitName){
+emergePlot<-function(indivs,traitName){
+  #Function for plotting trait values through time
+  #Inputs:
+  #  generations: vector of the generation of each individual to be plotted
+  #  traivals: vector of the trait value of interest of each individ to be plotted
+  #  mainlabel: label for the main graph
+  #  ylabel: label for Y axis
+  maxCount=100 #maximum number of years to count
+  generations=indivs[,"gen"]
+  if(length(unique(generations))>maxCount){
+    viewGens=floor(seq(min(generations),max(generations),length.out=maxCount))
+    goodInd=generations %in% viewGens
+    generations=generations[goodInd]
+    indivs=indivs[goodInd,]
+  }
+  plot(jitter(generations),indivs[,traitName],type='n',
+       main=paste("Actual effect size of,",traitName),
+       xlab="Generation",
+       ylab=paste(traitName,"effect size"),
+       cex.lab=1.4,cex.main=1.4)
+  #Plot the "emerge before last day" indivs
+  points(jitter(generations[indivs[,"emerge"]>364]),indivs[indivs[,"emerge"]>364,traitName],pch=3,col='blue')
+  points(jitter(generations[indivs[,"emerge"]<365]),indivs[indivs[,"emerge"]<365,traitName],pch=1)
+}
+traiteffplot<-function(indivs,traitName){
   #Function for plotting trait values through time
   #Inputs:
   #  generations: vector of the generation of each individual to be plotted
@@ -318,7 +357,7 @@ traitplot<-function(indivs,traitName){
        ylab=paste(traitName,"effect size"),
        cex.lab=1.4,cex.main=1.4)
 }
-emergePlot<-function(indivs,traitName){
+traitplot<-function(indivs,traitName){
   #Function for plotting trait values through time
   #Inputs:
   #  generations: vector of the generation of each individual to be plotted

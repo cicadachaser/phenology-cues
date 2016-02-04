@@ -9,7 +9,7 @@ ptm <-proc.time()
 #########################
 # Simulation parameters #
 #########################
-runType="unitTestRand" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
+runType="unitTestConst" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #unitTestConst is for running the population through a unit test with the same gaussian fitness every year
 #and constant environmental conditions
 #unitTestRand will be for running the populations through a
@@ -17,7 +17,7 @@ runType="unitTestRand" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #standard is for running the populations through a set of replications of the first 10 good years of the davis data
 runNumber=12
 duration=10
-numYears=5000
+numYears=500
 best.temp=15; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=55; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
 N=40 #number of individuals
@@ -26,14 +26,14 @@ start<-data.frame(  #this represents the min and max values used when randomly a
   tempmin=0,tempmax=10,
   precipmin=0,precipmax=10)
 sds<-data.frame( #standard deviations for trait mutations. Currently set so that variance = max initial trait value
-  day=sqrt(start$daymax),
-  temp=sqrt(start$tempmax),
-  precip=sqrt(start$precipmax))
+  day=sqrt(start$daymax)/10,
+  temp=sqrt(start$tempmax)/10,
+  precip=sqrt(start$precipmax)/10)
 mutrate<-data.frame( #probability of each trait mutating in an individual. Mutations are independent of one another
-  const=.5,
-  day=.5,
-  temp=.5,
-  precip=.5)
+  const=.1,
+  day=.1,
+  temp=.1,
+  precip=.1)
 
 #######################################
 # Handling libraries and source files #
@@ -51,7 +51,7 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
     if(Sys.info()["nodename"]=="DESKTOP-D6QSU8F"){
       setwd("G:\\Repos\\phenology-cues") #desktop
     }else{
-    setwd("C:\\Repos\\phenology-cues") #desktop
+      setwd("C:\\Repos\\phenology-cues") #desktop
     }
   }
 }else{
@@ -68,8 +68,7 @@ source("windows_subs.R")
 ###############################
 # Generate environmental data #
 ###############################
-
-
+#Based on the value of "runType", generate the appropriate type of data.
 if(runType=="standard"){
   out=yeargen.davistest(numYears,best.temp = best.temp,sd.temp = sd.temp,best.precip = best.precip,sd.precip = sd.precip)
   years.list=out[["years.list"]]
@@ -93,7 +92,6 @@ b.temp<-runif(n=N,min=start$tempmin,max=start$tempmax)
 b.precip<-runif(n=N,min=start$precipmin,max=start$precipmax)
 newpop<-data.frame(b.day,b.temp,b.precip)
 pop<-selection(newpop,duration,year=years.list[[1]],N)
-
 ###########################
 ## Running the Simulation #
 ###########################
@@ -143,7 +141,7 @@ for(i.day in 1:365){
 }
 
 x11(width=9,height=6)
-for(curgen in seq(2,length(years.index),length=5)){
+for(curgen in seq(2,length(years.index),length=10)){
   curgen=round(curgen)
   arheight=rep(max(meanFit)*1.1,N)
   emergeDay=pophistory[[curgen]]$emerge
@@ -163,7 +161,7 @@ for(curgen in seq(2,length(years.index),length=5)){
   #now calculate the fitSum for THIS YEAR ONLY
   FitSum=NULL
   for(i.day in 1:365){
-    FitSum=c(FitSum,sum(rep(years.list[[curgen]]$fit.daily,2)[i.day:(i.day+duration-1)]))
+    FitSum=c(FitSum,sum(rep(years.list[[years.index[[curgen]]]]$fit.daily,2)[i.day:(i.day+duration-1)]))
   }
   plot(FitSum,type='l',ylim=c(0,max(FitSum)*1.2),
        main=paste("Fitness gained this year, gen",curgen),
@@ -174,7 +172,35 @@ for(curgen in seq(2,length(years.index),length=5)){
   arheight=jitter(rep(max(FitSum)*1.05,N),factor=.8)
   arrows(y0=arheight+.05*max(FitSum),x0=emergeDay,y1=arheight,length=.1)
   dev.print(pdf,paste("dailyfitSum-run",runNumber,"-gen",curgen,"-actualfit.pdf",sep=""))
+  #Now plot each of the coefs by emergence day.
+  for(coefName in c("b.day","b.temp","b.precip")){
+    plot(pophistory[[curgen]][,coefName],pophistory[[curgen]][,"emerge"],
+         main=paste(coefName, "by emergence, gen", curgen),
+         ylab="emergence",
+         xlab=coefName,
+         cex.lab=1.3,
+         cex.main=1.3)
+    dev.print(pdf,paste("Coef_x_emerge-",coefName,"-run",runNumber,"-gen",curgen,".pdf",sep=""))
+  }
+  coefList=c("b.day","b.temp","b.precip")
+  for(i in 1:3){
+   coef1=coefList[i]
+   coef2=coefList[(i %% 3)+1]
+   curpop=pophistory[[curgen]]
+   plot(x=curpop[,coef1],y=curpop[,coef2],type='n',
+        main=paste(coef1, "by", coef2, "gen", curgen),
+        ylab=coef2,
+        xlab=coef1,
+        cex.lab=1.3,
+        cex.main=1.3)
+   points(x=(curpop[curpop[,"emerge"]>364,coef1]),y=(curpop[curpop[,"emerge"]>364,coef2]),pch=3,col='blue')
+   points(x=(curpop[curpop[,"emerge"]<365,coef1]),y=(curpop[curpop[,"emerge"]<365,coef2]),pch=1,col='black')
+   dev.print(pdf,paste("Coef_x_coef-",coef1,"x",coef2,"-run",runNumber,"-gen",curgen,".pdf",sep=""))
+
+  }
+
 }
+
 
 #Calculating changes in mean fitness through time
 meanfit=rep(0,length(years.index))
@@ -207,36 +233,49 @@ dev.print(pdf,paste("meanfitThroughTime-run",runNumber,"-gen",curgen,".pdf",sep=
 #  doing two things. exp.eff is the "expected" effect size by muliplying the coefficient of each individual by the mean environmental conditions for that generation
 #  The act.eff is the actual effect size, found by multiplying the coefficient of each indiv by the environmental conditions of their day of emergence.
 #    Those plots use crosses to represent individuals who didn't emerge until the final day, and circles for those that emerged on a normal day (ie their cue
-exp.eff=meanTraitEff(years.index,years.list,pophistory)
-act.eff=actTraitEff(years.index,years.list,pophistory)
+exp.eff=meanTraitEff(years.index,years.list,pophistory,N)
+act.eff=actTraitEff(years.index,years.list,pophistory,N)
+act.vals=actTraitVals(pophistory,numYears,N)
 
 x11(width=9,height=6)
 par(mar=c(5,5,4,4))
 
-traitplot(indivs=act.eff,trait="b.day")
-dev.print(pdf,paste("coefs-day-expected-run",runNumber,".pdf",sep=""))
-traitplot(indivs=act.eff,trait="b.temp")
-dev.print(pdf,paste("coefs-temp-expected-run",runNumber,".pdf",sep=""))
-traitplot(indivs=act.eff,trait="b.precip")
-dev.print(pdf,paste("coefs-precip-expected-run",runNumber,".pdf",sep=""))
+traitplot(indivs=act.vals,trait="b.day")
+dev.print(pdf,paste("coefVals-day-run",runNumber,".pdf",sep=""))
+traitplot(indivs=act.vals,trait="b.temp")
+dev.print(pdf,paste("coefVals-temp-run",runNumber,".pdf",sep=""))
+traitplot(indivs=act.vals,trait="b.precip")
+dev.print(pdf,paste("coefVals-precip-run",runNumber,".pdf",sep=""))
+
+traiteffplot(indivs=exp.eff,trait="b.day")
+dev.print(pdf,paste("coefEffects-day-expected-run",runNumber,".pdf",sep=""))
+traiteffplot(indivs=exp.eff,trait="b.temp")
+dev.print(pdf,paste("coefEffects-temp-expected-run",runNumber,".pdf",sep=""))
+traiteffplot(indivs=exp.eff,trait="b.precip")
+dev.print(pdf,paste("coefEffects-precip-expected-run",runNumber,".pdf",sep=""))
 
 emergePlot(indivs=act.eff,trait="b.day")
-dev.print(pdf,paste("coefs-day-actual-run",runNumber,".pdf",sep=""))
+dev.print(pdf,paste("coefEffects-day-actual-run",runNumber,".pdf",sep=""))
 emergePlot(indivs=act.eff,trait="b.temp")
-dev.print(pdf,paste("coefs-temp-actual-run",runNumber,".pdf",sep=""))
+dev.print(pdf,paste("coefEffects-temp-actual-run",runNumber,".pdf",sep=""))
 emergePlot(indivs=act.eff,trait="b.precip")
-dev.print(pdf,paste("coefs-precip-actual-run",runNumber,".pdf",sep=""))
+dev.print(pdf,paste("coefEffects-precip-actual-run",runNumber,".pdf",sep=""))
 
 #Plot it all in one
 x11()
 par(mfrow=c(3,1))
-traitplot(indivs=act.eff,trait="b.day")
-traitplot(indivs=act.eff,trait="b.temp")
-traitplot(indivs=act.eff,trait="b.precip")
-dev.print(pdf,paste("coefs-all-expected-run",runNumber,".pdf",sep=""))
+traiteffplot(indivs=exp.eff,trait="b.day")
+traiteffplot(indivs=exp.eff,trait="b.temp")
+traiteffplot(indivs=exp.eff,trait="b.precip")
+dev.print(pdf,paste("coefEffects-all-expected-run",runNumber,".pdf",sep=""))
+
+traitplot(indivs=act.vals,trait="b.day")
+traitplot(indivs=act.vals,trait="b.temp")
+traitplot(indivs=act.vals,trait="b.precip")
+dev.print(pdf,paste("coefVals-all-run",runNumber,".pdf",sep=""))
 
 emergePlot(indivs=act.eff,trait="b.day")
 emergePlot(indivs=act.eff,trait="b.temp")
 emergePlot(indivs=act.eff,trait="b.precip")
-dev.print(pdf,paste("coefs-all-actual-run",runNumber,".pdf",sep=""))
+dev.print(pdf,paste("coefEffects-all-actual-run",runNumber,".pdf",sep=""))
 proc.time()-ptm
