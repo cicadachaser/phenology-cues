@@ -36,6 +36,31 @@ davis.daily$MONTH<-as.numeric(substr(davis.daily$DATE,5,6)) #simple field for mo
 davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8)) #simple field for day
 davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")] #simplified dataframe
 
+#temporary plots checking that the data are mostly complete
+plot(davis.daily$JULIAN,is.na(davis.daily$TMAX))
+#however, there are 143 missing rows
+missing.row.count<-max(davis.daily$JULIAN)-length(davis.daily$JULIAN)
+#this is a list of the missing JULIAN days
+missing.days<-which((seq(1:max(davis.daily$JULIAN)) %in% davis.daily$JULIAN)=="FALSE")
+#create a empty dataframe with 143 rows
+missing.days.df <- data.frame(matrix(ncol = 8, nrow = 143))  #this need to be generalized for any number of missing rows
+#create matching column names
+colnames(missing.days.df)<-colnames(davis.daily)
+#fill in the missing Julian days
+missing.days.df$JULIAN<-missing.days
+missing.days.df$DATE2<-as.Date(origin=as.Date("1913-12-31"),missing.days.df$JULIAN)
+missing.days.df$YEAR<-as.numeric(format(missing.days.df$DATE2, format="%Y"))
+missing.days.df$MONTH<-as.numeric(format(missing.days.df$DATE2, format="%m"))
+missing.days.df$DAY<-as.numeric(format(missing.days.df$DATE2, format="%d"))
+
+#Combine the two dataframes
+davis.daily.w.missing.days<-rbind(missing.days.df,davis.daily)
+#sort by JULIAN
+davis.daily.w.missing.days<-davis.daily.w.missing.days[order(davis.daily.w.missing.days$JULIAN),]
+
+#this is just a shortcut to expedite - should be cleaned up?
+davis.daily<-davis.daily.w.missing.days
+
 davis.yearlist<-split(davis.daily,davis.daily$YEAR) #list of each year separated
 
 davis.yearnames<-unique(davis.daily$YEAR) #gives a list of all the years in the data
@@ -75,31 +100,28 @@ for (i in 1:length(davis.yearnames)){
   davis.yearvar[i,"PRCP.DEL"]<-sum(comparison$PRCP.x-comparison$PRCP.y,na.rm=T)/davis.yearvar[i,"PRCP.N"]
 }
 
-#temporary plots checking that the data are mostly complete
-plot(davis.daily$JULIAN,is.na(davis.daily$TMAX))
-#however, there are 143 missing rows
-missing.row.count<-max(davis.daily$JULIAN)-length(davis.daily$JULIAN)
-#this is a list of the missing JULIAN days
-missing.days<-which((seq(1:max(davis.daily$JULIAN)) %in% davis.daily$JULIAN)=="FALSE")
-#create a empty dataframe with 143 rows
-missing.days.df <- data.frame(matrix(ncol = 9, nrow = 143))
-#create matching column names
-colnames(missing.days.df)<-colnames(davis.daily)
-#fill in the missing Julian days
-missing.days.df$JULIAN<-missing.days
-missing.days.df$DATE2<-as.Date(origin=as.Date("1913-12-31"),missing.days.df$JULIAN)
-missing.days.df$YEAR<-as.numeric(format(missing.days.df$DATE2, format="%Y"))
-missing.days.df$MONTH<-as.numeric(format(missing.days.df$DATE2, format="%m"))
-missing.days.df$DAY<-as.numeric(format(missing.days.df$DATE2, format="%d"))
 
-#Combine the two dataframes
-davis.daily.w.missing.days<-rbind(missing.days.df,davis.daily)
-#sort by JULIAN
-davis.daily.w.missing.days[order(davis.daily.w.missing.days$JULIAN),]
 
-#amelia scripting in progress
-a.out<-amelia(davis.daily.w.missing.days,m=5,idvars=c("DATE2","JULIAN","YEAR","MONTH","DAY"))
-head(a.out$imputations[[1]])
+
+#Simple multiple imputation
+a.out<-amelia(davis.daily,m=5,ts="JULIAN",cs="DAY.OF.YEAR")
+
+#what do the imputated data look like?
+test.1914.1<-a.out$imputations[[1]]
+test.1914.2<-a.out$imputations[[2]]
+subset(test.1914.1, JULIAN > 1090 & JULIAN < 1105)
+subset(test.1914.2, JULIAN > 1090 & JULIAN < 1105)
+
+
+#More complex multiple imputation
+a.out<-amelia(davis.daily,m=5,ts="JULIAN",cs="DAY.OF.YEAR",idvars=("DATE2"))
+
+#what do the imputated data look like?
+test.1914.1<-a.out$imputations[[1]]
+test.1914.2<-a.out$imputations[[2]]
+subset(test.1914.1, JULIAN > 1090 & JULIAN < 1105)
+subset(test.1914.2, JULIAN > 1090 & JULIAN < 1105)
+
 
 
 
