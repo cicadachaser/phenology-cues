@@ -7,6 +7,7 @@ rm(list=ls())
 #libraries
 library(timeDate)
 library(Amelia)
+library(parallel)
 
 #Set appropriate working directory
 if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
@@ -101,6 +102,10 @@ for (i in 1:length(davis.yearnames)){
 }
 
 #this is resource intensive - USE WITH CAUTION
+#add argument parallel?
+#deal with negative values with post-imputation transformation
+#try fewer spline knots
+
 a.out<-amelia(davis.daily,m=5,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=6)
 
 tscsPlot(a.out,var="TMAX",cs="1917")
