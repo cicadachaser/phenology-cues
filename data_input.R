@@ -100,27 +100,22 @@ for (i in 1:length(davis.yearnames)){
   davis.yearvar[i,"PRCP.DEL"]<-sum(comparison$PRCP.x-comparison$PRCP.y,na.rm=T)/davis.yearvar[i,"PRCP.N"]
 }
 
-#Simple multiple imputation
-a.out<-amelia(davis.daily,m=5,ts="JULIAN",cs="DAY.OF.YEAR")
+#this is resource intensive - USE WITH CAUTION
+a.out<-amelia(davis.daily,m=5,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=6)
 
-#what do the imputated data look like?
-test.1914.1<-a.out$imputations[[1]]
-test.1914.2<-a.out$imputations[[2]]
-subset(test.1914.1, JULIAN > 1090 & JULIAN < 1105)
-subset(test.1914.2, JULIAN > 1090 & JULIAN < 1105)
+tscsPlot(a.out,var="TMAX",cs="1917")
+tscsPlot(a.out,var="TMIN",cs="1917")
+tscsPlot(a.out,var="PRCP",cs="1917")
 
+tscsPlot(a.out,var="TMAX",cs="1922")
+tscsPlot(a.out,var="TMIN",cs="1922")
+tscsPlot(a.out,var="PRCP",cs="1922")
 
-#More complex multiple imputation
-a.out<-amelia(davis.daily[davis.daily$YEAR==1917,-3],m=5,ts="DAY.OF.YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),splinetime=6)
+tscsPlot(a.out,var="TMAX",cs="1936")
+tscsPlot(a.out,var="TMIN",cs="1936")
+tscsPlot(a.out,var="PRCP",cs="1936")
 
-#tscsPlot(a.out,cs="1917",var="TMAX")
+plot(a.out,which.vars=6:8)
 
-#what do the imputated data look like?
-test.1914.1<-a.out$imputations[[1]]
-test.1914.2<-a.out$imputations[[2]]
-subset(test.1914.1, DAY.OF.YEAR > 0 &  DAY.OF.YEAR < 20)
-subset(test.1914.2, DAY.OF.YEAR > 0 &  DAY.OF.YEAR < 20)
-
-hist(a.out$imputations[[1]]$TMAX)
-
-
+#this is resource intensive - USE WITH CAUTION
+overimpute(a.out, var = "TMAX")
