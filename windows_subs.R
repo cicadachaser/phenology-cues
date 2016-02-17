@@ -47,14 +47,10 @@ selection<-function(newpop,duration,year,N){
   #
   out=fitness(year=year,newpop=newpop,duration=duration)
   newWi=out$fit
-  newWs<-(newWi-min(newWi))/(max(newWi)-min(newWi)+.0001) #rescaled between 0 and 1, centered on the mid-range
-  newWsurv<-newWs*(newWs>0) #newWsurv: all individuals survive (some may have zero fitness, none have neg fitness)
-  #That line should be unneccessary, since I don't think we can end up with negative fitness under current schema
-  newWp<-newWsurv/(sum(newWsurv)+.0001)+.00001 #Wp is the proportional fitness after mortality
-  newWnum=(rmultinom(1,size=N,prob=newWp)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
+    newWnum=(rmultinom(1,size=N,prob=newWi)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
   init.colnames=colnames(newpop)
-  newpop<-cbind(newpop,out$emerge,newWi,newWs,newWp,newWnum)
-  colnames(newpop)<-c(init.colnames,"emerge","Wi","Ws","Wp","Wnum")
+  newpop<-cbind(newpop,out$emerge,newWi,newWnum)
+  colnames(newpop)<-c(init.colnames,"emerge","Wi","Wnum")
   return(newpop)
 }
 
@@ -138,7 +134,7 @@ actTraitVals<-function(pophistory,numYears,N){
   for(i.gen in 1:numYears){
     curhist=pophistory[[i.gen]]
     coef.indiv[index:(index+N-1),"gen"]=rep(i.gen,N)
-    coef.indiv[index:(index+N-1),"relfit"]=curhist$Ws
+    coef.indiv[index:(index+N-1),"relfit"]=curhist$Wi
     coef.indiv[index:(index+N-1),"emerge"]=curhist$emerge
     coef.indiv[index:(index+N-1),"b.day"]=curhist$b.day
     coef.indiv[index:(index+N-1),"b.temp"]=curhist$b.temp
@@ -159,7 +155,7 @@ actTraitEff<-function(years.index,years.list,pophistory,N){
     curhist=pophistory[[i.gen]] #store the current year of population date
     curyear=years.list[[years.index[[i.gen]]]] #store the current year of envi conditions
     coef.indiv[index:(index+N-1),"gen"]=rep(i.gen,N)
-    coef.indiv[index:(index+N-1),"relfit"]=curhist$Ws
+    coef.indiv[index:(index+N-1),"relfit"]=curhist$Wi
     coef.indiv[index:(index+N-1),"emerge"]=curhist$emerge
     for(i.indiv in 1:N){
       cur.econd=curyear[curhist$emerge[i.indiv],] #grab the envi conditions of the day of emergence of current indiv
@@ -182,7 +178,7 @@ meanTraitEff<-function(years.index,years.list,pophistory,N){
   for(i.gen in 1:length(years.index)){
     curhist=pophistory[[i.gen]]
     coef.indiv[index:(index+N-1),"gen"]=rep(i.gen,N)
-    coef.indiv[index:(index+N-1),"relfit"]=curhist$Ws
+    coef.indiv[index:(index+N-1),"relfit"]=curhist$Wi
     covarmean=c("b.const"=0,"b.day"=0,"b.temp"=0,"b.precip"=0)
     #This will store the maximum covariable value for this year - max temp, max day, precip, etc.
     covarmean["b.day"]=mean(years.list[[years.index[i.gen]]]$day)
@@ -203,7 +199,7 @@ meanTraitEff<-function(years.index,years.list,pophistory,N){
 yeargen.const<-function(numYears){
   #generate a sequence of years with identical, gaussian fitness curves, and constant envi conditions.
   #In this test, fitness is a gauss function centered on day 150
-  modelYear=data.frame(day=1:365,temp=rep(20,365),precip=rep(.5,365),fit.daily=dnorm(1:365,mean=150,sd=100))
+  modelYear=data.frame(day=1:365,temp=rep(20,365),precip=rep(.5,365),fit.daily=dnorm(1:365,mean=150,sd=30))
   years.list=list(modelYear)
   # Each year data frame has $day, $precip, $tmean, $tmax, $tmin
   # This will be the same list for all configurations of years - this is essentially just our year database
@@ -214,10 +210,10 @@ yeargen.const<-function(numYears){
 yeargen.rand<-function(numYears){
   #generate a sequence of years with identical, gaussian fitness curves, and randomly fluctuating envi conditions.
   #In this test, fitness is a gauss function centered on day 150
-  modelYear=data.frame(day=1:365,temp=runif(n=365,min=0,max=40),precip=rexp(n=365,rate=10),fit.daily=dnorm(1:365,mean=150,sd=100))
+  modelYear=data.frame(day=1:365,temp=runif(n=365,min=0,max=40),precip=rexp(n=365,rate=10),fit.daily=dnorm(1:365,mean=150,sd=30))
   years.list=list(modelYear)
   for(i in 2:max(numYears,100)){
-    years.list[[i]]=data.frame(day=1:365,temp=runif(n=365,min=0,max=40),precip=rexp(n=365,rate=10),fit.daily=dnorm(1:365,mean=150,sd=100))
+    years.list[[i]]=data.frame(day=1:365,temp=runif(n=365,min=0,max=40),precip=rexp(n=365,rate=10),fit.daily=dnorm(1:365,mean=150,sd=30))
   }
   # Each year data frame has $day, $precip, $tmean, $tmax, $tmin
   # This will be the same list for all configurations of years - this is essentially just our year database

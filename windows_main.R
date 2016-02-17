@@ -15,12 +15,12 @@ runType="unitTestConst" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #unitTestRand will be for running the populations through a
 #unit test with the same gaussian fitness every year and random envi conditions
 #standard is for running the populations through a set of replications of the first 10 good years of the davis data
-runNumber=12
+runNumber=13
 duration=10
-numYears=500
+N=100 #number of individuals
+numYears=1500
 best.temp=15; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=55; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
-N=40 #number of individuals
 start<-data.frame(  #this represents the min and max values used when randomly assigning initial values to the population
   daymin=0,daymax=100,
   tempmin=0,tempmax=10,
@@ -44,7 +44,7 @@ library(timeDate)
 library(Cairo) #I'm not sure if we need this with the plotting removed
 
 #Set appropriate working directory
-if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
+if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin" || Sys.getenv("USERNAME")=="Collin.work"){ #If it's collin
   if(Sys.info()[1]=="Linux"){
     setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
   }else{
@@ -104,7 +104,7 @@ pophistory=runSim(startpop=pop,years.list=years.list,
 #Saving our results #
 #####################
 #Set appropriate working directory
-if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it's collin
+if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin" || Sys.getenv("USERNAME")=="Collin.work"){ #If it's collin
   if(Sys.info()[1]=="Linux"){
     setwd("/home/collin/Dropbox/Grad school/research projects/yang_cue")
   }else{
