@@ -66,7 +66,7 @@ mutation<-function(poptraits,sds,mutrate,N){
   #  2-dimensional matrix of the new (post-mutation) traits of the population
   #
   mat.runif=matrix(runif(length(sds[1,])*N),nrow=N, ncol=length(sds[1,])) #generate matrix of random uniform numbers for testing
-  test.mutate=cbind(seq(mutrate$day,N),seq(mutrate$temp,N),seq(mutrate$precip,N)) #THESE NEED TO BE IN THE SAME ORDER AS THE POPULATIONS
+  test.mutate=cbind(rep(mutrate$day,N),rep(mutrate$temp,N),rep(mutrate$precip,N)) #THESE NEED TO BE IN THE SAME ORDER AS THE POPULATIONS
   mat.mutate=mat.runif<test.mutate # which traits of which individuals mutated?
   vals.mutate=cbind(rnorm(n=N,mean=0,sd=sds$day),
                     rnorm(n=N,mean=0,sd=sds$temp),rnorm(n=N,mean=0,sd=sds$precip))# Generate random mutations for all traits of all individuals. THESE NEED TO BE IN THE SAME ORDER AS THE POPULATIONS

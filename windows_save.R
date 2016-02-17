@@ -4,10 +4,10 @@
 pophist.table <-do.call(rbind.data.frame, pophistory)
 
 setwd("results")
-resultsdir=sprintf("resRun%d",runNumber)
+resultsdir=sprintf("resRun%s",runName)
 dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
-write.table(pophist.table,file=paste("pophist_run",runNumber,".csv",sep=""),sep=",")
+write.table(pophist.table,file=paste("pophist_run",runName,".csv",sep=""),sep=",")
 parnames=c(
   "best.precip",
   "best.temp",
@@ -16,7 +16,7 @@ parnames=c(
 )
 parvals=get(parnames)
 meta=sprintf("%s has value %f",parnames,parvals)
-sink(paste("par_values_run",runNumber,".txt",sep=""))
+sink(paste("par_values_run",runName,".txt",sep=""))
 cat("Parameters for simulation. Weather from davis data. \n")
 for(i in meta){cat(paste(i,"\n"))}
 cat(" sds= \n")
