@@ -209,6 +209,72 @@ yeargen.template<-function(){
   }
 }
 
+yeargen.davis<-function(){
+  set_wrkdir()
+  filename="davisDat.Rdata"
+  if(file.exists(paste("data-years/",fileName,sep=""))){
+    attach(filename)
+  }else{
+    #THIS IS WHERE WE PULL IN THE IMPUTATION FUNCTION!
+    years.list=yearmk_davis
+    save(list=years.list,file = paste("data-years/",fileName,sep=""))
+  }
+}
+
+yearmk_davis<-function(){
+  #libraries
+  library(timeDate)
+  library(Amelia)
+  library(parallel)
+  #Set appropriate working directory
+  set_wrkdir()
+  #input data
+  davis.daily<-read.csv("davis-data/626713.csv", header=T, na.strings="-9999")
+  davis.daily$YEAR<-as.numeric(substr(davis.daily$DATE,1,4)) #simple field for year
+  davis.daily<-davis.daily[davis.daily$YEAR>1913 & davis.daily$YEAR<2015,] #truncates the data to 101 complete years between 1914 and 2014
+  davis.daily$PRCP<-davis.daily$PRCP/10 #precips are reported in tenths of mm
+  davis.daily$TMAX<-davis.daily$TMAX/10 #temps are reported in tenths of degree C
+  davis.daily$TMIN<-davis.daily$TMIN/10 #temps are reported in tenths of degree C
+  davis.daily$DATE2<-as.Date(as.character(davis.daily$DATE),format="%Y %m %d") #DATE2 is date formatted
+  davis.daily$JULIAN<-julian(davis.daily$DATE2,origin=as.Date("1913-12-31")) #1914-01-01 is day 1
+  davis.daily$MONTH<-as.numeric(substr(davis.daily$DATE,5,6)) #simple field for month
+  davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8)) #simple field for day
+  davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")] #simplified dataframe
+  #however, there are 143 missing rows
+  missing.row.count<-max(davis.daily$JULIAN)-length(davis.daily$JULIAN)
+  #this is a list of the missing JULIAN days
+  missing.days<-which((seq(1:max(davis.daily$JULIAN)) %in% davis.daily$JULIAN)=="FALSE")
+  #create a empty dataframe with 143 rows
+  missing.days.df <- data.frame(matrix(ncol = 8, nrow = missing.row.count))  #this need to be generalized for any number of missing rows
+  #create matching column names
+  colnames(missing.days.df)<-colnames(davis.daily)
+  #fill in the missing Julian days
+  missing.days.df$JULIAN<-missing.days
+  missing.days.df$DATE2<-as.Date(origin=as.Date("1913-12-31"),missing.days.df$JULIAN)
+  missing.days.df$YEAR<-as.numeric(format(missing.days.df$DATE2, format="%Y"))
+  missing.days.df$MONTH<-as.numeric(format(missing.days.df$DATE2, format="%m"))
+  missing.days.df$DAY<-as.numeric(format(missing.days.df$DATE2, format="%d"))
+  #Combine the two dataframes
+  davis.daily.w.missing.days<-rbind(missing.days.df,davis.daily)
+  #sort by JULIAN
+  davis.daily.w.missing.days<-davis.daily.w.missing.days[order(davis.daily.w.missing.days$JULIAN),]
+  #this is just a shortcut to expedite - should be cleaned up?
+  davis.daily<-davis.daily.w.missing.days
+  davis.yearlist<-split(davis.daily,davis.daily$YEAR) #list of each year separated
+  davis.yearnames<-unique(davis.daily$YEAR) #gives a list of all the years in the data
+  #calculates the "day of year", i.e. Jan 1 is 1, and 12/31 is 365
+  #adds a DAY.OF.YEAR column to each dataframe in the year list
+  for (i in 1:length(davis.yearnames)){
+    davis.yearlist[[i]]$DAY.OF.YEAR<-julian(davis.yearlist[[i]]$DATE2, origin=as.Date(paste(davis.yearnames[i],"01","01",sep="-")))+1 #add +1 so that the first day of the year is 1, not zero.
+  }
+  davis.daily<-unsplit(davis.yearlist,davis.daily$YEAR)
+  davis.daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=davis.daily, mean)
+  a.out<-amelia(davis.daily,m=5,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=6)
+  years.temp=a.out[[1]]$imp1
+  years.list=split(x=years.temp,f=years.temp$YEAR)
+  return(years.list)
+}
+
 yeargen.const<-function(numYears){
   #generate a sequence of years with identical, gaussian fitness curves, and constant envi conditions.
   #In this test, fitness is a gauss function centered on day 150
