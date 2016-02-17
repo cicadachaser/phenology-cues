@@ -33,7 +33,7 @@ runType="unitTestConst" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #unitTestRand will be for running the populations through a
 #unit test with the same gaussian fitness every year and random envi conditions
 #standard is for running the populations through a set of replications of the first 10 good years of the davis data
-runName="quickTest_subs1" #string without spaces (for simplicity) 
+runName="quickTest" #string without spaces (for simplicity)
 duration=10
 N=100 #number of individuals
 numYears=1500
@@ -52,19 +52,19 @@ mutrate<-data.frame( #probability of each trait mutating in an individual. Mutat
   day=.1,
   temp=.1,
   precip=.1)
-
+years.index=rep(1:100,length.out=numYears) # This is the list of which year.list data to use for each generation of the model
 #######################################
 # Handling libraries and source files #
 #######################################
 
 #libraries
 library(timeDate)
-library(Cairo) #I'm not sure if we need this with the plotting removed
+# library(Cairo) #I'm not sure if we need this with the plotting removed
 library(zoo)
 #Set appropriate working directory
 set_wrkdir()
 #Load sources file(s)
-source("windows_subs_2.R")
+source("windows_subs.R")
 
 ###############################
 # Generate environmental data #
@@ -74,15 +74,13 @@ if(runType=="standard"){
   out=yeargen.davistest(numYears,best.temp = best.temp,sd.temp = sd.temp,
                         best.precip = best.precip,sd.precip = sd.precip)
   years.list=out[["years.list"]]
-  years.index=out[["years.index"]]
 } else if(runType=="unitTestConst"){
   out=yeargen.const(numYears)
   years.list=out[["years.list"]]
-  years.index=out[["years.index"]]
+  years.index=rep(1,numYears)
 } else if (runType=="unitTestRand"){
   out=yeargen.rand(numYears)
   years.list=out[["years.list"]]
-  years.index=out[["years.index"]]
 }
 #######################
 # initializing population

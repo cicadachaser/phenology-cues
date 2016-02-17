@@ -34,7 +34,6 @@ for(curgen in seq(2,length(years.index),length=10)){
   arheight=jitter(rep(max(meanFitSum)*1.05,N),factor=.8)
   arrows(y0=arheight+.05*max(meanFitSum),x0=emergeDay,y1=arheight,length=.1)
   dev.print(pdf,paste("dailyfitSum-run",runName,"-gen",curgen,"-meanfit.pdf",sep=""))
-  
   #now calculate the fitSum for THIS YEAR ONLY
   FitSum=NULL
   for(i.day in 1:365){
@@ -73,22 +72,20 @@ for(curgen in seq(2,length(years.index),length=10)){
     points(x=(curpop[curpop[,"emerge"]>364,coef1]),y=(curpop[curpop[,"emerge"]>364,coef2]),pch=3,col='blue')
     points(x=(curpop[curpop[,"emerge"]<365,coef1]),y=(curpop[curpop[,"emerge"]<365,coef2]),pch=1,col='black')
     dev.print(pdf,paste("Coef_x_coef-",coef1,"x",coef2,"-run",runName,"-gen",curgen,".pdf",sep=""))
-    
   }
-  
 }
 
 
 #Calculating changes in mean fitness through time
-meanfit=rep(0,length(years.index))
-maxfit=meanfit
+maxfit=maxActfit=meanfit=rep(0,length(years.index))
 for(curgen in 1:length(years.index)){
   meanfit[curgen]=mean(pophistory[[curgen]]$Wi)
+  maxActfit[curgen]=max(pophistory[[curgen]]$Wi)
   cur.fitness=years.list[[years.index[curgen]]]$fit.daily
-  cur.fitness.durated=rep(0,365)
-  for(i.day in 1:length(cur.fitness.durated)){cur.fitness.durated[i.day]=sum(cur.fitness[i.day:min(i.day+duration-1,365)])}
+  cur.fitness.durated=rollapply(c(cur.fitness,rep(0,duration-1)),duration,by=1,sum)
   maxfit[curgen]=max(cur.fitness.durated)
 }
+#plot mean fitness through time, showing max possible fitness
 plot(maxfit,type='l',col='red',
      main=paste("Mean fitness through time for run",runName),
      ylab="generation",
@@ -96,15 +93,19 @@ plot(maxfit,type='l',col='red',
      sub="red is maximum possible",
      ylim=c(0,max(maxfit))
 )
-points(1:length(meanfit),meanfit,type='l',ylim=c(0,.04))
+points(1:length(meanfit),meanfit,type='l')
 dev.print(pdf,paste("meanfitThroughTime_wMax-run",runName,"-gen",curgen,".pdf",sep=""))
 
-plot(meanfit,type="l",
-     main=paste("Mean fitness through time for run",runName),
+#plot max actual fitness through time, showing
+plot(maxfit,type='l',col='red',
+     main=paste("Max achieved fitness through time for run",runName),
      ylab="generation",
-     xlab="Raw mean fitness"
+     xlab="Raw max fitness",
+     sub="red is maximum possible",
+     ylim=c(0,max(maxfit))
 )
-dev.print(pdf,paste("meanfitThroughTime-run",runName,"-gen",curgen,".pdf",sep=""))
+points(1:length(maxActfit),maxActfit,type='l')
+dev.print(pdf,paste("maxfitThroughTime_wMax-run",runName,"-gen",curgen,".pdf",sep=""))
 
 #Looking at coef changes through time
 #  doing two things. exp.eff is the "expected" effect size by muliplying the coefficient of each individual by the mean environmental conditions for that generation

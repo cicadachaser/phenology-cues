@@ -7,12 +7,14 @@ setwd("results")
 resultsdir=sprintf("resRun%s",runName)
 dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
-write.table(pophist.table,file=paste("pophist_run",runName,".csv",sep=""),sep=",")
+write.table(pophist.table,file=paste("pophist_run",runName,".csv",sep=""),row.names=FALSE,sep=",")
 parnames=c(
   "best.precip",
   "best.temp",
   "duration",
-  "N"
+  "N",
+  "numYears",
+  "runType"
 )
 parvals=get(parnames)
 meta=sprintf("%s has value %f",parnames,parvals)
@@ -29,4 +31,4 @@ cat("\n years.index=\n")
 print(years.index)
 sink()
 
-save(list=c("pophistory","years.list","years.index"),file="dat.RData")
+save(list=ls(all.names=TRUE),file="dat.RData")

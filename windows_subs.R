@@ -1,6 +1,8 @@
 #Updated through "fitness" function
 
-emergence<-function(year,indiv){
+emerge_sub<-function(x){min(c(which(x),365))} #function for use in "apply" within emergence()
+
+emergence<-function(year,newpop){
   #Function for calculating the emergence day of the given individual in the given year.
   #  Calculates emergence value as E= b.day*day+b.temp*temp+b.precip*precip
   # Then finds the first day when the calculated E is greater than 100 (100 chosen for arbitrary convenience)
@@ -9,8 +11,9 @@ emergence<-function(year,indiv){
   #  year: current year data. Includes columns $day, $tmax, $precip
   # Output:
   #  day (Julian) of emergence
-  E=(indiv$b.day*year$day+indiv$b.temp*year$temp+indiv$b.precip*year$precip)
-  return(min(c(min(which(E>100),365)))) #find the first day where emergence value is greater than 100 (or the last day of the year)
+  E=newpop$b.day %*% t(year$day) + newpop$b.temp %*% t(year$temp) + newpop$b.precip %*% t(year$precip)
+  emerge=apply(E>100,1,emerge_sub)
+  return(emerge) #find the first day where emergence value is greater than 100 (or the last day of the year)
 }
 
 fitness<-function(year,newpop,duration){
@@ -24,13 +27,11 @@ fitness<-function(year,newpop,duration){
   #Returns:
   #  fit: vector of the fitnesses of each individual
   #
-  evect=fit=rep(0,length(newpop[,1]))
-  wrappingfit=c(year$fit.daily,rep(0,duration))
-  for(i.indiv in 1:length(fit)){
-    start=emergence(year,indiv=newpop[i.indiv,])
-    fit[i.indiv]=sum(wrappingfit[start:(start+duration-1)])
-    evect[i.indiv]=start
-  }
+  evect=emergence(year,newpop)
+  #Create a vector with the "total fitness you experience if you emerge on this day" values.
+  # (using rollapply function from "zoo" library to make this fast)
+  fitVals=rollapply(c(year$fit.daily,rep(0,duration-1)),duration,by=1,sum)
+  fit=fitVals[evect]
   return(data.frame(fit=fit,emerge=evect))
 }
 
@@ -47,7 +48,7 @@ selection<-function(newpop,duration,year,N){
   #
   out=fitness(year=year,newpop=newpop,duration=duration)
   newWi=out$fit
-    newWnum=(rmultinom(1,size=N,prob=newWi)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
+  newWnum=(rmultinom(1,size=N,prob=newWi)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
   init.colnames=colnames(newpop)
   newpop<-cbind(newpop,out$emerge,newWi,newWnum)
   colnames(newpop)<-c(init.colnames,"emerge","Wi","Wnum")
@@ -196,6 +197,18 @@ meanTraitEff<-function(years.index,years.list,pophistory,N){
 # Year generation functions
 ####################################
 
+yeargen.template<-function(){
+  set_wrkdir()
+  filename="fileName.Rdata"
+  if(file.exists(paste("data-years/",fileName,sep=""))){
+    attach(filename)
+  }else{
+    #THIS IS WHERE WE PULL IN THE IMPUTATION FUNCTION!
+    #years.list=imputation_function()
+    save(list=years.list,file = paste("data-years/",fileName,sep=""))
+  }
+}
+
 yeargen.const<-function(numYears){
   #generate a sequence of years with identical, gaussian fitness curves, and constant envi conditions.
   #In this test, fitness is a gauss function centered on day 150
@@ -217,7 +230,6 @@ yeargen.rand<-function(numYears){
   }
   # Each year data frame has $day, $precip, $tmean, $tmax, $tmin
   # This will be the same list for all configurations of years - this is essentially just our year database
-  years.index=rep(1:100,length.out=numYears) # This is the list of which year.list data to use for each generation of the model
   return(list("years.list"=years.list,"years.index"=years.index))
 }
 
@@ -325,7 +337,7 @@ emergePlot<-function(indivs,traitName){
     indivs=indivs[goodInd,]
   }
   plot(jitter(generations),indivs[,traitName],type='n',
-       main=paste("Actual effect size of,",traitName),
+       main=paste("Actual effect size of",traitName),
        xlab="Generation",
        ylab=paste(traitName,"effect size"),
        cex.lab=1.4,cex.main=1.4)
@@ -348,7 +360,7 @@ traiteffplot<-function(indivs,traitName){
     indivs=indivs[goodInd,]
   } #  ylabel: label for Y axis
   plot(jitter(indivs[,"gen"]),indivs[,traitName],pch=1,
-       main=paste("Expected effect size of,",traitName),
+       main=paste("Expected effect size of",traitName),
        xlab="Generation",
        ylab=paste(traitName,"effect size"),
        cex.lab=1.4,cex.main=1.4)
@@ -369,7 +381,7 @@ traitplot<-function(indivs,traitName){
     indivs=indivs[goodInd,]
   }
   plot(jitter(generations),indivs[,traitName],type='n',
-       main=paste("Actual effect size of,",traitName),
+       main=paste("Actual effect size of",traitName),
        xlab="Generation",
        ylab=paste(traitName,"effect size"),
        cex.lab=1.4,cex.main=1.4)
