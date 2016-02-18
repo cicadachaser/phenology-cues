@@ -19,7 +19,7 @@ set_wrkdir<-function(){
     if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
       setwd("C:\\Users\\lhyang.ent-yang01\\SkyDrive\\Phenology simulation\\phenology-cues")#desktop
     }else{
-      setwd("C:\\Users\\lhyang\\Skydrive\\Phenology simulation\\phenology-cues")} #laptop
+      setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")} #laptop
   }
 }
 
