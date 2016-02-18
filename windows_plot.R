@@ -3,7 +3,6 @@ resultsdir=sprintf("resRun%s",runName)
 dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
 
-
 yearFit=NULL
 for(i in years.index){
   curfits=years.list[[i]]$fit.daily
@@ -75,7 +74,6 @@ for(curgen in seq(2,length(years.index),length=10)){
   }
 }
 
-
 #Calculating changes in mean fitness through time
 maxfit=maxActfit=meanfit=rep(0,length(years.index))
 for(curgen in 1:length(years.index)){
@@ -85,6 +83,7 @@ for(curgen in 1:length(years.index)){
   cur.fitness.durated=rollapply(c(cur.fitness,rep(0,duration-1)),duration,by=1,sum)
   maxfit[curgen]=max(cur.fitness.durated)
 }
+
 #plot mean fitness through time, showing max possible fitness
 plot(maxfit,type='l',col='red',
      main=paste("Mean fitness through time for run",runName),
