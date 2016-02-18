@@ -199,7 +199,7 @@ meanTraitEff<-function(years.index,years.list,pophistory,N){
 
 yeargen.template<-function(){
   set_wrkdir()
-  filename="fileName.Rdata"
+  fileName="fileName.Rdata"
   if(file.exists(paste("data-years/",fileName,sep=""))){
     attach(filename)
   }else{
@@ -207,18 +207,25 @@ yeargen.template<-function(){
     #years.list=imputation_function()
     save(list=years.list,file = paste("data-years/",fileName,sep=""))
   }
+  years.temp=do.call(rbind.data.frame,years.list)
+  daily.fit=dnorm(years.temp$temp,mean=best.temp,sd=sd.temp)*dnorm(years.temp$precip,mean=best.precip,sd=sd.precip)
 }
 
-yeargen.davis<-function(){
+yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp){
   set_wrkdir()
-  filename="davisDat.Rdata"
+  fileName="davisDat.Rdata"
   if(file.exists(paste("data-years/",fileName,sep=""))){
-    attach(filename)
+    load(paste("data-years/",fileName,sep=""))
   }else{
     #THIS IS WHERE WE PULL IN THE IMPUTATION FUNCTION!
-    years.list=yearmk_davis
-    save(list=years.list,file = paste("data-years/",fileName,sep=""))
+    years.list=yearmk_davis()
+    save(years.list,file = paste("data-years/",fileName,sep=""))
   }
+  years.temp=do.call(rbind.data.frame,years.list)
+  fit.daily=dnorm(years.temp$temp,mean=best.temp,sd=sd.temp)*dnorm(years.temp$precip,mean=best.precip,sd=sd.precip)
+  years.temp=cbind(years.temp,fit.daily)
+  years.list=split(years.temp,f=years.temp$year)
+  return(years.list)
 }
 
 yearmk_davis<-function(){
@@ -269,9 +276,11 @@ yearmk_davis<-function(){
   }
   davis.daily<-unsplit(davis.yearlist,davis.daily$YEAR)
   davis.daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=davis.daily, mean)
-  a.out<-amelia(davis.daily,m=5,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=6)
+  a.out<-amelia(davis.daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=6)
   years.temp=a.out[[1]]$imp1
-  years.list=split(x=years.temp,f=years.temp$YEAR)
+  years.temp=years.temp[c("DAY.OF.YEAR","TMAX","PRCP","YEAR")]
+  colnames(years.temp)<-c("day","temp","precip","year")
+  years.list=split(x=years.temp,f=years.temp$year)
   return(years.list)
 }
 

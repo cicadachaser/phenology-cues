@@ -27,13 +27,13 @@ ptm <-proc.time()
 #########################
 # Simulation parameters #
 #########################
-runType="unitTestConst" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
+runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #unitTestConst is for running the population through a unit test with the same gaussian fitness every year
 #and constant environmental conditions
 #unitTestRand will be for running the populations through a
 #unit test with the same gaussian fitness every year and random envi conditions
 #standard is for running the populations through a set of replications of the first 10 good years of the davis data
-runName="quickTest" #string without spaces (for simplicity)
+runName="davisTest" #string without spaces (for simplicity)
 duration=10
 N=100 #number of individuals
 numYears=1500
@@ -71,9 +71,8 @@ source("windows_subs.R")
 ###############################
 #Based on the value of "runType", generate the appropriate type of data.
 if(runType=="standard"){
-  out=yeargen.davistest(numYears,best.temp = best.temp,sd.temp = sd.temp,
+  years.list=yeargen.davis(best.temp = best.temp,sd.temp = sd.temp,
                         best.precip = best.precip,sd.precip = sd.precip)
-  years.list=out[["years.list"]]
 } else if(runType=="unitTestConst"){
   out=yeargen.const(numYears)
   years.list=out[["years.list"]]
