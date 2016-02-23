@@ -3,26 +3,35 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
-\title{Explanation of code and output for phenology project}
+\title{explanation of code and output for phenology project}
+\author{}
+\date{\today}
 \begin{document}
 \maketitle
-\section{Output files}
-\subsection{Plots:}
+\section{Coding decisions}
+some decisions that seem important to remember:
 \begin{itemize}
-\item \textit{Coef\_x\_coef} files plot the values of two coefficients by each other (values are from the same generation, given in filename and title). This was mainly intended for debugging and sanity checking.
-\item \textit{Coef\_x\_emerge} files plot the emerge dante by the coefficient of interest (values are from the same generation, given in filename and title). This was mainly intended for debugging and sanity checking.
-\item \textit{coefeffects-*-actual} files plot the effect that the given coefficient had on the emerge value on the day the individual emerged. For example, if the individual emerged on a day when the temperature was 10 degrees, and the individual has a b.temp value of .5, then the ``actual effect size'' was 5. This is intended to be used to characterize evolution in simulations.
-\item \textit{coefeffects-*-expected} files are similar to the ``actual'' ones. However, instead of plotting the coefficient times the environmental value on the day the individual emerged, it instead plots the coefficient times the average environmental value for that year. This may still be useful, but largely was intended to be a faster approximation of the ``*-actual'' version.
-\item \textit{coefVals-*} files plot the actual coefficient values through time. This is intended to be used to characterize evolution in simulations.
-\item \textit{dailyfit} files plot the emergence day of individuals superimposed on the fitness curve. Arrow lengths represent the entire duration of time the individual was emerged and alive; their fitness is the sum/integral of the fitness curve under that arrow. This was intended to help understand how the population evolves through time.
-\item \textit{dailyfitSum} files plot the emergence day of individuals superimposed on the "total fitness gained by emerging on day X" curve. Arrows point down to the day of emergence. This was intended to help understand how the population evolves through time.
-\item \textit{meanfitThroughTime\_wMax} file plots the mean fitness of the population through time, and includes a read line representing the maximum fitness attainable in every year. This was intended to be used to understand how the population was evolving through time.
-\item \textit{meanfitThroughTime\_wMax} file plots the max fitness attained individuals in the population through time, and includes a read line representing the maximum fitness attainable in every year. This was intended to be used to understand how the population was evolving through time.
+	\item for imputation: we currently impute a single set of years. we experienced occasional negative rainfall values, which we have patched by simply adding a max(temp,0) function call. not slick, but it does the trick. 
+	\item Selection is based on the raw fitness function
 \end{itemize}
-\subsection{Other files:}
-Note that I intended to save the data in two forms: one that can be immediately imported into R (Rdata) and one that can be read easily by humans (text or csv).
+
+\section{output files}
+\subsection{plots:}
 \begin{itemize}
-  \item \textit{dat.Rdata}: Rdata file storing the parameters and results of the simulation
+\item \textit{coef\_x\_coef} files plot the values of two coefficients by each other (values are from the same generation, given in filename and title). this was mainly intended for debugging and sanity checking.
+\item \textit{coef\_x\_emerge} files plot the emerge dante by the coefficient of interest (values are from the same generation, given in filename and title). this was mainly intended for debugging and sanity checking.
+\item \textit{coefeffects-*-actual} files plot the effect that the given coefficient had on the emerge value on the day the individual emerged. for example, if the individual emerged on a day when the temperature was 10 degrees, and the individual has a b.temp value of .5, then the ``actual effect size'' was 5. this is intended to be used to characterize evolution in simulations.
+\item \textit{coefeffects-*-expected} files are similar to the ``actual'' ones. however, instead of plotting the coefficient times the environmental value on the day the individual emerged, it instead plots the coefficient times the average environmental value for that year. this may still be useful, but largely was intended to be a faster approximation of the ``*-actual'' version.
+\item \textit{coefvals-*} files plot the actual coefficient values through time. this is intended to be used to characterize evolution in simulations.
+\item \textit{dailyfit} files plot the emergence day of individuals superimposed on the fitness curve. arrow lengths represent the entire duration of time the individual was emerged and alive; their fitness is the sum/integral of the fitness curve under that arrow. this was intended to help understand how the population evolves through time.
+\item \textit{dailyfitsum} files plot the emergence day of individuals superimposed on the "total fitness gained by emerging on day x" curve. arrows point down to the day of emergence. this was intended to help understand how the population evolves through time.
+\item \textit{meanfitthroughtime\_wmax} file plots the mean fitness of the population through time, and includes a read line representing the maximum fitness attainable in every year. this was intended to be used to understand how the population was evolving through time.
+\item \textit{meanfitthroughtime\_wmax} file plots the max fitness attained individuals in the population through time, and includes a read line representing the maximum fitness attainable in every year. this was intended to be used to understand how the population was evolving through time.
+\end{itemize}
+\subsection{other files:}
+note that i intended to save the data in two forms: one that can be immediately imported into r (rdata) and one that can be read easily by humans (text or csv).
+\begin{itemize}
+  \item \textit{dat.rdata}: rdata file storing the parameters and results of the simulation
   \item \textit{par\_values*.txt}: text files storing the metadata of the run
   \item \textit{pophist\_*.csv}: csv file storing the population data from the simulation
 \end{itemize}

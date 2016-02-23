@@ -146,12 +146,28 @@ traiteffplot(indivs=exp.eff,trait="b.temp")
 traiteffplot(indivs=exp.eff,trait="b.precip")
 dev.print(pdf,paste("coefEffects-all-expected-run",runName,".pdf",sep=""))
 
-traitplot(indivs=act.vals,trait="b.day")
-traitplot(indivs=act.vals,trait="b.temp")
-traitplot(indivs=act.vals,trait="b.precip")
-dev.print(pdf,paste("coefVals-all-run",runName,".pdf",sep=""))
+traiteffplot(indivs=exp.eff[exp.eff[,"gen"]>burnIn,],trait="b.day")
+traiteffplot(indivs=exp.eff[exp.eff[,"gen"]>burnIn,],trait="b.temp")
+traiteffplot(indivs=exp.eff[exp.eff[,"gen"]>burnIn,],trait="b.precip")
+dev.print(pdf,paste("coefEffects-all-expected-postburn-run",runName,".pdf",sep=""))
 
 emergePlot(indivs=act.eff,trait="b.day")
 emergePlot(indivs=act.eff,trait="b.temp")
 emergePlot(indivs=act.eff,trait="b.precip")
 dev.print(pdf,paste("coefEffects-all-actual-run",runName,".pdf",sep=""))
+
+emergePlot(indivs=act.eff[act.eff[,"gen"]>burnIn,],trait="b.day")
+emergePlot(indivs=act.eff[act.eff[,"gen"]>burnIn,],trait="b.temp")
+emergePlot(indivs=act.eff[act.eff[,"gen"]>burnIn,],trait="b.precip")
+dev.print(pdf,paste("coefEffects-all-actual-postburn-run",runName,".pdf",sep=""))
+
+traitplot(indivs=act.vals,trait="b.day")
+traitplot(indivs=act.vals,trait="b.temp")
+traitplot(indivs=act.vals,trait="b.precip")
+dev.print(pdf,paste("coefVals-all-run",runName,".pdf",sep=""))
+
+traitplot(indivs=act.vals[act.vals[,"gen"]>burnIn,],trait="b.day")
+traitplot(indivs=act.vals[act.vals[,"gen"]>burnIn,],trait="b.temp")
+traitplot(indivs=act.vals[act.vals[,"gen"]>burnIn,],trait="b.precip")
+dev.print(pdf,paste("coefVals-all-postburn-run",runName,".pdf",sep=""))
+

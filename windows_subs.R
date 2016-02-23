@@ -280,6 +280,8 @@ yearmk_davis<-function(){
   years.temp=a.out[[1]]$imp1
   years.temp=years.temp[c("DAY.OF.YEAR","TMAX","PRCP","YEAR")]
   colnames(years.temp)<-c("day","temp","precip","year")
+  temp=cbind(years.temp$temp,years.temp$temp*0) #for use in following line
+  years.temp$temp=apply(temp,1,max) #ensuring that temperatures are all positive
   years.list=split(x=years.temp,f=years.temp$year)
   return(years.list)
 }
@@ -456,9 +458,9 @@ traitplot<-function(indivs,traitName){
     indivs=indivs[goodInd,]
   }
   plot(jitter(generations),indivs[,traitName],type='n',
-       main=paste("Actual effect size of",traitName),
+       main=paste("Coefficient values of",traitName),
        xlab="Generation",
-       ylab=paste(traitName,"effect size"),
+       ylab=paste(traitName,"values"),
        cex.lab=1.4,cex.main=1.4)
   #Plot the "emerge before last day" indivs
   points(jitter(generations[indivs[,"emerge"]>364]),indivs[indivs[,"emerge"]>364,traitName],pch=3,col='blue')
