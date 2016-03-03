@@ -101,6 +101,7 @@ matplot(jitter(viewGens),emerge[viewGens,],type='p',pch=1,col='black',
      cex.lab=1.4,cex.main=1.4)
 #Plot the "emerge before last day" indivs
 points(viewGens,emerge.ideal[viewGens],col="red",pch=4,lwd=2)
+dev.print(pdf,paste("emerge-run",runName,"-gen",curgen,".pdf",sep=""))
 
 #plot mean fitness through time, showing max possible fitness
 plot(maxfit,type='l',col='red',

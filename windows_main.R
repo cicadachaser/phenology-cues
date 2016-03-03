@@ -34,7 +34,7 @@ runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #unit test with the same gaussian fitness every year and random envi conditions
 #standard is for running the populations through a set of replications of the first 10 good years of the davis data
 plotExtra=FALSE
-runName="davisRecentyearstest" #string without spaces (for simplicity)
+runName="davisRecentyears4" #string without spaces (for simplicity)
 duration=10
 N=100 #number of individuals
 numYears=1000 #number of years to simulate
@@ -42,9 +42,9 @@ burnIn=100 #number of years to not plot (to avoid scale issues from broad initia
 best.temp=25; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=10; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
 start<-data.frame(  #this represents the min and max values used when randomly assigning initial values to the population
-  daymin=0,daymax=5,
-  tempmin=0,tempmax=8,
-  precipmin=0,precipmax=20)
+  daymin=0,daymax=1,
+  tempmin=1,tempmax=4,
+  precipmin=0,precipmax=10)
 sds<-data.frame( #standard deviations for trait mutations. Currently set so that variance = max initial trait value
   day=sqrt(start$daymax)/10,
   temp=sqrt(start$tempmax)/10,
