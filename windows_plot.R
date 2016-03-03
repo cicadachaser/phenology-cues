@@ -76,19 +76,31 @@ if(plotExtra==TRUE){
   }
 }
 #Calculating changes in mean fitness through time
- maxfit=maxActfit=meanfit=emerge.ideal=rep(0,length(years.index))
- emerge=matrix(0,nrow=N,ncol=length(years.index))
- for(curgen in 1:length(years.index)){
-   meanfit[curgen]=mean(pophistory[[curgen]]$Wi)
-   maxActfit[curgen]=max(pophistory[[curgen]]$Wi)
-   cur.fitness=years.list[[years.index[curgen]]]$fit.daily
-   cur.fitness.durated=rollapply(c(cur.fitness,rep(0,duration-1)),duration,by=1,sum)
-   maxfit[curgen]=max(cur.fitness.durated)
-   emerge[curgen,]=pophistory[[curgen]]$emerge
-   emerge.ideal[curgen]=which(cur.fitness.durated==maxfit[curgen])
+maxfit=maxActfit=meanfit=emerge.ideal=rep(0,length(years.index))
+emerge=matrix(0,ncol=N,nrow=length(years.index))
+for(curgen in 1:length(years.index)){
+  meanfit[curgen]=mean(pophistory[[curgen]]$Wi)
+  maxActfit[curgen]=max(pophistory[[curgen]]$Wi)
+  cur.fitness=years.list[[years.index[curgen]]]$fit.daily
+  cur.fitness.durated=rollapply(c(cur.fitness,rep(0,duration-1)),duration,by=1,sum)
+  maxfit[curgen]=max(cur.fitness.durated)
+  emerge[curgen,]=pophistory[[curgen]]$emerge
+  emerge.ideal[curgen]=min(which(cur.fitness.durated==maxfit[curgen]))
 }
 #plot emergence times
-
+maxCount=100 #maximum number of years to count
+generations=1:length(years.index)
+viewGens=generations
+if(length(generations)>maxCount){
+  viewGens=floor(seq(min(generations),max(generations),length.out=maxCount))
+}
+matplot(jitter(viewGens),emerge[viewGens,],type='p',pch=1,col='black',
+     main=paste("Emergence days"),
+     xlab="Generation",
+     ylab="Emergence day",
+     cex.lab=1.4,cex.main=1.4)
+#Plot the "emerge before last day" indivs
+points(viewGens,emerge.ideal[viewGens],col="red",pch=4,lwd=2)
 
 #plot mean fitness through time, showing max possible fitness
 plot(maxfit,type='l',col='red',
