@@ -8,6 +8,16 @@
 \date{\today}
 \begin{document}
 \maketitle
+\section{Planned Additions}
+It seems like it would be interesting to compare different climate regimes and see if there are differences in the evolutionary trajectory based on those. To implement this, we need to analyze the details of the years. I plan to add a new script, something along the lines of of year\_analyzer, which would do a few things:
+\begin{itemize}
+	\item calculate the optimal emergence time of each year, given the fitness parameters and duration standard for our main script
+	\item calculate the temporal autocorellation in temp, precip, and fitness
+	\item Calculate the sum of the differences of normalized fitness between each pairwise combination of years.
+\end{itemize}
+We could then use these year attributes to create two differing climatic regimes.\\
+I would also like to try adding a ``moving window'' parameter for temp and another for fitness, where the length of the window and the coefficient associated with it can both vary.
+
 \section{Coding decisions}
 some decisions that seem important to remember:
 \begin{itemize}

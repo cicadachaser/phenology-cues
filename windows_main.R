@@ -33,7 +33,8 @@ runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #unitTestRand will be for running the populations through a
 #unit test with the same gaussian fitness every year and random envi conditions
 #standard is for running the populations through a set of replications of the first 10 good years of the davis data
-runName="davisLong" #string without spaces (for simplicity)
+plotExtra=FALSE
+runName="davisRecentyears3" #string without spaces (for simplicity)
 duration=10
 N=100 #number of individuals
 numYears=1000 #number of years to simulate
@@ -53,7 +54,7 @@ mutrate<-data.frame( #probability of each trait mutating in an individual. Mutat
   day=.1,
   temp=.1,
   precip=.1)
-years.index=rep(1:100,length.out=numYears) # This is the list of which year.list data to use for each generation of the model
+years.index=rep(50:100,length.out=numYears) # This is the list of which year.list data to use for each generation of the model
 #######################################
 # Handling libraries and source files #
 #######################################
