@@ -17,7 +17,7 @@ set_wrkdir<-function(){
     }
   }else{
     if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
-      setwd("C:\\Users\\lhyang.ent-yang01\\SkyDrive\\Phenology simulation\\phenology-cues")#desktop
+      setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")#desktop
     }else{
       setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")} #laptop
   }
@@ -37,18 +37,18 @@ plotExtra=FALSE
 runName="threshold_lowmut_longrun" #string without spaces (for simplicity)
 duration=10
 N=100 #number of individuals
-numYears=5000 #number of years to simulate
+numYears=1000 #number of years to simulate
 burnIn=100 #number of years to not plot (to avoid scale issues from broad initial population traits
 best.temp=30; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=10; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
 start<-data.frame(  #this represents the min and max values used when randomly assigning initial values to the population
-  daymin=-1,daymax=1,
-  tempmin=-1,tempmax=1,
-  precipmin=-1,precipmax=1)
+  daymin=1/365*100,daymax=100,
+  tempmin=0,tempmax=0,
+  precipmin=0,precipmax=0)
 sds<-data.frame( #standard deviations for trait mutations. Currently set so that variance = max initial trait value
-  day=sqrt(start$daymax)/10,
-  temp=sqrt(start$tempmax)/10,
-  precip=sqrt(start$precipmax)/10)
+  day=.1,
+  temp=.1,
+  precip=.1)
 mutrate<-data.frame( #probability of each trait mutating in an individual. Mutations are independent of one another
   const=.01,
   day=.01,
