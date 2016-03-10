@@ -34,12 +34,12 @@ runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #unit test with the same gaussian fitness every year and random envi conditions
 #standard is for running the populations through a set of replications of the first 10 good years of the davis data
 plotExtra=FALSE
-runName="davistestNegs" #string without spaces (for simplicity)
+runName="threshold_lowmut_longrun" #string without spaces (for simplicity)
 duration=10
 N=100 #number of individuals
-numYears=1000 #number of years to simulate
+numYears=5000 #number of years to simulate
 burnIn=100 #number of years to not plot (to avoid scale issues from broad initial population traits
-best.temp=25; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
+best.temp=30; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=10; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
 start<-data.frame(  #this represents the min and max values used when randomly assigning initial values to the population
   daymin=-1,daymax=1,
@@ -50,10 +50,10 @@ sds<-data.frame( #standard deviations for trait mutations. Currently set so that
   temp=sqrt(start$tempmax)/10,
   precip=sqrt(start$precipmax)/10)
 mutrate<-data.frame( #probability of each trait mutating in an individual. Mutations are independent of one another
-  const=.1,
-  day=.1,
-  temp=.1,
-  precip=.1)
+  const=.01,
+  day=.01,
+  temp=.01,
+  precip=.01)
 years.index=rep(50:100,length.out=numYears) # This is the list of which year.list data to use for each generation of the model
 #######################################
 # Handling libraries and source files #

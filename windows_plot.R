@@ -18,7 +18,7 @@ for(i.day in 1:365){
 
 x11(width=9,height=6)
 if(plotExtra==TRUE){
-  for(curgen in seq(2,length(years.index),length=10)){
+  for(curgen in c(2:29,seq(31,length(years.index),length=10))){
     curgen=round(curgen)
     arheight=rep(max(meanFit)*1.1,N)
     emergeDay=pophistory[[curgen]]$emerge

@@ -2,6 +2,21 @@
 
 emerge_sub<-function(x){min(c(which(x),365))} #function for use in "apply" within emergence()
 
+emergence_range<-function(year,newpop){
+  #Function for calculating the emergence day of the given individual in the given year.
+  #  Calculates emergence value as E= b.day*day+b.temp*temp+b.precip*precip
+  # Then finds the first day when the calculated E is greater than 100 (100 chosen for arbitrary convenience)
+  # Inputs:
+  #  Indiv: (individual) has three important attributes: $b.day, $b.temp, $b.precip
+  #  year: current year data. Includes columns $day, $tmax, $precip
+  # Output:
+  #  day (Julian) of emergence
+  E=newpop$b.day %*% t(year$day) + newpop$b.temp %*% t(year$temp) + newpop$b.precip %*% t(year$precip)
+  emerge=apply(E>100&E<120,1,emerge_sub)
+  return(emerge) #find the first day where emergence value is greater than 100 (or the last day of the year)
+}
+
+
 emergence<-function(year,newpop){
   #Function for calculating the emergence day of the given individual in the given year.
   #  Calculates emergence value as E= b.day*day+b.temp*temp+b.precip*precip
@@ -16,6 +31,24 @@ emergence<-function(year,newpop){
   return(emerge) #find the first day where emergence value is greater than 100 (or the last day of the year)
 }
 
+fitness_range<-function(year,newpop,duration){
+  #Function for giving fitness of individuals based on their start time, duration, and the W.
+  # fitness is the sum of W over the lifespan
+  #FOR SIMPLICITY, ASSUMING END OF YEAR MEANS DEATH. CHANGE IF APPROPRIATE.
+  #Inputs:
+  #  year: data frame of climate and fitness information for current year. Includes $fit.daily column
+  #  newpop: matrix of individuals, with each row corresponding to an individual, rows $b.const, $b.day, $b.temp, $b.precip
+  #  duration: number of days organism is emerged
+  #Returns:
+  #  fit: vector of the fitnesses of each individual
+  #
+  evect=emergence_range(year,newpop)
+  #Create a vector with the "total fitness you experience if you emerge on this day" values.
+  # (using rollapply function from "zoo" library to make this fast)
+  fitVals=rollapply(c(year$fit.daily,rep(0,duration-1)),duration,by=1,sum)
+  fit=fitVals[evect]
+  return(data.frame(fit=fit,emerge=evect))
+}
 fitness<-function(year,newpop,duration){
   #Function for giving fitness of individuals based on their start time, duration, and the W.
   # fitness is the sum of W over the lifespan
@@ -35,6 +68,25 @@ fitness<-function(year,newpop,duration){
   return(data.frame(fit=fit,emerge=evect))
 }
 
+selection_range<-function(newpop,duration,year,N){
+  #Function for carrying out `soft selection' - all individuals reproduce, with variable fitness.
+  #Inputs:
+  #  newpop: data frame with the current population trait values; each row is an individual
+  #  year: data on the year, including a column for daily fitness
+  #  duration: lifespan of organisms
+  #  N: number of individuals in the population
+  #Returns:
+  #  newpop: a matrix with the current population traits, plus raw fitness (Wi),
+  #     rescaled fitness(Ws), proportional fitness after mortality(Wp), and number of offspring (Wnum)
+  #
+  out=fitness_range(year=year,newpop=newpop,duration=duration)
+  newWi=out$fit
+  newWnum=(rmultinom(1,size=N,prob=newWi)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
+  init.colnames=colnames(newpop)
+  newpop<-cbind(newpop,out$emerge,newWi,newWnum)
+  colnames(newpop)<-c(init.colnames,"emerge","Wi","Wnum")
+  return(newpop)
+}
 selection<-function(newpop,duration,year,N){
   #Function for carrying out `soft selection' - all individuals reproduce, with variable fitness.
   #Inputs:
@@ -92,6 +144,34 @@ reproduction<-function(pop){
     }
   }
   return(expandpop)
+}
+runSim_range<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,generations,graphics=FALSE){
+  #Function that actually runs the simulation (calling the other functions above)
+  #Inputs:
+  #  startpop: initial population
+  #  years.list: List of dataframes for daily information on each year (MUST INCLUDE DAILY FITNESS)
+  #  years.ind: vector of indices for the year to use for each generation.
+  #  N: number of individuals in the population
+  #  duration: number of days all individuals is in an emerged state
+  #  sds: standard deviation for the distribution of mutation sizes for each trait
+  #  mutrate: probability of mutation for each trait (per individual).
+  #  generations: number of generations to simulate.
+  #  graphics: boolean, defaults to false. If true, carry out some plotting operations
+  #Returns
+  #  pophistory: list where each element represents the full population data frame for each generation
+  #
+  pop=startpop
+  pophistory<-list(cbind(startpop, gen=rep(1,N))) #initialize the population history
+  for(g in 1:generations){
+    #reproduction
+    cur.year=years.list[[years.ind[g]]]
+    newpop<-reproduction(pop)
+    newpop<-mutation(newpop,sds,mutrate,N)
+    newpop<-selection_range(newpop,duration,cur.year,N)
+    pophistory[[g+1]]<-cbind(newpop, gen=rep(g+1,N))
+    pop<-newpop
+  }
+  return(pophistory)
 }
 
 runSim<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,generations,graphics=FALSE){
