@@ -18,7 +18,7 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
   }
 }else{
   if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
-    setwd("C:\\Users\\lhyang.ent-yang01\\SkyDrive\\Phenology simulation\\phenology-cues")#desktop
+    setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")#desktop
   }else{  
     setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")} #SP4
 }
