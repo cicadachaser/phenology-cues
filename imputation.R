@@ -47,66 +47,65 @@ daily$PRCP<-daily$PRCP/10 #precips are reported in tenths of mm, units changed t
 daily$TMAX<-daily$TMAX/10 #temps are reported in tenths of degree C, units changed to degree C
 daily$TMIN<-daily$TMIN/10 #temps are reported in tenths of degree C, units changed to degree C
 
-daily<-daily[,c("DATE2","JULIAN","YEAR","MONTH","DAY","DAY.OF.YEAR","PRCP","TMAX","TMIN")] #simplified dataframe
 
+daily<-daily[,c("DATE2","JULIAN","YEAR","MONTH","DAY","DAY.OF.YEAR","PRCP","TMAX","TMIN")] #simplified dataframe
 
 # imputation of missing data ----------------------------------------------
 
-t.go<-proc.time()
-a.out<-amelia(daily,m=5,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel = "snow", npcus=detectCores())
-proc.time()-t.go
+a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel = "snow", npcus=detectCores())
 
-plot(a.out)
+daily.imp<-a.out$imputations[[1]]
 
-save(a.out, file = "imputations.RData") 
-
-
+daily.imp[daily.imp$PRCP<0,"PRCP"]<-0 #set all negative precip values to zero
 
 # descriptive statistics --------------------------------------------------
 
-daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=daily, mean)
+daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=daily.imp, mean)
 
 qplot(x=DAY.OF.YEAR,y=TMAX,data=daily.means)
 qplot(x=DAY.OF.YEAR,y=TMIN,data=daily.means)
 qplot(x=DAY.OF.YEAR,y=PRCP,data=daily.means)
 
+yearnames<-unique(daily.imp$YEAR) #vector of years
+yearlist<-split(daily.imp,daily.imp$YEAR) #list of each year separated
+yearvar<-data.frame(row.names=yearnames) #dataframe to hold environmental variability
 
-
-
-
-
-
-
-
-
-
-davis.yearvar<-data.frame(row.names=davis.yearnames) #dataframe to hold environmental variability
-
-for (i in 1:length(davis.yearnames)){
-  #temporary dataframe to compare with mean conditions
+for (i in 1:length(yearnames)){
+  #dataframe to compare with mean conditions
   #this creates a VAR.x for each year and a VAR.y for the daily means
-  comparison<-merge(davis.yearlist[[i]],davis.daily.means,by="DAY.OF.YEAR") 
-  #number of complete cases (is.na=F) for each year
-  davis.yearvar[i,"TMAX.N"]<-sum(complete.cases(davis.yearlist[[i]]$TMAX))
-  davis.yearvar[i,"TMIN.N"]<-sum(complete.cases(davis.yearlist[[i]]$TMIN))
-  davis.yearvar[i,"PRCP.N"]<-sum(complete.cases(davis.yearlist[[i]]$PRCP))
+  comparison<-merge(yearlist[[i]],daily.means,by="DAY.OF.YEAR") 
   #sum of squared differences with an average year - how weird is each year?
-  #some years have incomplete data, so this is the mean SS per observed day
-  davis.yearvar[i,"TMAX.SS"]<-(sum(comparison$TMAX.x-comparison$TMAX.y,na.rm=T)^2)/davis.yearvar[i,"TMAX.N"]
-  davis.yearvar[i,"TMIN.SS"]<-(sum(comparison$TMIN.x-comparison$TMIN.y,na.rm=T)^2)/davis.yearvar[i,"TMIN.N"]
-  davis.yearvar[i,"PRCP.SS"]<-(sum(comparison$PRCP.x-comparison$PRCP.y,na.rm=T)^2)/davis.yearvar[i,"PRCP.N"]
+  yearvar[i,"TMAX.SS"]<-sum((comparison$TMAX.x-comparison$TMAX.y)^2)
+  yearvar[i,"TMIN.SS"]<-sum((comparison$TMIN.x-comparison$TMIN.y)^2)
+  yearvar[i,"PRCP.SS"]<-sum((comparison$PRCP.x-comparison$PRCP.y)^2)
   #CV within years - how variable is each year?
-  davis.yearvar[i,"TMAX.CV"]<-sd(comparison$TMAX.x,na.rm=T)/mean(comparison$TMAX.x,na.rm=T)
-  davis.yearvar[i,"TMIN.CV"]<-sd(comparison$TMIN.x,na.rm=T)/mean(comparison$TMIN.x,na.rm=T)
-  davis.yearvar[i,"PRCP.CV"]<-sd(comparison$PRCP.x,na.rm=T)/mean(comparison$PRCP.x,na.rm=T)
+  yearvar[i,"TMAX.CV"]<-sd(comparison$TMAX.x)/mean(comparison$TMAX.x)
+  yearvar[i,"TMIN.CV"]<-sd(comparison$TMIN.x)/mean(comparison$TMIN.x)
+  yearvar[i,"PRCP.CV"]<-sd(comparison$PRCP.x)/mean(comparison$PRCP.x)
   #sum of differences (not squared) with an average year - how hot/wet is each year?
-  #some years have incomplete data, so this is the mean difference per observed day
-  davis.yearvar[i,"TMAX.DEL"]<-sum(comparison$TMAX.x-comparison$TMAX.y,na.rm=T)/davis.yearvar[i,"TMAX.N"]
-  davis.yearvar[i,"TMIN.DEL"]<-sum(comparison$TMIN.x-comparison$TMIN.y,na.rm=T)/davis.yearvar[i,"TMIN.N"]
-  davis.yearvar[i,"PRCP.DEL"]<-sum(comparison$PRCP.x-comparison$PRCP.y,na.rm=T)/davis.yearvar[i,"PRCP.N"]
-}
+  yearvar[i,"TMAX.DEL"]<-sum(comparison$TMAX.x-comparison$TMAX.y)
+  yearvar[i,"TMIN.DEL"]<-sum(comparison$TMIN.x-comparison$TMIN.y)
+  yearvar[i,"PRCP.DEL"]<-sum(comparison$PRCP.x-comparison$PRCP.y)
+  #annual totals
+  yearvar[i,"TMAX.TOT"]<-max(cumsum(comparison$TMAX.x))
+  yearvar[i,"TMIN.TOT"]<-max(cumsum(comparison$TMIN.x))
+  yearvar[i,"PRCP.TOT"]<-max(cumsum(comparison$PRCP.x))
+  #spring totals
+  yearvar[i,"TMAX.SPR"]<-max(cumsum(comparison$TMAX.x[1:120]))
+  yearvar[i,"TMIN.SPR"]<-max(cumsum(comparison$TMIN.x[1:120]))
+  yearvar[i,"PRCP.SPR"]<-max(cumsum(comparison$PRCP.x[1:120]))
+}  
 
+# generating some environmental histories ---------------------------------
 
+strange.TMAX.25<-as.numeric(rownames(tail(yearvar[order(yearvar$TMAX.SS),],25))) #25 least normal TMAX years
+normal.TMAX.25<-as.numeric(rownames(head(yearvar[order(yearvar$TMAX.SS),],25))) #25 most normal TMAX years
 
-#this is resource intensive - USE WITH CAUTION
-overimpute(a.out, var = "TMAX")
+strange.PRCP.25<-as.numeric(rownames(tail(yearvar[order(yearvar$PRCP.SS),],25))) #25 least normal PRCP years
+normal.PRCP.25<-as.numeric(rownames(head(yearvar[order(yearvar$PRCP.SS),],25))) #25 most normal PRCP years
+
+hot.25<-as.numeric(rownames(tail(yearvar[order(yearvar$TMAX.DEL),],25))) #25 hottest TMAX years
+cool.25<-as.numeric(rownames(head(yearvar[order(yearvar$TMAX.DEL),],25))) #25 coolest TMAX years
+
+hot.cold.50<-c(hot.25,cool.25) #mix of hottest and coldest years
+goldilocks.50<-as.numeric(rownames(head(yearvar[order(abs(yearvar$TMAX.DEL)),],25))) #most normal TMAX
