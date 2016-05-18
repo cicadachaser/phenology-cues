@@ -1,6 +1,6 @@
 #Updated through "fitness" function
 
-emerge_sub<-function(x){min(c(which(x),365))} #function for use in "apply" within emergence()
+emerge_sub<-function(x){min(c(which(x),366))} #function for use in "apply" within emergence()
 
 emergence<-function(year,newpop){
   #Function for calculating the emergence day of the given individual in the given year.
@@ -11,7 +11,10 @@ emergence<-function(year,newpop){
   #  year: current year data. Includes columns $day, $tmax, $precip
   # Output:
   #  day (Julian) of emergence
-  E=newpop$b.day %*% t(year$day) + newpop$b.temp %*% t(year$temp) + newpop$b.precip %*% t(year$precip)
+  E=newpop$b.day %*% t(year$day) + newpop$b.temp %*% t(year$temp) + newpop$b.precip %*% t(year$precip) +
+    newpop$b.cutemp %*% t(year$cutemp) + newpop$b.cuprecip %*% t(year$cuprecip) +
+    newpop$b.daysq %*% t(year$daysq) + newpop$b.tempsq %*% t(year$tempsq) + newpop$b.precipsq %*% t(year$precipsq) +
+    newpop$b.cutempsq %*% (t(year$cutempsq)^2) + newpop$b.cuprecipsq %*% t(year$cuprecipsq)
   emerge=apply(E>100,1,emerge_sub)
   return(emerge) #find the first day where emergence value is greater than 100 (or the last day of the year)
 }
@@ -26,10 +29,11 @@ fitness<-function(year,newpop,duration){
   #Returns:
   #  fit: vector of the fitnesses of each individual
   #
-  evect=emergence(year,newpop)
+  evect=emergence(year=year,newpop=newpop)
   #Create a vector with the "total fitness you experience if you emerge on this day" values.
   # (using rollapply function from "zoo" library to make this fast)
-  fitVals=rollapply(c(year$fit.daily,rep(0,duration-1)),duration,by=1,sum)
+  # Adding a 0 at the end of the vector: if you didn't emerge in the normal year, you "emerge" on day 366 which has zero fitness. ie if you don't emerge you die.
+  fitVals=c(rollapply(c(year$fit.daily,rep(0,duration-1)),duration,by=1,sum),0)
   fit=fitVals[evect]
   return(data.frame(fit=fit,emerge=evect))
 }
@@ -63,11 +67,15 @@ mutation<-function(poptraits,sds,mutrate,N){
   #Returns
   #  2-dimensional matrix of the new (post-mutation) traits of the population
   #
-  mat.runif=matrix(runif(length(sds[1,])*N),nrow=N, ncol=length(sds[1,])) #generate matrix of random uniform numbers for testing
-  test.mutate=cbind(rep(mutrate$day,N),rep(mutrate$temp,N),rep(mutrate$precip,N)) #THESE NEED TO BE IN THE SAME ORDER AS THE POPULATIONS
+  mat.runif=matrix(runif(length(sds)*N),nrow=N, ncol=length(sds)) #generate matrix of random uniform numbers for testing
+  #make a data frame with N rows, each row being a duplicate of the mutrate list
+  mutframe=data.frame(t(unlist(mutrate))) #one row
+  test.mutate=mutframe[rep(1,N),] #sneaky way to make N rows
   mat.mutate=mat.runif<test.mutate # which traits of which individuals mutated?
-  vals.mutate=cbind(rnorm(n=N,mean=0,sd=sds$day),
-                    rnorm(n=N,mean=0,sd=sds$temp),rnorm(n=N,mean=0,sd=sds$precip))# Generate random mutations for all traits of all individuals. THESE NEED TO BE IN THE SAME ORDER AS THE POPULATIONS
+  #This is a little dicey, but when executed correctly (like here), allows me to make our entire rnorm matrix in one shot.
+  #It relies on the INCREDIBLY STUPID FACT that R recycles vectors when needed. I don't like it, but the code works and is quick.
+  vals.mutate=matrix(rnorm(n=N*length(sds),mean=0,sd=unlist(sds)),N,length(sds),byrow=TRUE)
+  colnames(vals.mutate)<-sprintf("b.%s",names(sds))
   poptraits=poptraits+mat.mutate*vals.mutate #Take current population, add mutations only for individuals and traits that mutated.
   return(poptraits)
 }
@@ -80,11 +88,13 @@ reproduction<-function(pop){
   #Returns:
   #  Next generation as a data frame.
   repop<-pop[pop$Wnum>0,]
-  expandpop<-data.frame(b.day=rep(0,N),b.temp=rep(0,N),b.precip=rep(0,N))
+  nameslist=sprintf("b.%s",names(sds))
+  expandpop<-data.frame(t(rep(0,length(sds))))[rep(1,N),]
+  colnames(expandpop)<-nameslist
   ind=1
   for(i in 1:nrow(repop)){
     for (j in 1:repop$Wnum[i]) {
-      expandpop[ind,]<-c(repop$b.day[i],repop$b.temp[i],repop$b.precip[i])
+      expandpop[ind,]<-repop[i,!names(repop) %in% c("emerge","Wi","Wnum")]
       ind=ind+1
     }
   }
@@ -107,13 +117,13 @@ runSim<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,generation
   #
   pop=startpop
   pophistory<-list(cbind(startpop, gen=rep(1,N))) #initialize the population history
-  for(g in 1:generations){
+  for(g in 2:generations){
     #reproduction
     cur.year=years.list[[years.ind[g]]]
-    newpop<-reproduction(pop)
-    newpop<-mutation(newpop,sds,mutrate,N)
-    newpop<-selection(newpop,duration,cur.year,N)
-    pophistory[[g+1]]<-cbind(newpop, gen=rep(g+1,N))
+    newpop<-reproduction(pop=pop)
+    newpop<-mutation(poptraits=newpop,sds=sds,mutrate=mutrate,N=N)
+    newpop<-selection(newpop=newpop,duration=duration,year=cur.year,N=N)
+    pophistory[[g]]<-cbind(newpop, gen=rep(g,N))
     pop<-newpop
   }
   return(pophistory)
@@ -125,66 +135,66 @@ runSim<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,generation
 
 #####
 actTraitVals<-function(pophistory,numYears,N){
-  coef.indiv=matrix(data=0,ncol=6,nrow=N*numYears,
-                    dimnames = list(NULL,c("gen","b.day","b.temp","b.precip","relfit","emerge")))
-  index=1
+  traitslist=sprintf("b.%s",traits)
+  coef.indiv=matrix(data=0,ncol=(3+length(traitslist)),nrow=N*numYears,
+                    dimnames = list(NULL,c("gen",traitslist,"relfit","emerge")))
+  ind=1
   for(i.gen in 1:numYears){
     curhist=pophistory[[i.gen]]
-    coef.indiv[index:(index+N-1),"gen"]=rep(i.gen,N)
-    coef.indiv[index:(index+N-1),"relfit"]=curhist$Wi
-    coef.indiv[index:(index+N-1),"emerge"]=curhist$emerge
-    coef.indiv[index:(index+N-1),"b.day"]=curhist$b.day
-    coef.indiv[index:(index+N-1),"b.temp"]=curhist$b.temp
-    coef.indiv[index:(index+N-1),"b.precip"]=curhist$b.precip
-    index=index+N
+    coef.indiv[ind:(ind+N-1),"gen"]=rep(i.gen,N)
+    coef.indiv[ind:(ind+N-1),"relfit"]=curhist$Wi
+    coef.indiv[ind:(ind+N-1),"emerge"]=curhist$emerge
+    coef.indiv[ind:(ind+N-1),traitslist]=as.matrix(curhist[,traitslist])
+    ind=ind+N
   }
   return(coef.indiv)
 }
 
-actTraitEff<-function(years.index,years.list,pophistory,N){
+##NEXT DO THIS ONE!
+# actTraitEff<-function(years.ind,years.list,pophistory,N){
+#   #  Function for calculating the actual effect size of each coefficient for each indiv
+#   #    This is done by finding the conditions when each individual emerged, and calculating the effect of each coefficient on that day.
+#   #  Inputs:
+#   traitslist=sprintf("b.%s",traits)
+#   coef.indiv=matrix(data=0,ncol=(3+length(traitslist)),nrow=N*numYears,
+#                     dimnames = list(NULL,c("gen",traitslist,"relfit","emerge")))
+#   ind=1
+#   for(i.gen in 1:length(years.ind)){
+#     curhist=pophistory[[i.gen]] #store the current year of population date
+#     curyear=years.list[[years.ind[[i.gen]]]] #store the current year of envi conditions
+#     coef.indiv[ind:(ind+N-1),"gen"]=rep(i.gen,N)
+#     coef.indiv[ind:(ind+N-1),"relfit"]=curhist$Wi
+#     coef.indiv[ind:(ind+N-1),"emerge"]=curhist$emerge
+#     for(i.indiv in 1:N){
+#       cur.econd=curyear[curhist$emerge[i.indiv],] #grab the envi conditions of the day of emergence of current indiv
+#       coef.indiv[ind,"b.day"]=cur.econd$day*curhist[i.indiv,"b.day"]
+#       coef.indiv[ind,"b.temp"]=cur.econd$temp*curhist[i.indiv,"b.temp"]
+#       coef.indiv[ind,"b.precip"]=cur.econd$precip*curhist[i.indiv,"b.precip"]
+#       ind=ind+1
+#     }
+#   }
+#   return(coef.indiv)
+# }
+
+actTraitEff<-function(years.ind,years.list,pophistory,N){
   #  Function for calculating the actual effect size of each coefficient for each indiv
   #    This is done by finding the conditions when each individual emerged, and calculating the effect of each coefficient on that day.
   #  Inputs:
-  coef.indiv=matrix(data=0,ncol=6,nrow=N*length(years.index),
-                    dimnames = list(NULL,c("gen","b.day","b.temp","b.precip","relfit","emerge")))
-  index=1
-  for(i.gen in 1:length(years.index)){
+  traitslist=sprintf("b.%s",traits)
+  coef.indiv=matrix(data=0,ncol=(3+length(traitslist)),nrow=N*numYears,
+                    dimnames = list(NULL,c("gen",traitslist,"relfit","emerge")))
+  ind=1
+  for(i.gen in 1:length(years.ind)){
     curhist=pophistory[[i.gen]] #store the current year of population date
-    curyear=years.list[[years.index[[i.gen]]]] #store the current year of envi conditions
-    coef.indiv[index:(index+N-1),"gen"]=rep(i.gen,N)
-    coef.indiv[index:(index+N-1),"relfit"]=curhist$Wi
-    coef.indiv[index:(index+N-1),"emerge"]=curhist$emerge
+    curyear=years.list[[years.ind[[i.gen]]]] #store the current year of envi conditions
+    coef.indiv[ind:(ind+N-1),"gen"]=rep(i.gen,N)
+    coef.indiv[ind:(ind+N-1),"relfit"]=curhist$Wi
+    coef.indiv[ind:(ind+N-1),"emerge"]=curhist$emerge
     for(i.indiv in 1:N){
       cur.econd=curyear[curhist$emerge[i.indiv],] #grab the envi conditions of the day of emergence of current indiv
-      coef.indiv[index,"b.day"]=cur.econd$day*curhist[i.indiv,"b.day"]
-      coef.indiv[index,"b.temp"]=cur.econd$temp*curhist[i.indiv,"b.temp"]
-      coef.indiv[index,"b.precip"]=cur.econd$precip*curhist[i.indiv,"b.precip"]
-      index=index+1
+      coef.indiv[ind,traitslist]=as.matrix(cur.econd[,unlist(traits)]*curhist[i.indiv,traitslist])
+      ind=ind+1
     }
-  }
-  return(coef.indiv)
-}
-
-meanTraitEff<-function(years.index,years.list,pophistory,N){
-  #  Function for calculating the "mean effect size" of each coefficient for each indiv
-  #    This is done by multiplying the coefficient of each individual by the mean of the appropriate environmental effect for the appropriate generation
-  #  Inputs:
-  coef.indiv=matrix(data=0,ncol=5,nrow=N*length(years.index),
-                    dimnames = list(NULL,c("gen","b.day","b.temp","b.precip","relfit")))
-  index=1
-  for(i.gen in 1:length(years.index)){
-    curhist=pophistory[[i.gen]]
-    coef.indiv[index:(index+N-1),"gen"]=rep(i.gen,N)
-    coef.indiv[index:(index+N-1),"relfit"]=curhist$Wi
-    covarmean=c("b.const"=0,"b.day"=0,"b.temp"=0,"b.precip"=0)
-    #This will store the maximum covariable value for this year - max temp, max day, precip, etc.
-    covarmean["b.day"]=mean(years.list[[years.index[i.gen]]]$day)
-    covarmean["b.temp"]=mean(years.list[[years.index[i.gen]]]$temp)
-    covarmean["b.precip"]=mean(years.list[[years.index[i.gen]]]$precip)
-    for(cur.par in c("b.day","b.temp","b.precip")){
-      coef.indiv[index:(index+N-1),cur.par]=abs(curhist[,cur.par])*covarmean[cur.par]
-    }
-    index=index+N
   }
   return(coef.indiv)
 }
@@ -218,9 +228,28 @@ yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp){
     save(years.list,file = paste("data-years/",fileName,sep=""))
   }
   years.temp=do.call(rbind.data.frame,years.list)
-  fit.daily=dnorm(years.temp$temp,mean=best.temp,sd=sd.temp)*dnorm(years.temp$precip,mean=best.precip,sd=sd.precip)
+  #add cumulative and squared cues. NOTE THAT SQUARING HAPPENS AFTER CUMSUM!
+  years.temp=cbind(years.temp,
+                   cutemp=0*years.temp$temp,
+                   cuprecip=0*(years.temp$precip),
+                   daysq=0*(years.temp$day),
+                   tempsq=0*(years.temp$temp),
+                   precipsq=0*(years.temp$precip),
+                   cutempsq=0*(cumsum(years.temp$temp)),
+                   cuprecipsq=0*(cumsum(years.temp$precip))
+  )
+   fit.daily=dnorm(years.temp$temp,mean=best.temp,sd=sd.temp)*dnorm(years.temp$precip,mean=best.precip,sd=sd.precip)
   years.temp=cbind(years.temp,fit.daily)
   years.list=split(years.temp,f=years.temp$year)
+  for(i.year in 1:length(years.list)){
+    years.list[[i.year]]$cutemp=cumsum(years.list[[i.year]]$temp);
+    years.list[[i.year]]$cuprecip=cumsum(years.list[[i.year]]$precip);
+    years.list[[i.year]]$daysq=(years.list[[i.year]]$day)^2;
+    years.list[[i.year]]$tempsq=(years.list[[i.year]]$temp)^2;
+    years.list[[i.year]]$precipsq=(years.list[[i.year]]$precip)^2;
+    years.list[[i.year]]$cutempsq=cumsum((years.list[[i.year]]$temp)^2);
+    years.list[[i.year]]$cuprecipsq=cumsum((years.list[[i.year]]$precip)^2);
+    }
   return(years.list)
 }
 
@@ -414,6 +443,31 @@ emergePlot<-function(indivs,traitName){
        xlab="Generation",
        ylab=paste(traitName,"effect size"),
        cex.lab=1.4,cex.main=1.4)
+  #Plot the "emerge before last day" indivs
+  points(jitter(generations[indivs[,"emerge"]>364]),indivs[indivs[,"emerge"]>364,traitName],pch=3,col='blue')
+  points(jitter(generations[indivs[,"emerge"]<365]),indivs[indivs[,"emerge"]<365,traitName],pch=1)
+}
+emergePlotYlim<-function(indivs,traitName,ylim){
+  #Function for plotting trait values through time
+  #Inputs:
+  #  generations: vector of the generation of each individual to be plotted
+  #  traivals: vector of the trait value of interest of each individ to be plotted
+  #  mainlabel: label for the main graph
+  #  ylabel: label for Y axis
+  maxCount=100 #maximum number of years to count
+  generations=indivs[,"gen"]
+  if(length(unique(generations))>maxCount){
+    viewGens=floor(seq(min(generations),max(generations),length.out=maxCount))
+    goodInd=generations %in% viewGens
+    generations=generations[goodInd]
+    indivs=indivs[goodInd,]
+  }
+  plot(jitter(generations),indivs[,traitName],type='n',
+       main=paste("Actual effect size of",traitName),
+       xlab="Generation",
+       ylab=paste(traitName,"effect size"),
+       cex.lab=1.4,cex.main=1.4,
+       ylim=ylim)
   #Plot the "emerge before last day" indivs
   points(jitter(generations[indivs[,"emerge"]>364]),indivs[indivs[,"emerge"]>364,traitName],pch=3,col='blue')
   points(jitter(generations[indivs[,"emerge"]<365]),indivs[indivs[,"emerge"]<365,traitName],pch=1)
