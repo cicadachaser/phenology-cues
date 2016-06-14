@@ -148,10 +148,9 @@ act.eff=actTraitEff(years.index,years.list,pophistory,N)
 act.vals=actTraitVals(pophistory,numYears,N)
 traitslist=sprintf("b.%s",traits)
 
-x11(width=9,height=6)
+#x11(width=9,height=6)
 par(mar=c(5,5,4,4))
 #Plot it all in one
-x11()
 par(mfrow=c(3,1))
 ind=1
 while(ind<=length(traitslist)){
@@ -180,12 +179,13 @@ while(ind<=length(traitslist)){
 }
 #Plot phenotypes through time
 
+par(mfrow=c(1,1))
 pop.temp=do.call(rbind.data.frame,pophistory[c(seq(2,length(years.index),by=100))])
 traitmins=NULL
 for(i.trait in traitslist){traitmins=c(traitmins,min(pop.temp[,i.trait]))}
 traitmaxs=NULL
 for(i.trait in traitslist){traitmaxs=c(traitmaxs,max(pop.temp[,i.trait]))}
-x11(width=9,height=6)
+#x11(width=9,height=6)
 if(plotPheno==TRUE){
   traitslist=sprintf("b.%s",traits)
   for(curgen in c(1,seq(2,length(years.index),by=100))){

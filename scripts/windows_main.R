@@ -24,7 +24,7 @@ ptm <-proc.time()
 # Simulation parameters #
 #########################
 runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
-traits=c("day","cutemp","cuprecip")
+traits=c("day","temp","precip")
 #traits=c("day","temp","precip","cutemp","cuprecip","daysq","tempsq","precipsq","cutempsq","cuprecipsq")
 #unitTestConst is for running the population through a unit test with the same gaussian fitness every year
 #and constant environmental conditions
@@ -33,26 +33,46 @@ traits=c("day","cutemp","cuprecip")
 #standard is for running the populations through a set of replications of the first 10 good years of the davis data
 plotExtra=TRUE # do we plot snapshots of emergence through time?
 plotPheno=TRUE # do we plot snapshots of phenotype through time?
-runName="-meetingtest" #string without spaces (for simplicity)
-duration=10
+runName="-temptest" #string without spaces (for simplicity)
+duration=10 #number of days organizm is emerged.
 N=100 #number of individuals
 numYears=1000 #number of years to simulate
-burnIn=100 #number of years to not plot (to avoid scale issues from broad initial population traits
+burnIn=200 #number of years to not plot (to avoid scale issues from broad initial population traits)
 best.temp=30; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=10; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
-start<-list(  #this represents the min and max values used when randomly assigning initial values to the population
-  day=c(1,1200),
-  temp=c(0,0),
-  precip=c(0,0),
-  cutemp=c(1,27000),
-  cuprecip=c(1,1800),
-  daysq=c(0,0),
-  tempsq=c(0,0),
-  precipsq=c(0,0),
-  cutempsq=c(0,0),
-  cuprecipsq=c(0,0)
+mutdist=.01 #What fraction of the total "cue space" should mutations (on average) traverse (kinda).
+  # if we're looking at b.day, the cue space is 365 days. So a mutdist of .01 means that each mutation will
+  # be drawn from a normal distribution with mean 0 and sd 3.65
+maxcues<-list(#these are approximately the max values of the first five years of the Davis data.
+  # use them for scaling the starting values, and for
+  day=365,
+  temp=45,
+  precip=100,
+  cutemp=9000,
+  cuprecip=600,
+  daysq=133225,
+  tempsq=1971.36,
+  precipsq=10000,
+  cutempsq=250000,
+  cuprecipsq=20000
 )
-temporary<-list( #probability of each trait mutating in an individual. Mutations are independent of one another
+start<-list(#these are used to generate the starting values of individuals. Starting values will produce
+  # individuals who, if they relied solely on a single cue, would emerge uniformly across a range of
+  # cues from 1 to x times approximately the max value, where x is the number of traits used.
+  # The max value is selected to be approximately the maximum found in the first five years of the davis
+  # data set, and the min is set to approximately the minimum found. Note that we can't use zero.
+  day=c(1,maxcues$day*length(traits)),
+  temp=c(5,maxcues$temp*length(traits)),
+  precip=c(.01,maxcues$precip*length(traits)),
+  cutemp=c(5,maxcues$cutemp*length(traits)),
+  cuprecip=c(.01,maxcues$cuprecip*length(traits)),
+  daysq=c(1,maxcues$daysq*length(traits)),
+  tempsq=c(5,maxcues$tempsq*length(traits)),
+  precipsq=c(.01,maxcues$precipsq*length(traits)),
+  cutempsq=c(5,maxcues$cutempsq*length(traits)),
+  cuprecipsq=c(.01,maxcues$cuprecipsq*length(traits))
+)
+temporary<-list( #temporary object for masking unused traits
   day=0,
   temp=0,
   precip=0,
@@ -70,16 +90,16 @@ for(i.trait in traits){
 start=temporary
 ####THE SDS BELOW NEED TO BE RESCALED FOR FAIRNESS.
 sds<-list( #standard deviations for trait mutations.
-  day=.1,
-  temp=.1,
-  precip=.1,
-  cutemp=.1,
-  cuprecip=.1, #max
-  daysq=.1,
-  tempsq=.1,
-  precipsq=.1,
-  cutempsq=.1,
-  cuprecipsq=.1)
+  day=mutdist*maxcues$day,
+  temp=mutdist*maxcues$temp,
+  precip=mutdist*maxcues$precip,
+  cutemp=mutdist*maxcues$cutemp,
+  cuprecip=mutdist*maxcues$cuprecip, #max
+  daysq=mutdist*maxcues$daysq,
+  tempsq=mutdist*maxcues$tempsq,
+  precipsq=mutdist*maxcues$precipsq,
+  cutempsq=mutdist*maxcues$cutempsq,
+  cuprecipsq=mutdist*maxcues$cuprecipsq)
 mutrate<-list( #probability of each trait mutating in an individual. Mutations are independent of one another
   day=.01,
   temp=.01,
@@ -108,8 +128,6 @@ for(i.trait in traits){
   temporary[i.trait]=mutrate[i.trait]
 }
 mutrate=temporary
-
-
 
 years.index=rep(50:100,length.out=numYears) # This is the list of which year.list data to use for each generation of the model
 #######################################
@@ -153,19 +171,19 @@ for(i.trait in traits){
   }else{
     randnums=runif(n=N,min=start[[i.trait]][1],max=start[[i.trait]][2])
     randnums[randnums==0]=1/(10^10)
-    curvals=100/randnums
+    curvals=randnums
   }
   curname=paste("b.",i.trait,sep="")
   assign(curname,curvals)
 }
 newpop<-data.frame(b.day,b.temp,b.precip,b.cutemp,b.cuprecip,b.daysq,b.tempsq,b.precipsq,b.cutempsq,b.cuprecipsq)
-pop<-selection(newpop,duration,year=years.list[[years.index[1]]],N)
+pop<-selection(newpop,duration,year=years.list[[years.index[1]]],N,traits=traits)
 ###########################
 ## Running the Simulation #
 ###########################
 pophistory=runSim(startpop=pop,years.list=years.list,
                   years.ind=years.index,N=N,duration=duration,
-                  sds=sds,mutrate=mutrate,generations=length(years.index))
+                  sds=sds,mutrate=mutrate,generations=length(years.index),traits=traits)
 #Note: we've already used year 1 in initiating the pop
 
 #####################

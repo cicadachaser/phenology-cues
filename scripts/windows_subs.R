@@ -2,7 +2,7 @@
 
 emerge_sub<-function(x){min(c(which(x),366))} #function for use in "apply" within emergence()
 
-emergence<-function(year,newpop){
+emergence<-function(year,newpop,traits){
   #Function for calculating the emergence day of the given individual in the given year.
   #  Calculates emergence value as E= b.day*day+b.temp*temp+b.precip*precip
   # Then finds the first day when the calculated E is greater than 100 (100 chosen for arbitrary convenience)
@@ -11,14 +11,24 @@ emergence<-function(year,newpop){
   #  year: current year data. Includes columns $day, $tmax, $precip
   # Output:
   #  day (Julian) of emergence
-  E=newpop$b.day %*% t(year$day) + newpop$b.temp %*% t(year$temp) + newpop$b.precip %*% t(year$precip) +
-    newpop$b.cutemp %*% t(year$cutemp) + newpop$b.cuprecip %*% t(year$cuprecip) +
-    newpop$b.daysq %*% t(year$daysq) + newpop$b.tempsq %*% t(year$tempsq) + newpop$b.precipsq %*% t(year$precipsq) +
-    newpop$b.cutempsq %*% (t(year$cutempsq)^2) + newpop$b.cuprecipsq %*% t(year$cuprecipsq)
+  newpop[newpop==0]=10^-10
+  trans=0*newpop #trans will hold the tranformed trait values for linear combination and 0s for unused traits
+  b.traits=sprintf("b.%s",traits)
+  trans[,b.traits]=100/newpop[,b.traits]
+  E=trans$b.day %*% t(year$day) +
+    trans$b.temp %*% t(year$temp) +
+    trans$b.precip %*% t(year$precip) +
+    trans$b.cutemp %*% t(year$cutemp) +
+    trans$b.cuprecip %*% t(year$cuprecip) +
+    trans$b.daysq %*% t(year$daysq) +
+    trans$b.tempsq %*% t(year$tempsq) +
+    trans$b.precipsq %*% t(year$precipsq) +
+    trans$b.cutempsq %*% (t(year$cutempsq)^2) +
+    trans$b.cuprecipsq %*% t(year$cuprecipsq)
   emerge=apply(E>100,1,emerge_sub)
   return(emerge) #find the first day where emergence value is greater than 100 (or the last day of the year)
 }
-fitness<-function(year,newpop,duration){
+fitness<-function(year,newpop,duration,traits){
   #Function for giving fitness of individuals based on their start time, duration, and the W.
   # fitness is the sum of W over the lifespan
   #FOR SIMPLICITY, ASSUMING END OF YEAR MEANS DEATH. CHANGE IF APPROPRIATE.
@@ -29,7 +39,7 @@ fitness<-function(year,newpop,duration){
   #Returns:
   #  fit: vector of the fitnesses of each individual
   #
-  evect=emergence(year=year,newpop=newpop)
+  evect=emergence(year=year,newpop=newpop,traits=traits)
   #Create a vector with the "total fitness you experience if you emerge on this day" values.
   # (using rollapply function from "zoo" library to make this fast)
   # Adding a 0 at the end of the vector: if you didn't emerge in the normal year, you "emerge" on day 366 which has zero fitness. ie if you don't emerge you die.
@@ -38,7 +48,7 @@ fitness<-function(year,newpop,duration){
   return(data.frame(fit=fit,emerge=evect))
 }
 
-selection<-function(newpop,duration,year,N){
+selection<-function(newpop,duration,year,N,traits){
   #Function for carrying out `soft selection' - all individuals reproduce, with variable fitness.
   #Inputs:
   #  newpop: data frame with the current population trait values; each row is an individual
@@ -49,7 +59,7 @@ selection<-function(newpop,duration,year,N){
   #  newpop: a matrix with the current population traits, plus raw fitness (Wi),
   #     rescaled fitness(Ws), proportional fitness after mortality(Wp), and number of offspring (Wnum)
   #
-  out=fitness(year=year,newpop=newpop,duration=duration)
+  out=fitness(year=year,newpop=newpop,duration=duration,traits=traits)
   newWi=out$fit
   newWnum=(rmultinom(1,size=N,prob=newWi)) #To avoid potential rounding weirdness, had individuals assigned via the multinomial distribution
   init.colnames=colnames(newpop)
@@ -100,7 +110,7 @@ reproduction<-function(pop){
   }
   return(expandpop)
 }
-runSim<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,generations,graphics=FALSE){
+runSim<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,generations,traits,graphics=FALSE){
   #Function that actually runs the simulation (calling the other functions above)
   #Inputs:
   #  startpop: initial population
@@ -122,7 +132,7 @@ runSim<-function(startpop,years.list,years.ind,N,duration,sds,mutrate,generation
     cur.year=years.list[[years.ind[g]]]
     newpop<-reproduction(pop=pop)
     newpop<-mutation(poptraits=newpop,sds=sds,mutrate=mutrate,N=N)
-    newpop<-selection(newpop=newpop,duration=duration,year=cur.year,N=N)
+    newpop<-selection(newpop=newpop,duration=duration,year=cur.year,N=N,traits=traits)
     pophistory[[g]]<-cbind(newpop, gen=rep(g,N))
     pop<-newpop
   }
