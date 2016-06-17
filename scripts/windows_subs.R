@@ -186,7 +186,7 @@ actTraitVals<-function(pophistory,numYears,N){
 #   return(coef.indiv)
 # }
 
-actTraitEff<-function(years.ind,years.list,pophistory,N){
+actTraitEff<-function(years.ind,years.list,pophistory,N,traits){
   #  Function for calculating the actual effect size of each coefficient for each indiv
   #    This is done by finding the conditions when each individual emerged, and calculating the effect of each coefficient on that day.
   #  Inputs:
@@ -202,7 +202,7 @@ actTraitEff<-function(years.ind,years.list,pophistory,N){
     coef.indiv[ind:(ind+N-1),"emerge"]=curhist$emerge
     for(i.indiv in 1:N){
       cur.econd=curyear[curhist$emerge[i.indiv],] #grab the envi conditions of the day of emergence of current indiv
-      coef.indiv[ind,traitslist]=as.matrix(cur.econd[,unlist(traits)]*curhist[i.indiv,traitslist])
+      coef.indiv[ind,traitslist]=as.matrix(cur.econd[,unlist(traits)]*100/curhist[i.indiv,traitslist])
       ind=ind+1
     }
   }

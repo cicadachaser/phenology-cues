@@ -26,21 +26,21 @@ ptm <-proc.time()
 runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 traits=c("day","temp","precip")
 numsims=10 # number of simulations of each type to do
-runsnames=c("-instanttraits4-","-cutraits4-") #string without spaces (for simplicity)
+runsnames=c("-daytempprecip-","-day-") #string without spaces (for simplicity)
 #traits=c("day","temp","precip","cutemp","cuprecip","daysq","tempsq","precipsq","cutempsq","cuprecipsq")
 #unitTestConst is for running the population through a unit test with the same gaussian fitness every year
 #and constant environmental conditions
 #unitTestRand will be for running the populations through a
 #unit test with the same gaussian fitness every year and random envi conditions
 #standard is for running the populations through a set of replications of the first 10 good years of the davis data
-plotExtra=TRUE # do we plot snapshots of emergence through time?
+plotExtra=FALSE # do we plot snapshots of emergence through time?
 plotPheno=TRUE # do we plot snapshots of phenotype through time?
 viewLength=200 #for comparisons of simulation types,
 #  how many generations (starting from the final and working backwards) to plot/compare
 duration=10 #number of days organizm is emerged.
 N=100 #number of individuals
 numYears=5000 #number of years to simulate
-burnIn=100 #number of years to not plot (to avoid scale issues from broad initial population traits)
+burnIn=200 #number of years to not plot (to avoid scale issues from broad initial population traits)
 best.temp=30; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=10; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
 mutdist=.01 #What fraction of the total "cue space" should mutations (on average) traverse (kinda).
@@ -132,7 +132,7 @@ for(i.trait in traits){
 }
 mutrate=temporary
 
-years.index=sample(1:100,size=numYears,replace=TRUE) # This is the list of which year.list data to use for each generation of the model
+years.indmat=matrix(sample(1:100,size=numYears*numsims,replace=TRUE),ncol=numYears,nrow=numsims) # This is the list of which year.list data to use for each generation of the model
 #######################################
 # Handling libraries and source files #
 #######################################
@@ -167,7 +167,9 @@ store.mean=store.max=matrix(0,nrow=numsims*length(runsnames),ncol=numYears)
 store.names=rep(0,numsims*length(runsnames)) #vector for storing run names, corresponds to rows of store.mean
 finalpops=NULL #for storing the final populations of each run.
 
+count=1 #for tracking year in years.indmat
 for(i.sim in 1:numsims){
+  years.index=years.indmat[count,]
   runName=sprintf("%s%d",runsnames[1],i.sim)
   #######################
   # initializing population
@@ -215,7 +217,7 @@ for(i.sim in 1:numsims){
   store.names[i.sim]=runName
   temppop=cbind(run=rep(runName,N),pophistory[[numYears]])
   finalpops=rbind(finalpops,temppop)
-
+  count=count+1
 }
 
 #################################################################################################
@@ -224,7 +226,8 @@ for(i.sim in 1:numsims){
 ######################################
 #HERE WE MAKE CHANGES FOR RUN TYPE 2!#
 ######################################
-traits=c("day","cutemp","cuprecip")
+traits=c("day")
+plotPheno=FALSE
 
 #######################
 # Reworking prep work #
@@ -318,7 +321,9 @@ mutrate=temporary
 ########################################################################################
 
 #Okay, run the second run type
+count=1 #for tracking row in years.indmat
 for(i.sim in (numsims+1):(2*numsims)){
+  years.index=years.indmat[count,]
   runName=sprintf("%s%d",runsnames[2],i.sim-numsims)
   #######################
   # initializing population
@@ -366,7 +371,7 @@ for(i.sim in (numsims+1):(2*numsims)){
   store.names[i.sim]=runName
   temppop=cbind(run=rep(runName,N),pophistory[[numYears]])
   finalpops=rbind(finalpops,temppop)
-
+ count=count+1
 }
 
 set_wrkdir()

@@ -144,7 +144,7 @@ dev.print(pdf,paste("maxfit-run",runName,"-gen",curgen,".pdf",sep=""))
 #Looking at coef changes through time
 #  The act.eff is the actual effect size, found by multiplying the coefficient of each indiv by the environmental conditions of their day of emergence.
 #    Those plots use crosses to represent individuals who didn't emerge until the final day, and circles for those that emerged on a normal day (ie their cue
-act.eff=actTraitEff(years.index,years.list,pophistory,N)
+act.eff=actTraitEff(years.index,years.list,pophistory,N,traits)
 act.vals=actTraitVals(pophistory,numYears,N)
 traitslist=sprintf("b.%s",traits)
 
