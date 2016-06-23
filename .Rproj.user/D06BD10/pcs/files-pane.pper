@@ -1,0 +1,9 @@
+{
+    "path" : "~/GitHub/phenology-cues/results/resRun-cumulative",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
