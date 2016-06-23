@@ -25,8 +25,8 @@ ptm <-proc.time()
 #########################
 runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 traits=c("day","temp","precip")
-numsims=10 # number of simulations of each type to do
-runsnames=c("-daytempprecip-","-day-") #string without spaces (for simplicity)
+numsims=5# number of simulations of each type to do
+runsnames=c("-earlylate50-","-punctual50-") #string without spaces (for simplicity)
 #traits=c("day","temp","precip","cutemp","cuprecip","daysq","tempsq","precipsq","cutempsq","cuprecipsq")
 #unitTestConst is for running the population through a unit test with the same gaussian fitness every year
 #and constant environmental conditions
@@ -39,14 +39,17 @@ viewLength=500 #for comparisons of simulation types,
 #  how many generations (starting from the final and working backwards) to plot/compare
 duration=10 #number of days organizm is emerged.
 N=100 #number of individuals
-numYears=5000 #number of years to simulate
+numYears=1000 #number of years to simulate
 burnIn=200 #number of years to not plot (to avoid scale issues from broad initial population traits)
-best.temp=30; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
+best.temp=20; sd.temp=5; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=10; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
 mutdist=.01 #What fraction of the total "cue space" should mutations (on average) traverse (kinda).
 # if we're looking at b.day, the cue space is 365 days. So a mutdist of .01 means that each mutation will
 # be drawn from a normal distribution with mean 0 and sd 3.65
-years.indmat=matrix(sample(1:100,size=numYears*numsims,replace=TRUE),ncol=numYears,nrow=numsims) # This is the list of which year.list data to use for each generation of the model
+set_wrkdir()
+years.indlist=read.csv("enviromental histories/earlylate50.csv")
+years.indlist=years.indlist$x-1913 #kludge to turn 1900s values into 1-100
+years.indmat=matrix(sample(years.indlist,size=numYears*numsims,replace=TRUE),ncol=numYears,nrow=numsims) # This is the list of which year.list data to use for each generation of the model
 #######################################
 # Handling libraries and source files #
 #######################################
@@ -116,7 +119,9 @@ for(i.sim in 1:numsims){
 ######################################
 #HERE WE MAKE CHANGES FOR RUN TYPE 2!#
 ######################################
-traits=c("day")
+years.indlist=read.csv("enviromental histories/punctual50.csv")
+years.indlist=years.indlist$x-1913 #kludge to turn 1900s values into 1-100
+years.indmat=matrix(sample(years.indlist,size=numYears*numsims,replace=TRUE),ncol=numYears,nrow=numsims) # This is the list of which year.list data to use for each generation of the model
 plotPheno=FALSE
 
 #######################
