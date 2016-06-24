@@ -33,8 +33,8 @@ runsnames=c("-earlylate50-","-punctual50-") #string without spaces (for simplici
 #unitTestRand will be for running the populations through a
 #unit test with the same gaussian fitness every year and random envi conditions
 #standard is for running the populations through a set of replications of the first 10 good years of the davis data
-plotExtra=FALSE # do we plot snapshots of emergence through time?
-plotPheno=TRUE # do we plot snapshots of phenotype through time?
+plotExtra=TRUE # do we plot snapshots of emergence through time?
+plotPheno=FALSE # do we plot snapshots of phenotype through time?
 viewLength=500 #for comparisons of simulation types,
 #  how many generations (starting from the final and working backwards) to plot/compare
 duration=10 #number of days organizm is emerged.
