@@ -21,11 +21,5 @@ burnIn=200 #number of years to not plot (to avoid scale issues from broad initia
 mutdist=.01 #What fraction of the total "cue space" should mutations (on average) traverse (kinda).
 yearLabel="A" #For deciding which set of year randomization to use
 fitshape=standgauss
-#########################################################
-
-#Choosing the combination of years to use.
-years.indmat=read.csv("yearlist/earlylate50.A.csv")
 
 
-#reading in fitness shape file
-source(paste("fitcurve/",fitshape,".R"))
