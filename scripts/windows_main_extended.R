@@ -25,7 +25,7 @@ ptm <-proc.time()
 #########################
 runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 traits=c("day","temp","precip")
-numsims=5# number of simulations of each type to do
+numsims=10# number of simulations of each type to do
 runsnames=c("-earlylate50-","-punctual50-") #string without spaces (for simplicity)
 #traits=c("day","temp","precip","cutemp","cuprecip","daysq","tempsq","precipsq","cutempsq","cuprecipsq")
 #unitTestConst is for running the population through a unit test with the same gaussian fitness every year
@@ -41,7 +41,7 @@ duration=10 #number of days organizm is emerged.
 N=100 #number of individuals
 numYears=1000 #number of years to simulate
 burnIn=200 #number of years to not plot (to avoid scale issues from broad initial population traits)
-best.temp=20; sd.temp=5; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
+best.temp=45; sd.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.precip=10; sd.precip=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
 mutdist=.01 #What fraction of the total "cue space" should mutations (on average) traverse (kinda).
 # if we're looking at b.day, the cue space is 365 days. So a mutdist of .01 means that each mutation will
@@ -122,7 +122,6 @@ for(i.sim in 1:numsims){
 years.indlist=read.csv("enviromental histories/punctual50.csv")
 years.indlist=years.indlist$x-1913 #kludge to turn 1900s values into 1-100
 years.indmat=matrix(sample(years.indlist,size=numYears*numsims,replace=TRUE),ncol=numYears,nrow=numsims) # This is the list of which year.list data to use for each generation of the model
-plotPheno=FALSE
 
 #######################
 # Reworking prep work #
