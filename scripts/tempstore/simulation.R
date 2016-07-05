@@ -9,6 +9,8 @@ simulation<-function(runsname){
   ###############################
   set_wrkdir()
   source(paste("parameters/",runsname,".R",sep="")) #read in all the parameters
+  #reading in fitness shape file
+  source(paste("fitcurve/",fitshape,".R"))
   if(runType=="standard"){
     years.list=yeargen.davis(best.temp = best.temp,sd.temp = sd.temp,
                              best.precip = best.precip,sd.precip = sd.precip)
