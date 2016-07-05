@@ -1,7 +1,7 @@
 require(vegan)
 require(scatterplot3d)
 setwd("results")
-resultsdir=sprintf("resRun%s",runName)
+resultsdir=sprintf("%s/resRun%s",runsname,runName)
 dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
 

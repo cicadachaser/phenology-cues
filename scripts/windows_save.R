@@ -3,8 +3,8 @@
 #Turn results from list to data frame
 pophist.table <-do.call(rbind.data.frame, pophistory)
 
-setwd("results")
-resultsdir=sprintf("resRun%s",runName)
+setwd("results"))
+resultsdir=sprintf("%s/resRun%s",runsname,runName)
 dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
 write.table(pophist.table,file=paste("pophist_run",runName,".csv",sep=""),row.names=FALSE,sep=",")

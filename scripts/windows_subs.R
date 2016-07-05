@@ -248,7 +248,7 @@ yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp){
                    cutempsq=0*(cumsum(years.temp$temp)),
                    cuprecipsq=0*(cumsum(years.temp$precip))
   )
-   fit.daily=dnorm(years.temp$temp,mean=best.temp,sd=sd.temp)*dnorm(years.temp$precip,mean=best.precip,sd=sd.precip)
+   fit.daily=fit_fn(years=years.temp)
   years.temp=cbind(years.temp,fit.daily)
   years.list=split(years.temp,f=years.temp$year)
   for(i.year in 1:length(years.list)){
