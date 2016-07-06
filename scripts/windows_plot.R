@@ -83,7 +83,7 @@ if(plotExtra==TRUE){
 #Calculating changes in mean fitness through time
 maxfit=maxActfit=meanfit=emerge.ideal=rep(0,length(years.index))
 emerge=matrix(0,ncol=N,nrow=length(years.index))
-for(curgen in 1:length(years.index)){
+for(curgen in 1:numYears){
   meanfit[curgen]=mean(pophistory[[curgen]]$Wi)
   maxActfit[curgen]=max(pophistory[[curgen]]$Wi)
   cur.fitness=years.list[[years.index[curgen]]]$fit.daily
@@ -188,7 +188,7 @@ for(i.trait in traitslist){traitmaxs=c(traitmaxs,max(pop.temp[,i.trait]))}
 #x11(width=9,height=6)
 if(plotPheno==TRUE){
   traitslist=sprintf("b.%s",traits)
-  for(curgen in c(1,seq(2,length(years.index),by=100))){
+  for(curgen in c(1,seq(2,numYears,length=20))){
     curgen=round(curgen)
     cur.pop=pophistory[[curgen]]
     if(length(traitslist)<4){ #can just do 3d plot

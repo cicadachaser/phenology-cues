@@ -3,7 +3,7 @@
 #Turn results from list to data frame
 pophist.table <-do.call(rbind.data.frame, pophistory)
 
-setwd("results"))
+setwd("results")
 resultsdir=sprintf("%s/resRun%s",runsname,runName)
 dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
