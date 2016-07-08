@@ -111,4 +111,4 @@ for(i in 1:slownum){
   res.slow[i,2:(length(traits)+1)]=temp$par
 }
 set_wrkdir()
-save(list=c("store.fast","res.fast","store.slow","res.slow"),file=paste("results/analytic/",runsname,"_summary.RData",sep=""))
+save(list=c("store.fast","res.fast","store.slow","res.slow"),file=paste("results/analytic/",runsname,"_analytic.RData",sep=""))
