@@ -32,12 +32,14 @@ obj_fn<-function(x,duration,yrs,traits){
 ################################
 #Prepping:
 runsname="parameterexample"
-fastnum=20 #number of points to test quickly
-slownum=10 #number of points to test slowly
+pointcheck=100000 #number of points to evaluate initially
+fastnum=40 #number of points to test quickly
+slownum=20 #number of points to test slowly
 set_wrkdir()
+require(zoo)
 source("scripts/windows_subs.R")
-source("scripts/rate_setup.R")
 source(paste("parameters/",runsname,".R",sep=""))
+source("scripts/rate_setup.R")
 source(paste("fitcurve/",fitshape,".R",sep=""))
 years.list=NULL
 if(runType=="standard"){
@@ -56,7 +58,7 @@ years.indlist=read.csv(paste("enviromental histories/",yearSet,".csv",sep=""))
 years.index=years.indlist$x-1913
 
 #first, point-check
-N=10000
+N=pointcheck
 b.day=b.temp=b.precip=b.cutemp=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=rep(0,N)
 for(i.trait in traits){
   if(start[[i.trait]][1]==0 & start[[i.trait]][2]==0){
@@ -79,12 +81,16 @@ geofit=apply(yrfit,1,function(x){-sum(log(x))})
 ordpop=newpop[(order(geofit)),]
 b.traits=sprintf("b.%s",traits)
 topop=ordpop[1:fastnum,b.traits]
+
+#Now, fast-check the best points
 store.fast=list()
 res.fast=matrix(0,ncol=length(traits)+1,nrow=fastnum)
 colnames(res.fast)<-c("geofit",b.traits)
 for(i in 1:fastnum){
   print(i)
-  temp=store.fast[[i]]=optim(par=topop[i,],fn=obj_fn,duration=duration,yrs=years.list[years.index],traits=traits)
+  temp=store.fast[[i]]=optim(par=topop[i,],fn=obj_fn,duration=duration,
+                             yrs=years.list[years.index],traits=traits,
+                             control=list(maxit=1000,abstol=1/10^4,reltol=1/10^4))
   res.fast[i,1]=temp$value
   res.fast[i,2:(length(traits)+1)]=temp$par
 }
