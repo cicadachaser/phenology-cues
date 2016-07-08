@@ -9,6 +9,7 @@ library(timeDate)
 library(Amelia)
 library(parallel)
 library(ggplot2)
+library(plyr)
 
 # Set working directory ---------------------------------------------------
 
@@ -32,7 +33,8 @@ end.date<-as.Date("2014-12-31") #the dataset will end on 2014-12-31
 complete.dates<-data.frame(seq(start.date,end.date,1)) #all dates between the start and end dates
 colnames(complete.dates)<-c("COMPLETE.DATES") #renaming the column
 
-daily<-read.csv("davis-data/626713.csv", header=T, na.strings="-9999")
+#daily<-read.csv("davis-data/626713.csv", header=T, na.strings="-9999")
+daily<-read.csv("ithaca-data/627453.csv", header=T, na.strings="-9999")
 daily$DATE2<-as.Date(as.character(daily$DATE),format="%Y %m %d") #DATE2 is date formatted
 daily<-merge(daily,complete.dates,by.x="DATE2",by.y="COMPLETE.DATES",all.y=TRUE) #add missing rows
 
@@ -52,11 +54,19 @@ daily<-daily[,c("DATE2","JULIAN","YEAR","MONTH","DAY","DAY.OF.YEAR","PRCP","TMAX
 
 # imputation of missing data ----------------------------------------------
 
-a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel="snow", npcus=detectCores())
+temp.bounds<-matrix(c(8, min(daily$TMAX[!is.na(daily$TMAX)]), max(daily$TMAX[!is.na(daily$TMAX)])), nrow = 1, ncol = 3) #matrix in the format [column lowerbound upperbound]
+
+temp.priors<-c(0, 2, mean(daily$TMAX[!is.na(daily$TMAX)]),sd(daily$TMAX[!is.na(daily$TMAX)])) #c(row, column, mean,standard deviation); row=0 means all rows
+
+
+a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel="snow", npcus=detectCores(),bounds=temp.bounds,max.resample = 1000,lags=TMAX,leads=TMAX,priors=temp.priors )
 
 daily.imp<-a.out$imputations[[1]]
 
 daily.imp[daily.imp$PRCP<0,"PRCP"]<-0 #set all negative precip values to zero
+
+tscsPlot(a.out,cs="1918", var="TMAX")
+tscsPlot(a.out,cs="1924", var="TMAX")
 
 # descriptive statistics --------------------------------------------------
 
