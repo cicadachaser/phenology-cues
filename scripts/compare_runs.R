@@ -16,7 +16,7 @@
   dir.create(resultsdir,showWarnings = FALSE)
   setwd(resultsdir)
 
-  cols=c('red','blue')
+  col.list=c('red','blue')
   matplot(((numYears-viewLength+1):numYears),t(store.max[,-(1:(numYears-viewLength))]),type='l',col=c(rep('red',numsims),rep('blue',numsims)),
           main=paste("Mean fitness through time for all runs",runsnames[1],runsnames[2]),
           xlab="generation",

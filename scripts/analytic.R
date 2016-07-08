@@ -1,0 +1,106 @@
+rm(list=ls())
+set_wrkdir<-function(){
+  #function for setting working directory to the right place given the current computer/user
+  if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin" || Sys.getenv("USERNAME")=="Collin.work"){ #If it's collin
+    if(Sys.info()["nodename"]=="DESKTOP-D6QSU8F"){
+      setwd("G:\\Repos\\phenology-cues") #desktop
+    }else{
+      setwd("C:\\Repos\\phenology-cues") #desktop
+    }
+  }else{
+    if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
+      setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")#desktop
+    }else{
+      setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")} #laptop
+  }
+}
+
+obj_fn<-function(x,duration,yrs,traits){
+  #takes individual, and the years that are to be used
+  b.day=b.temp=b.precip=b.cutemp=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=0
+  indiv<-data.frame(b.day,b.temp,b.precip,b.cutemp,b.cuprecip,b.daysq,b.tempsq,b.precipsq,b.cutempsq,b.cuprecipsq)
+  b.traits=sprintf("b.%s",traits)
+  indiv[b.traits]=x
+  yrfit=rep(0,length(yrs))
+  for(i in 1:length(yrs)){
+    yrfit[i]=fitness(year=yrs[[i]],newpop=indiv,duration=duration,traits=traits)$fit
+  }
+  return(-sum(log(yrfit+1/10^10)))
+}
+################################
+# Optimizing geometric fitness #
+################################
+#Prepping:
+runsname="parameterexample"
+fastnum=20 #number of points to test quickly
+slownum=10 #number of points to test slowly
+set_wrkdir()
+source("scripts/windows_subs.R")
+source("scripts/rate_setup.R")
+source(paste("parameters/",runsname,".R",sep=""))
+source(paste("fitcurve/",fitshape,".R",sep=""))
+years.list=NULL
+if(runType=="standard"){
+  years.list=yeargen.davis(best.temp = best.temp,sd.temp = sd.temp,
+                           best.precip = best.precip,sd.precip = sd.precip)
+} else if(runType=="unitTestConst"){
+  out=yeargen.const(numYears)
+  years.list=out[["years.list"]]
+  years.index=rep(1,numYears)
+} else if (runType=="unitTestRand"){
+  out=yeargen.rand(numYears)
+  years.list=out[["years.list"]]
+}
+set_wrkdir()
+years.indlist=read.csv(paste("enviromental histories/",yearSet,".csv",sep=""))
+years.index=years.indlist$x-1913
+
+#first, point-check
+N=10000
+b.day=b.temp=b.precip=b.cutemp=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=rep(0,N)
+for(i.trait in traits){
+  if(start[[i.trait]][1]==0 & start[[i.trait]][2]==0){
+    curvals=rep(0,N)
+  }else{
+    randnums=runif(n=N,min=start[[i.trait]][1],max=start[[i.trait]][2])
+    randnums[randnums==0]=1/(10^10)
+    curvals=randnums
+  }
+  curname=paste("b.",i.trait,sep="")
+  assign(curname,curvals)
+}
+newpop<-data.frame(b.day,b.temp,b.precip,b.cutemp,b.cuprecip,b.daysq,b.tempsq,b.precipsq,b.cutempsq,b.cuprecipsq)
+yrfit=matrix(0,nrow=N,ncol=length(years.index))
+for(i in 1:length(years.index)){
+  pop<-fitness(year=years.list[[years.index[i]]],newpop=newpop,duration=duration,traits=traits)
+  yrfit[,i]=pop$fit
+}
+geofit=apply(yrfit,1,function(x){-sum(log(x))})
+ordpop=newpop[(order(geofit)),]
+b.traits=sprintf("b.%s",traits)
+topop=ordpop[1:fastnum,b.traits]
+store.fast=list()
+res.fast=matrix(0,ncol=length(traits)+1,nrow=fastnum)
+colnames(res.fast)<-c("geofit",b.traits)
+for(i in 1:fastnum){
+  print(i)
+  temp=store.fast[[i]]=optim(par=topop[i,],fn=obj_fn,duration=duration,yrs=years.list[years.index],traits=traits)
+  res.fast[i,1]=temp$value
+  res.fast[i,2:(length(traits)+1)]=temp$par
+}
+#NOTE: we are MINIMIZING the objective function, which is the NEGATVE of the log geometric fitness
+res.fast=res.fast[order(res.fast[,"geofit"]),]
+
+
+#finally, slow convergence
+store.slow=list()
+res.slow=matrix(0,ncol=length(traits)+1,nrow=slownum)
+colnames(res.slow)<-c("geofit",b.traits)
+for(i in 1:slownum){
+  print(i)
+  temp=store.slow[[i]]=optim(par=res.fast[i,2:(1+length(traits))],fn=obj_fn,duration=duration,
+                        yrs=years.list[years.index],traits=traits,
+                        control=list(maxit=50000,abstol=1/10^10))
+  res.slow[i,1]=temp$value
+  res.slow[i,2:(length(traits)+1)]=temp$par
+}
