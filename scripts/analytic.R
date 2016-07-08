@@ -29,11 +29,13 @@ obj_fn<-function(x,duration,yrs,traits){
     # the negative sum log of yearly fitness. This maps to geometic fitness,
     #   with small values being better (convenient for optim)
   b.day=b.temp=b.precip=b.cutemp=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=0
+  # start with traits = 0
   indiv<-data.frame(b.day,b.temp,b.precip,b.cutemp,b.cuprecip,b.daysq,b.tempsq,b.precipsq,b.cutempsq,b.cuprecipsq)
-  b.traits=sprintf("b.%s",traits)
-  indiv[b.traits]=x
-  yrfit=rep(0,length(yrs))
-  for(i in 1:length(yrs)){
+  # create "empty" individual
+  b.traits=sprintf("b.%s",traits)  # list of traits in b.day format
+  indiv[b.traits]=x #fill in the values for the traits we're actually using
+  yrfit=rep(0,length(yrs)) #initialize vector for storing yearly fitness
+  for(i in 1:length(yrs)){ #iterate through all years, calculate fitness for each
     yrfit[i]=fitness(year=yrs[[i]],newpop=indiv,duration=duration,traits=traits)$fit
   }
   return(-sum(log(yrfit+1/10^10)))
@@ -42,18 +44,19 @@ obj_fn<-function(x,duration,yrs,traits){
 # Optimizing geometric fitness #
 ################################
 #Prepping:
-runsname="parameterexample"
+runsname="parameterexample" #Name of the parameter file, minus .R part
 pointcheck=10000 #number of points to evaluate initially
 fastnum=20 #number of points to test quickly
 slownum=10 #number of points to test slowly
 set_wrkdir()
-require(zoo)
-require(lhs)
-source("scripts/windows_subs.R")
-source(paste("parameters/",runsname,".R",sep=""))
-source("scripts/rate_setup.R")
-source(paste("fitcurve/",fitshape,".R",sep=""))
-years.list=NULL
+require(zoo) #for use in fitness calculations
+require(lhs) #for use in choosing initial points to check
+source("scripts/windows_subs.R") #read in standard functions
+source(paste("parameters/",runsname,".R",sep="")) #read in parameters
+source(paste("fitcurve/",fitshape,".R",sep="")) #read in fitness curve function
+source("scripts/rate_setup.R") #here using only for the cuesmax
+years.list=NULL #initialize list
+
 if(runType=="standard"){
   years.list=yeargen.davis(best.temp = best.temp,sd.temp = sd.temp,
                            best.precip = best.precip,sd.precip = sd.precip)
