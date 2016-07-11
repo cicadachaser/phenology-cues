@@ -16,7 +16,7 @@ set_wrkdir<-function(){
 }
 set_wrkdir()
 runsname="cu-stand"
-source("scripts/simulation_kludge.R")
+source("scripts/simulation.R")
 source("scripts/analytic.R")
 source("scripts/analytic_contour.R")
 # runsname="parameterexample2"

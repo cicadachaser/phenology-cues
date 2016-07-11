@@ -1,4 +1,4 @@
-simulation<-function(runsname){
+#simulation<-function(runsname){
   rm(list=setdiff(ls(), c("set_wrkdir","runsname")))
   require(timeDate)
   require(zoo)
@@ -68,7 +68,6 @@ simulation<-function(runsname){
     years.index=as.numeric(years.indmat[count,])
     runName=sprintf("%s%d",runsname[1],i.sim)
     set_wrkdir()
-    print(length(years.list))
     source("scripts/sim_runner.R")  #this sets up mutation rates, distances, etc.
     #####################
     #Saving our results #
@@ -91,9 +90,8 @@ simulation<-function(runsname){
     store.coEff[i.sim,]=apply(wrk.acteff[,sprintf("b.%s",traits)],2,mean)
     temppop=cbind(run=rep(runName,N),pophistory[[numYears]])
     finalpops=rbind(finalpops,temppop)
-    count=count+1
-  }
+    count=count+1  }
   set_wrkdir()
   save(list=c("store.mean","store.names","finalpops","store.coEff"),file=paste("results/",runsname,"/",runsname,"_summary.RData",sep=""))
-}
+#}
 
