@@ -5,7 +5,7 @@ require(graphics)
 # pointdense=100
 # num.plots=10
 # plot.traits=c("day","temp") #traits to vary
-fix.traits=c("precip") #traits to hold constant
+# fix.traits=setdiff(traits, plot.traits)
 fix.b=sprintf("b.%s",fix.traits)
 figpath=paste("results/analytic/",runsname,sep="")
 dir.create(figpath,showWarnings = FALSE)

@@ -92,6 +92,6 @@
     finalpops=rbind(finalpops,temppop)
     count=count+1  }
   set_wrkdir()
-  save(list=c("store.mean","store.names","finalpops","store.coEff"),file=paste("results/",runsname,"/",runsname,"_summary.RData",sep=""))
+  save(list=c("store.mean","store.max","store.names","finalpops","store.coEff"),file=paste("results/",runsname,"/",runsname,"_summary.RData",sep=""))
 #}
 

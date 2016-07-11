@@ -1,10 +1,25 @@
 #For comparing two runs
-
+set_wrkdir<-function(){
+  #function for setting working directory to the right place given the current computer/user
+  if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin" || Sys.getenv("USERNAME")=="Collin.work"){ #If it's collin
+    if(Sys.info()["nodename"]=="DESKTOP-D6QSU8F"){
+      setwd("G:\\Repos\\phenology-cues") #desktop
+    }else{
+      setwd("C:\\Repos\\phenology-cues") #desktop
+    }
+  }else{
+    if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
+      setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")#desktop
+    }else{
+      setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")} #laptop
+  }
+}
+names=c("parameterexample","cu-stand")
 set_wrkdir()
 load(paste("results/",names[1],"/",names[1],"_summary.RData",sep=""))
-assign(x="sims1",value=list(means=store.mean,names=store.names,coEff=store.coEff,finalpops))
+assign(x="sims1",value=list(means=store.mean,max=store.max,names=store.names,coEff=store.coEff,finalpops))
 load(paste("results/",names[2],"/",names[2],"_summary.RData",sep=""))
-assign(x="sims2",value=list(means=store.mean,names=store.names,coEff=store.coEff,finalpops))
+assign(x="sims2",value=list(means=store.mean,max=store.max,names=store.names,coEff=store.coEff,finalpops))
 
 
 

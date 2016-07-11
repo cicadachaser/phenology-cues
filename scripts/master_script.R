@@ -19,7 +19,9 @@ runsname="cu-stand"
 source("scripts/simulation.R")
 source("scripts/analytic.R")
 source("scripts/analytic_contour.R")
-# runsname="parameterexample2"
-# source("scripts/simulation_kludge.R")
+runsname="parameterexample"
+source("scripts/simulation.R")
+source("scripts/analytic.R")
+source("scripts/analytic_contour.R")
 # names=c("parameterexample","parameterexample2")
 # comparison(names=c("name1","name2"))
