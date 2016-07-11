@@ -15,9 +15,11 @@ set_wrkdir<-function(){
   }
 }
 set_wrkdir()
-runsname="parameterexample"
+runsname="cu-stand"
 source("scripts/simulation_kludge.R")
-runsname="parameterexample2"
-source("scripts/simulation_kludge.R")
-names=c("parameterexample","parameterexample2")
-comparison(names=c("name1","name2"))
+source("scripts/analytic.R")
+source("scripts/analytic_contour.R")
+# runsname="parameterexample2"
+# source("scripts/simulation_kludge.R")
+# names=c("parameterexample","parameterexample2")
+# comparison(names=c("name1","name2"))

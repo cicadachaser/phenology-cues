@@ -1,10 +1,12 @@
-compare<-function(names){
+#compare<-function(names){
 
   #read in summary files, save an object with name curnameres, as a list with elements means, names, finalpops
-  for(cur.name in names){
+  storenames=sprintf("sim%i",1:length(names)) #create short names for storing objects
+  for(i in 1:length(names)){
+    cur.name=storenames[i]
     set_wrkdir()
-    load("results/",cur.name,"/",cur.name,"_summary.RData")
-    assign(x=paste(cur.name,"res",sep=""),value=list(means=store.mean,names=store.names,finalpops))
+    load(paste("results/",names[i],"/",names[i],"_summary.RData",sep=""))
+    assign(x=cur.name,value=list(means=store.mean,names=store.names,coEff=store.coEff,finalpops))
   }
 
 ###########Everything below this needs to be updated for the new modular approach###########
@@ -14,7 +16,7 @@ compare<-function(names){
   dir.create(resultsdir,showWarnings = FALSE)
   setwd(resultsdir)
 
-  cols=c('red','blue')
+  col.list=c('red','blue')
   matplot(((numYears-viewLength+1):numYears),t(store.max[,-(1:(numYears-viewLength))]),type='l',col=c(rep('red',numsims),rep('blue',numsims)),
           main=paste("Mean fitness through time for all runs",runsnames[1],runsnames[2]),
           xlab="generation",
@@ -100,4 +102,4 @@ compare<-function(names){
   axis(1,at=c(1,2),labels = runsnames)
   abline(h=1,col='red')
   dev.print(pdf,paste("latefitness-scaled.pdf",sep=""))
-}
+#}

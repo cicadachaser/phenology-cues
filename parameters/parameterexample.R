@@ -7,7 +7,7 @@ runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #unitTestRand will be for running the populations through a
 #unit test with the same gaussian fitness every year and random envi conditions
 #standard is for running the populations through a set of replications of the first 10 good years of the davis data
-traits=c("day","temp","precip")
+traits=c("day","cutemp","cuprecip")
 numsims=5 # number of simulations of each type to do
 #traits=c("day","temp","precip","cutemp","cuprecip","daysq","tempsq","precipsq","cutempsq","cuprecipsq")
 plotExtra=TRUE # do we plot snapshots of emergence through time?
@@ -22,5 +22,17 @@ mutdist=.01 #What fraction of the total "cue space" should mutations (on average
 yearLabel="A" #For deciding which set of year randomization to use
 fitshape="standgauss"
 yearSet="earlylate50"
+#######################
+# For analytic script #
+#######################
+pointcheck=10000 #number of points to evaluate initially
+fastnum=20 #number of points to test quickly
+slownum=10 #number of points to test slowly
 
-
+################################
+# For analytic script plotting #
+################################
+pointdense=100
+num.plots=10
+plot.traits=c("day","temp") #Traits to plot on countours. Must be 2 traits from the 'traits' vector
+fix.traits=setdiff(traits, plot.traits)
