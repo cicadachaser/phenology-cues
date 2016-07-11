@@ -82,6 +82,7 @@
     ############
     set_wrkdir()
     source("scripts/windows_plot.R")
+    dev.off()
     store.mean[i.sim,]=meanfit
     store.max[i.sim,]=maxfit
     store.names[i.sim]=runName
