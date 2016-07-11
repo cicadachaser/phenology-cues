@@ -99,7 +99,9 @@ latefit2=apply(sims2[["means"]][,(numYears-viewLength):numYears],1,sum)
 plot(jitter(c(rep(1,numsims),rep(2,numsims)),factor=.1),c(latefit1,latefit2),
      xlim=c(.5,2.5),ylim=c(0,max(c(latefit1,latefit2))),
      xaxt='n',
-     main=paste("Comparing sum fitness over final",viewLength, "years")
+    main=paste("Comparing sum fitness over final",viewLength, "years"),
+    xlab="",
+    ylab="Sum fitness"
 )
 axis(1,at=c(1,2),labels = names)
 dev.print(pdf,paste("latefitness.pdf",sep=""))
