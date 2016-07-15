@@ -56,10 +56,9 @@ daily<-daily[,c("DATE2","JULIAN","YEAR","MONTH","DAY","DAY.OF.YEAR","PRCP","TMAX
 
 temp.bounds<-matrix(c(8, min(daily$TMAX[!is.na(daily$TMAX)]), max(daily$TMAX[!is.na(daily$TMAX)])), nrow = 1, ncol = 3) #matrix in the format [column lowerbound upperbound]
 
-temp.priors<-c(0, 2, mean(daily$TMAX[!is.na(daily$TMAX)]),sd(daily$TMAX[!is.na(daily$TMAX)])) #c(row, column, mean,standard deviation); row=0 means all rows
+temp.priors<-matrix(c(0, 8, mean(daily$TMAX[!is.na(daily$TMAX)]),sd(daily$TMAX[!is.na(daily$TMAX)])),ncol=4,nrow=1) #c(row, column, mean,standard deviation); row=0 means all rows
 
-
-a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel="snow", npcus=detectCores(),bounds=temp.bounds,max.resample = 1000,lags=TMAX,leads=TMAX,priors=temp.priors )
+a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel="snow", npcus=detectCores(),bounds=temp.bounds,max.resample = 1000,lags="TMAX",leads="TMAX",priors=temp.priors )
 
 daily.imp<-a.out$imputations[[1]]
 
