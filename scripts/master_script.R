@@ -15,7 +15,7 @@ set_wrkdir<-function(){
   }
 }
 set_wrkdir()
-names=c("cu-stand","parameterexample")
+names=c("parameter_test","parameterexample")
 runsname=names[1]
 source("scripts/simulation.R")
 source("scripts/analytic.R")
