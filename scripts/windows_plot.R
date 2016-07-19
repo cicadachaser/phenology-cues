@@ -2,23 +2,24 @@ require(vegan)
 require(scatterplot3d)
 setwd("results")
 resultsdir=sprintf("%s/resRun%s",runsname,runName)
-dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
 
 #Make a matrix of daily fitnesses for all years, cutting out the last day of leap years
 yearFit=matrix(0,nrow=length(years.index),ncol=365)
+count=1
 for(i in years.index){
   curfits=years.list[[i]]$fit.daily
   if(length(curfits)==366){curfits=curfits[-366]} #to handle leap years, remove last day
-  yearFit[i,]=curfits;
+  yearFit[count,]=curfits;
+  count=count+1
 }
 #Calculate the mean fitness accrued each day
 par(mar=c(5,5,4,3))
 meanFit=apply(yearFit,2,mean)
-meanFitSum=NULL
 #calculate the mean fitness for emerging on day x (for all days) [this is using mean fitness accrued per day]
+meanFitSum=rollapply(c(meanFit,rep(0,duration-1)),duration,by=1,sum)
 for(i.day in 1:365){
-  meanFitSum=c(meanFitSum,sum(rep(meanFit,2)[i.day:(i.day+duration-1)]))
+  meanFitSum=c(meanFitSum,sum(rep(meanFit)[i.day:(i.day+duration-1)]))
 }
 
 x11(width=9,height=6)
@@ -40,10 +41,7 @@ if(plotExtra==TRUE){
     #     arrows(y0=arheight+.05*max(meanFitSum),x0=emergeDay,y1=arheight,length=.1)
     #     dev.print(pdf,paste("dailyfitSum-run",runName,"-gen",curgen,"-meanfit.pdf",sep=""))
     #now calculate the fitSum for THIS YEAR ONLY
-    FitSum=NULL
-    for(i.day in 1:365){
-      FitSum=c(FitSum,sum(c(years.list[[years.index[[curgen]]]]$fit.daily,rep(0,duration))[i.day:(i.day+duration-1)]))
-    }
+    FitSum=rollapply(c(years.list[[years.index[[curgen]]]]$fit.daily,rep(0,duration-1)),duration,by=1,sum)
     plot(FitSum,type='l',ylim=c(0,max(FitSum)*1.2),
          main=paste("Fitness gained this year, gen",curgen),
          ylab="Fitness gained",
@@ -52,6 +50,7 @@ if(plotExtra==TRUE){
          cex.main=1.3)
     arheight=jitter(rep(max(FitSum)*1.05,N),factor=.8)
     arrows(y0=arheight+.05*max(FitSum),x0=emergeDay,y1=arheight,length=.1)
+    points(meanFitSum,type='l',lty=3)
     dev.print(pdf,paste("dailyfitSum-run",runName,"-gen",curgen,"-actualfit.pdf",sep=""))
     #Now plot each of the coefs by emergence day.
     #     for(coefName in c("b.day","b.temp","b.precip")){
@@ -160,7 +159,7 @@ while(ind<=length(traitslist)){
   }
   dev.print(pdf,paste("coefEffects-",paste(traitslist[plotlist],collapse='-'),"-actual-run",runName,".pdf",sep=""))
   for(cur.trait in plotlist){
-    emergePlotYlim(indivs=act.eff,trait=traitslist[cur.trait],ylim=c(-50,150))
+    emergePlotYlim(indivs=act.eff,trait=traitslist[cur.trait],ylim=c(0,100))
   }
   dev.print(pdf,paste("coefEffects-",paste(traitslist[plotlist],collapse='-'),"-actual-run-ylim",runName,".pdf",sep=""))
   for(cur.trait in plotlist){

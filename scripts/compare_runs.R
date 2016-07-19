@@ -1,4 +1,5 @@
 #For comparing two runs
+require(stats)
 set_wrkdir<-function(){
   #function for setting working directory to the right place given the current computer/user
   if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin" || Sys.getenv("USERNAME")=="Collin.work"){ #If it's collin
@@ -26,6 +27,7 @@ max2=apply(sims2[["max"]],2,max)
 
 setwd("results")
 resultsdir=paste("compare",names[1],names[2],sep="")
+unlink(resultsdir,recursive = TRUE)
 dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
 
@@ -95,6 +97,17 @@ matplot(cbind(meanmeans.1[(numYears-viewLength):numYears]/meanmax.1[(numYears-vi
         ylab="Raw mean fitness",
         ylim=c(0,1)
 )
+#Add trend for first param set
+xvals=1:viewLength
+model=loess((meanmeans.1[(numYears-viewLength):numYears]/meanmax.1[(numYears-viewLength):numYears])~xvals)
+pred=predict(model,xvals)
+points(pred,type='l',lwd=2,col="chocolate",lty=2)
+#Add trend for second param set
+xvals=1:viewLength
+model=loess((meanmeans.2[(numYears-viewLength):numYears]/meanmax.2[(numYears-viewLength):numYears])~xvals)
+pred=predict(model,xvals)
+points(pred,type='l',lwd=2,col="cornflowerblue",lty=2)
+
 abline(h=1,col='red')
 legend(x="bottomright",legend=names,fill=c("chocolate","cornflowerblue"),cex=2)
 dev.print(pdf,paste("compare-means-scaled.pdf",sep=""))
