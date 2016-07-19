@@ -14,7 +14,6 @@ set_wrkdir<-function(){
       setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")} #laptop
   }
 }
-names=c("parameterexample","cu-stand")
 set_wrkdir()
 load(paste("results/",names[1],"/",names[1],"_summary.RData",sep=""))
 assign(x="sims1",value=list(means=store.mean,max=store.max,names=store.names,coEff=store.coEff,finalpops=finalpops))
@@ -24,17 +23,19 @@ max1=apply(sims1[["max"]],2,max)
 max2=apply(sims2[["max"]],2,max)
 
 
-###########Everything below this needs to be updated for the new modular approach###########
 
 setwd("results")
 resultsdir=paste("compare",names[1],names[2],sep="")
 dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
 
+
 #plotting scaled means of all runs
 col.list=c('red','blue')
 dev.new(width=9,height=6)
-matplot(cbind(t(sims1[["means"]]/sims1[["max"]]),t(sims2[["means"]]/sims2[["max"]])),type='l',col=c(rep("chocolate",numsims),rep("cornflowerblue",numsims)),
+matplot(cbind(t(sims1[["means"]][,(numYears-viewLength):numYears]/sims1[["max"]][,(numYears-viewLength):numYears]),
+              t(sims2[["means"]][,(numYears-viewLength):numYears]/sims2[["max"]][,(numYears-viewLength):numYears])),
+        type='l',col=c(rep("chocolate",numsims),rep("cornflowerblue",numsims)),
         main=paste("Scaled fitness through time for all runs",names[1],names[2]),
         xlab="generation",
         ylab="Raw mean fitness",
@@ -53,28 +54,31 @@ meanmax.1=apply(sims1[["max"]],2,mean)
 meanmeans.2=apply(sims2[["means"]],2,mean)
 meanmax.2=apply(sims2[["max"]],2,mean)
 
-matplot(cbind(meanmax.1,meanmax.2),type='l',col=c(rep('red',numsims),rep('blue',numsims)),
+matplot(cbind(meanmax.1[(numYears-viewLength):numYears],meanmax.2[(numYears-viewLength):numYears]),
+        type='l',col=c(rep('red',numsims),rep('blue',numsims)),
         main=paste("Mean fitness through time for mean of runs",names[1],names[2]),
         xlab="generation",
         ylab="Raw mean fitness",
         ylim=c(0,max(c(meanmax.1,meanmax.2)))
 )
-matpoints(cbind(meanmeans.1,meanmeans.2),type='l',col=c("chocolate","cornflowerblue"))
-legend(x="bottomright",legend=c(sprintf("max %s",names)),
-       fill=c("chocolate","cornflowerblue"),cex=2)
+matpoints(cbind(meanmeans.1[(numYears-viewLength):numYears],meanmeans.2[(numYears-viewLength):numYears]),
+          type='l',col=c("chocolate","cornflowerblue"))
+legend(x="bottomright",legend=c(sprintf("max possible %s",names),sprintf("mean %s",names)),
+       fill=c(col.list,"chocolate","cornflowerblue"),cex=2)
 dev.print(pdf,paste("compare-means.pdf",sep=""))
 
-#Difference of means through time
-plot((meanmeans.1-meanmeans.2),type='l',col="red",
-     main=paste("Fitness of ",names[1],"minus",names[2]),
-     xlab="generation",
-     ylab="Raw mean fitness"
-)
-abline(h=0)
-dev.print(pdf,paste("difference-of-means.pdf",sep=""))
+# #Difference of means through time
+# plot((meanmeans.1-meanmeans.2),type='l',col="red",
+#      main=paste("Fitness of ",names[1],"minus",names[2]),
+#      xlab="generation",
+#      ylab="Raw mean fitness"
+# )
+# abline(h=0)
+# dev.print(pdf,paste("difference-of-means.pdf",sep=""))
 
 #histogram of difference of means
-hist((sims1[["means"]]-sims2[["means"]]),breaks=30,
+hist((sims1[["means"]][,(numYears-viewLength):numYears]-sims2[["means"]][,(numYears-viewLength):numYears]),
+     breaks=30,
      main="histogram of differences",
      xlab=paste("Fitness of ",names[1],"minus",names[2]),
      sub="green is mean")
@@ -83,7 +87,9 @@ abline(v=mean(sims1[["means"]]-sims2[["means"]]),lwd=2,col='green')
 dev.print(pdf,paste("hist-difference-of-means.pdf",sep=""))
 
 #Scaled mean of means fitness through time
-matplot(cbind(meanmeans.1/meanmax.1,meanmeans.2/meanmax.2),type='l',col=c("chocolate","cornflowerblue"),
+matplot(cbind(meanmeans.1[(numYears-viewLength):numYears]/meanmax.1[(numYears-viewLength):numYears],
+              meanmeans.2[(numYears-viewLength):numYears]/meanmax.2[(numYears-viewLength):numYears]),
+        type='l',col=c("chocolate","cornflowerblue"),
         main=paste("Scaled fitness through time for mean of runs",names[1],names[2]),
         xlab="generation",
         ylab="Raw mean fitness",
