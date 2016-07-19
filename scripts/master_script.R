@@ -19,11 +19,11 @@ names=c("parameter_test","parameterexample")
 runsname=names[1]
 source("scripts/simulation.R")
 source("scripts/analytic.R")
-source("scripts/analytic_contour.R")
+source("scripts/analytic_image.R")
 runsname=names[2]
 source("scripts/simulation.R")
 source("scripts/analytic.R")
-source("scripts/analytic_contour.R")
+source("scripts/analytic_image.R")
 set_wrkdir()
 source("scripts/compare_runs.R")
 
