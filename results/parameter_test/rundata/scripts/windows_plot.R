@@ -206,14 +206,3 @@ if(plotPheno==TRUE){
 }
 
 
-# a few new plotting ideas ------------------------------------------------
-
-library(reshape2)
-library(ggplot2)
-
-coeff.eff.sum<-aggregate(cbind(b.day,b.cutemp,b.cuprecip)~gen,data=act.eff,mean)
-coeff.eff.sum.melt<- melt(coeff.eff.sum, id.var="gen")
-
-ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,fill=variable))+geom_bar(stat = "identity")
-ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,fill=variable))+geom_smooth()
-
