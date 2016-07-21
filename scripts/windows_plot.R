@@ -210,9 +210,41 @@ if(plotPheno==TRUE){
 
 library(reshape2)
 library(ggplot2)
+library(gridExtra)
 
 coeff.eff.sum<-aggregate(cbind(b.day,b.cutemp,b.cuprecip)~gen,data=act.eff,mean)
 coeff.eff.sum.melt<- melt(coeff.eff.sum, id.var="gen")
 
 ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,fill=variable))+geom_bar(stat = "identity")
 ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,fill=variable))+geom_smooth()
+
+#here is a quick and dirty exploration of the phenotype diversity in a few generations
+
+gen.1<-na.omit(act.eff[act.eff[,1]==1,2:4])
+rownames(gen.1)<-1:nrow(gen.1)
+
+distmat<-dist(gen.1)
+hc<-hclust(distmat)
+plot(hc)
+
+gen.10<-na.omit(act.eff[act.eff[,1]==10,2:4])
+rownames(gen.10)<-1:nrow(gen.10)
+
+distmat<-dist(gen.10)
+hc<-hclust(distmat)
+plot(hc)
+
+gen.100<-na.omit(act.eff[act.eff[,1]==100,2:4])
+rownames(gen.100)<-1:nrow(gen.100)
+
+distmat<-dist(gen.100)
+hc<-hclust(distmat)
+plot(hc)
+
+gen.300<-na.omit(act.eff[act.eff[,1]==100,2:4])
+rownames(gen.300)<-1:nrow(gen.300)
+
+distmat<-dist(gen.300)
+hc<-hclust(distmat)
+plot(hc)
+
