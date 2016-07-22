@@ -213,8 +213,8 @@ library(ggplot2)
 library(plot3D)
 library(plot3Drgl)
 
-coeff.eff.sum<-aggregate(cbind(b.day,b.cutemp,b.cuprecip)~gen,data=act.eff,mean)
-
+coeff.eff.sum<-aggregate(cbind(b.day,b.temp,b.precip)~gen,data=act.vals,mean)
+# coeff.vals.sum<-aggregate(cbind(b.day,b.temp,b.precip)~gen,data=act.vals,mean)
 #to look at a smaller subset of the data, here up to 50 generations
 #coeff.eff.sum<-coeff.eff.sum[coeff.eff.sum$gen<50,]
 
@@ -227,8 +227,8 @@ ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,color=variable))+geom_line()+geom_po
 #more 3D scatterplotting
 
 x<-coeff.eff.sum$b.day
-y<-coeff.eff.sum$b.cutemp
-z<-coeff.eff.sum$b.cuprecip
+y<-coeff.eff.sum$b.temp
+z<-coeff.eff.sum$b.precip
 
 fit<-lm(z~x+y)
 grid.lines = 26
@@ -238,6 +238,6 @@ xy<-expand.grid(x=x.pred,y=y.pred)
 z.pred<-matrix(predict(fit,newdata = xy),nrow=grid.lines,ncol=grid.lines)
 fitpoints <- predict(fit)
 
-scatter3D(x,y,z,colvar=coeff.eff.sum$gen,type = "h", ticktype = "detailed", pch = 19,xlab="b.day.eff", ylab="b.cutemp.eff", zlab="b.cuprecip.eff", clab="gen",surf = list(x = x.pred, y = y.pred, z = z.pred,facets = NA, fit = fitpoints))
+scatter3D(x,y,z,colvar=coeff.eff.sum$gen,type = "h", ticktype = "detailed", pch = 19,xlab="b.day.eff", ylab="b.temp.eff", zlab="b.precip.eff", clab="gen",surf = list(x = x.pred, y = y.pred, z = z.pred,facets = NA, fit = fitpoints))
 
 plotrgl()
