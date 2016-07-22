@@ -210,41 +210,34 @@ if(plotPheno==TRUE){
 
 library(reshape2)
 library(ggplot2)
-library(gridExtra)
+library(plot3D)
+library(plot3Drgl)
 
 coeff.eff.sum<-aggregate(cbind(b.day,b.cutemp,b.cuprecip)~gen,data=act.eff,mean)
+
+#to look at a smaller subset of the data, here up to 50 generations
+#coeff.eff.sum<-coeff.eff.sum[coeff.eff.sum$gen<50,]
+
 coeff.eff.sum.melt<- melt(coeff.eff.sum, id.var="gen")
 
-ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,fill=variable))+geom_bar(stat = "identity")
 ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,fill=variable))+geom_smooth()
 
-#here is a quick and dirty exploration of the phenotype diversity in a few generations
+ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,color=variable))+geom_line()+geom_point()+geom_smooth()
 
-gen.1<-na.omit(act.eff[act.eff[,1]==1,2:4])
-rownames(gen.1)<-1:nrow(gen.1)
+#more 3D scatterplotting
 
-distmat<-dist(gen.1)
-hc<-hclust(distmat)
-plot(hc)
+x<-coeff.eff.sum$b.day
+y<-coeff.eff.sum$b.cutemp
+z<-coeff.eff.sum$b.cuprecip
 
-gen.10<-na.omit(act.eff[act.eff[,1]==10,2:4])
-rownames(gen.10)<-1:nrow(gen.10)
+fit<-lm(z~x+y)
+grid.lines = 26
+x.pred<-seq(min(x),max(x),length.out=grid.lines)
+y.pred<-seq(min(y),max(y),length.out=grid.lines)
+xy<-expand.grid(x=x.pred,y=y.pred)
+z.pred<-matrix(predict(fit,newdata = xy),nrow=grid.lines,ncol=grid.lines)
+fitpoints <- predict(fit)
 
-distmat<-dist(gen.10)
-hc<-hclust(distmat)
-plot(hc)
+scatter3D(x,y,z,colvar=coeff.eff.sum$gen,type = "h", ticktype = "detailed", pch = 19,xlab="b.day.eff", ylab="b.cutemp.eff", zlab="b.cuprecip.eff", clab="gen",surf = list(x = x.pred, y = y.pred, z = z.pred,facets = NA, fit = fitpoints))
 
-gen.100<-na.omit(act.eff[act.eff[,1]==100,2:4])
-rownames(gen.100)<-1:nrow(gen.100)
-
-distmat<-dist(gen.100)
-hc<-hclust(distmat)
-plot(hc)
-
-gen.300<-na.omit(act.eff[act.eff[,1]==100,2:4])
-rownames(gen.300)<-1:nrow(gen.300)
-
-distmat<-dist(gen.300)
-hc<-hclust(distmat)
-plot(hc)
-
+plotrgl()
