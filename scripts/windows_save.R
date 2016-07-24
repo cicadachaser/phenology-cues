@@ -5,6 +5,7 @@ pophist.table <-do.call(rbind.data.frame, pophistory)
 
 setwd("results")
 resultsdir=sprintf("%s/resRun%s",runsname,runName)
+unlink(resultsdir,recursive = TRUE)
 dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
 write.table(pophist.table,file=paste("pophist_run",runName,".csv",sep=""),row.names=FALSE,sep=",")

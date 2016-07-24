@@ -6,10 +6,10 @@ runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #and constant environmental conditions
 #unitTestRand will be for running the populations through a
 #unit test with the same gaussian fitness every year and random envi conditions
-#standard is for running the populations through a set of replications of the first 10 good years of the davis data
+#standard is for running the populations through a set of replications 
 traits=c("day","temp","precip")
-numsims=5 # number of simulations of each type to do
 #traits=c("day","temp","precip","cutemp","cuprecip","daysq","tempsq","precipsq","cutempsq","cuprecipsq")
+numsims=5 # number of simulations of each type to do
 plotExtra=TRUE # do we plot snapshots of emergence through time?
 plotPheno=FALSE # do we plot snapshots of phenotype through time?
 viewLength=500 #for comparisons of simulation types,
