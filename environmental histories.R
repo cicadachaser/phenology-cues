@@ -69,13 +69,14 @@ daily<-daily[order(daily$DATE2),]
 #use priors based on the daily mean and sd for TMAX across the dataset
 temp.priors<-cbind(1:max(nrow(daily)),8,daily$TMAX.means,daily$TMAX.sd) #matrix [row col mean sd]
 
-a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel="snow", npcus=detectCores()-1,bounds=temp.bounds,priors=temp.priors,max.resample = 500)
+a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel="snow", npcus=detectCores()-1,bounds=temp.bounds,priors=temp.priors,leads="TMAX",lags="TMAX",max.resample = 500)
 
 daily.imp<-a.out$imputations[[1]]
 
 daily.imp[daily.imp$PRCP<0,"PRCP"]<-0 #set all negative precip values to zero
 
 plot(1:length(daily.imp[daily.imp$YEAR==1918,"TMAX"]),daily.imp[daily.imp$YEAR==1918,"TMAX"])
+plot(1:length(daily.imp[daily.imp$YEAR==1924,"TMAX"]),daily.imp[daily.imp$YEAR==1924,"TMAX"])
 
 # descriptive statistics --------------------------------------------------
 
