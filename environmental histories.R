@@ -54,28 +54,28 @@ daily$TMIN<-daily$TMIN/10 #temps are reported in tenths of degree C, units chang
 daily<-daily[,c("DATE2","JULIAN","YEAR","MONTH","DAY","DAY.OF.YEAR","PRCP","TMAX","TMIN")] #simplified dataframe
 
 daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=daily, mean)
-colnames(daily.means)<-c("TMAX.means","TMIN.means","PRCP.means")
+colnames(daily.means)<-c("DAY.OF.YEAR","TMAX.means","TMIN.means","PRCP.means")
 daily.sd<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=daily, sd)
-colnames(daily.sd)<-c("TMAX.sd","TMIN.sd","PRCP.sd")
+colnames(daily.sd)<-c("DAY.OF.YEAR","TMAX.sd","TMIN.sd","PRCP.sd")
 
 # imputation of missing data ----------------------------------------------
 
 temp.bounds<-matrix(c(8, min(daily$TMAX[!is.na(daily$TMAX)]), max(daily$TMAX[!is.na(daily$TMAX)])), nrow = 1, ncol = 3) #matrix in the format [column lowerbound upperbound]
 
-#temp.priors<-matrix(c(0, 8, mean(daily$TMAX[!is.na(daily$TMAX)]),sd(daily$TMAX[!is.na(daily$TMAX)])),ncol=4,nrow=1) #c(row, column, mean,standard deviation); row=0 means all rows
+daily<-merge(daily,daily.means,by="DAY.OF.YEAR")
+daily<-merge(daily,daily.sd,by="DAY.OF.YEAR")
+daily<-daily[order(daily$DATE2),]
 
+#use priors based on the daily mean and sd for TMAX across the dataset
+temp.priors<-cbind(1:max(nrow(daily)),8,daily$TMAX.means,daily$TMAX.sd) #matrix [row col mean sd]
 
-
-test<-merge(daily,daily.means,by="DAY.OF.YEAR")
-
-a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel="snow", npcus=detectCores()-1,bounds=temp.bounds,max.resample = 500)
+a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel="snow", npcus=detectCores()-1,bounds=temp.bounds,priors=temp.priors,max.resample = 500)
 
 daily.imp<-a.out$imputations[[1]]
 
 daily.imp[daily.imp$PRCP<0,"PRCP"]<-0 #set all negative precip values to zero
 
-tscsPlot(a.out,cs="1918", var="TMAX")
-tscsPlot(a.out,cs="1924", var="TMAX")
+plot(1:length(daily.imp[daily.imp$YEAR==1918,"TMAX"]),daily.imp[daily.imp$YEAR==1918,"TMAX"])
 
 # descriptive statistics --------------------------------------------------
 
