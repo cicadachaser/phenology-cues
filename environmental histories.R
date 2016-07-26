@@ -45,6 +45,7 @@ daily$DAY.OF.YEAR<-as.POSIXlt(daily$DATE2)$yday+1 #day of the year
 
 daily$JULIAN<-julian(daily$DATE2,origin=start.date-1) #1914-01-01 is day 1
 daily<-daily[daily$YEAR>1913 & daily$YEAR<2015,] #truncates the data to 101 complete years between 1914 and 2014
+
 daily$PRCP<-daily$PRCP/10 #precips are reported in tenths of mm, units changed to mm
 daily$TMAX<-daily$TMAX/10 #temps are reported in tenths of degree C, units changed to degree C
 daily$TMIN<-daily$TMIN/10 #temps are reported in tenths of degree C, units changed to degree C
@@ -52,13 +53,22 @@ daily$TMIN<-daily$TMIN/10 #temps are reported in tenths of degree C, units chang
 
 daily<-daily[,c("DATE2","JULIAN","YEAR","MONTH","DAY","DAY.OF.YEAR","PRCP","TMAX","TMIN")] #simplified dataframe
 
+daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=daily, mean)
+colnames(daily.means)<-c("TMAX.means","TMIN.means","PRCP.means")
+daily.sd<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=daily, sd)
+colnames(daily.sd)<-c("TMAX.sd","TMIN.sd","PRCP.sd")
+
 # imputation of missing data ----------------------------------------------
 
 temp.bounds<-matrix(c(8, min(daily$TMAX[!is.na(daily$TMAX)]), max(daily$TMAX[!is.na(daily$TMAX)])), nrow = 1, ncol = 3) #matrix in the format [column lowerbound upperbound]
 
-temp.priors<-matrix(c(0, 8, mean(daily$TMAX[!is.na(daily$TMAX)]),sd(daily$TMAX[!is.na(daily$TMAX)])),ncol=4,nrow=1) #c(row, column, mean,standard deviation); row=0 means all rows
+#temp.priors<-matrix(c(0, 8, mean(daily$TMAX[!is.na(daily$TMAX)]),sd(daily$TMAX[!is.na(daily$TMAX)])),ncol=4,nrow=1) #c(row, column, mean,standard deviation); row=0 means all rows
 
-a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel="snow", npcus=detectCores(),bounds=temp.bounds,max.resample = 1000,lags="TMAX",leads="TMAX",priors=temp.priors )
+
+
+test<-merge(daily,daily.means,by="DAY.OF.YEAR")
+
+a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel="snow", npcus=detectCores()-1,bounds=temp.bounds,max.resample = 500)
 
 daily.imp<-a.out$imputations[[1]]
 
@@ -68,8 +78,6 @@ tscsPlot(a.out,cs="1918", var="TMAX")
 tscsPlot(a.out,cs="1924", var="TMAX")
 
 # descriptive statistics --------------------------------------------------
-
-daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=daily.imp, mean)
 
 qplot(x=DAY.OF.YEAR,y=TMAX,data=daily.means)
 qplot(x=DAY.OF.YEAR,y=TMIN,data=daily.means)
