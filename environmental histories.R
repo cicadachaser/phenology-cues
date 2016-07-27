@@ -78,6 +78,9 @@ daily.imp[daily.imp$PRCP<0,"PRCP"]<-0 #set all negative precip values to zero
 plot(1:length(daily.imp[daily.imp$YEAR==1918,"TMAX"]),daily.imp[daily.imp$YEAR==1918,"TMAX"])
 plot(1:length(daily.imp[daily.imp$YEAR==1924,"TMAX"]),daily.imp[daily.imp$YEAR==1924,"TMAX"])
 
+tscsPlot(a.out,var="TMAX",cs="1918")
+tscsPlot(a.out,var="TMAX",cs="1924")
+
 # descriptive statistics --------------------------------------------------
 
 qplot(x=DAY.OF.YEAR,y=TMAX,data=daily.means)
