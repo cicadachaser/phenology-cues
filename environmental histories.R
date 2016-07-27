@@ -89,7 +89,6 @@ qplot(x=DAY.OF.YEAR,y=PRCP.means,data=daily.means)
 
 qplot(x=DAY.OF.YEAR,y=TMAX,data=daily.imp,facets= .~YEAR)
 
-
 yearnames<-unique(daily.imp$YEAR) #vector of years
 yearlist<-split(daily.imp,daily.imp$YEAR) #list of each year separated
 yearvar<-data.frame(row.names=yearnames) #dataframe to hold environmental variability
@@ -145,3 +144,6 @@ late.25<-as.numeric(rownames(head(yearvar[order(yearvar$TMAX.SPR),],25)))  #25 y
 
 early.late.50<-c(early.25,late.25) #early and late years
 punctual.50<-as.numeric(rownames(yearvar[order(abs(yearvar$TMAX.SPR)),][26:75,])) #normal springs
+
+save.image(file="ithaca.RData")
+
