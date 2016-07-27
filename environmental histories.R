@@ -33,8 +33,8 @@ end.date<-as.Date("2014-12-31") #the dataset will end on 2014-12-31
 complete.dates<-data.frame(seq(start.date,end.date,1)) #all dates between the start and end dates
 colnames(complete.dates)<-c("COMPLETE.DATES") #renaming the column
 
-#daily<-read.csv("davis-data/626713.csv", header=T, na.strings="-9999")
-daily<-read.csv("ithaca-data/627453.csv", header=T, na.strings="-9999")
+daily<-read.csv("davis-data/626713.csv", header=T, na.strings="-9999")
+#daily<-read.csv("ithaca-data/627453.csv", header=T, na.strings="-9999")
 daily$DATE2<-as.Date(as.character(daily$DATE),format="%Y %m %d") #DATE2 is date formatted
 daily<-merge(daily,complete.dates,by.x="DATE2",by.y="COMPLETE.DATES",all.y=TRUE) #add missing rows
 
@@ -95,28 +95,27 @@ yearvar<-data.frame(row.names=yearnames) #dataframe to hold environmental variab
 
 for (i in 1:length(yearnames)){
   #dataframe to compare with mean conditions
-  #this creates a VAR.x for each year and a VAR.y for the daily means
-  comparison<-merge(yearlist[[i]],daily.means,by="DAY.OF.YEAR") 
+  comparison<-yearlist[[i]]
   #sum of squared differences with an average year - how weird is each year?
-  yearvar[i,"TMAX.SS"]<-sum((comparison$TMAX.x-comparison$TMAX.y)^2)
-  yearvar[i,"TMIN.SS"]<-sum((comparison$TMIN.x-comparison$TMIN.y)^2)
-  yearvar[i,"PRCP.SS"]<-sum((comparison$PRCP.x-comparison$PRCP.y)^2)
+  yearvar[i,"TMAX.SS"]<-sum((comparison$TMAX-comparison$TMAX.means)^2)
+  yearvar[i,"TMIN.SS"]<-sum((comparison$TMIN-comparison$TMIN.means)^2)
+  yearvar[i,"PRCP.SS"]<-sum((comparison$PRCP-comparison$PRCP.means)^2)
   #CV within years - how variable is each year?
-  yearvar[i,"TMAX.CV"]<-sd(comparison$TMAX.x)/mean(comparison$TMAX.x)
-  yearvar[i,"TMIN.CV"]<-sd(comparison$TMIN.x)/mean(comparison$TMIN.x)
-  yearvar[i,"PRCP.CV"]<-sd(comparison$PRCP.x)/mean(comparison$PRCP.x)
+  yearvar[i,"TMAX.CV"]<-sd(comparison$TMAX)/mean(comparison$TMAX)
+  yearvar[i,"TMIN.CV"]<-sd(comparison$TMIN)/mean(comparison$TMIN)
+  yearvar[i,"PRCP.CV"]<-sd(comparison$PRCP)/mean(comparison$PRCP)
   #sum of differences (not squared) with an average year - how hot/wet is each year?
-  yearvar[i,"TMAX.DEL"]<-sum(comparison$TMAX.x-comparison$TMAX.y)
-  yearvar[i,"TMIN.DEL"]<-sum(comparison$TMIN.x-comparison$TMIN.y)
-  yearvar[i,"PRCP.DEL"]<-sum(comparison$PRCP.x-comparison$PRCP.y)
+  yearvar[i,"TMAX.DEL"]<-sum(comparison$TMAX-comparison$TMAX.means)
+  yearvar[i,"TMIN.DEL"]<-sum(comparison$TMIN-comparison$TMIN.means)
+  yearvar[i,"PRCP.DEL"]<-sum(comparison$PRCP-comparison$PRCP.means)
   #annual totals
-  yearvar[i,"TMAX.TOT"]<-max(cumsum(comparison$TMAX.x))
-  yearvar[i,"TMIN.TOT"]<-max(cumsum(comparison$TMIN.x))
-  yearvar[i,"PRCP.TOT"]<-max(cumsum(comparison$PRCP.x))
+  yearvar[i,"TMAX.TOT"]<-max(cumsum(comparison$TMAX))
+  yearvar[i,"TMIN.TOT"]<-max(cumsum(comparison$TMIN))
+  yearvar[i,"PRCP.TOT"]<-max(cumsum(comparison$PRCP))
   #spring totals
-  yearvar[i,"TMAX.SPR"]<-max(cumsum(comparison$TMAX.x[1:120]))
-  yearvar[i,"TMIN.SPR"]<-max(cumsum(comparison$TMIN.x[1:120]))
-  yearvar[i,"PRCP.SPR"]<-max(cumsum(comparison$PRCP.x[1:120]))
+  yearvar[i,"TMAX.SPR"]<-max(cumsum(comparison$TMAX[1:120]))
+  yearvar[i,"TMIN.SPR"]<-max(cumsum(comparison$TMIN[1:120]))
+  yearvar[i,"PRCP.SPR"]<-max(cumsum(comparison$PRCP[1:120]))
 }  
 
 # generating some environmental histories ---------------------------------
@@ -145,5 +144,5 @@ late.25<-as.numeric(rownames(head(yearvar[order(yearvar$TMAX.SPR),],25)))  #25 y
 early.late.50<-c(early.25,late.25) #early and late years
 punctual.50<-as.numeric(rownames(yearvar[order(abs(yearvar$TMAX.SPR)),][26:75,])) #normal springs
 
-save.image(file="ithaca.RData")
+save.image(file="davis.RData")
 
