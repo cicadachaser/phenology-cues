@@ -83,9 +83,12 @@ tscsPlot(a.out,var="TMAX",cs="1924")
 
 # descriptive statistics --------------------------------------------------
 
-qplot(x=DAY.OF.YEAR,y=TMAX,data=daily.means)
-qplot(x=DAY.OF.YEAR,y=TMIN,data=daily.means)
-qplot(x=DAY.OF.YEAR,y=PRCP,data=daily.means)
+qplot(x=DAY.OF.YEAR,y=TMAX.means,data=daily.means)
+qplot(x=DAY.OF.YEAR,y=TMIN.means,data=daily.means)
+qplot(x=DAY.OF.YEAR,y=PRCP.means,data=daily.means)
+
+qplot(x=DAY.OF.YEAR,y=TMAX,data=daily.imp,facets= .~YEAR)
+
 
 yearnames<-unique(daily.imp$YEAR) #vector of years
 yearlist<-split(daily.imp,daily.imp$YEAR) #list of each year separated
