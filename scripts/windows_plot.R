@@ -210,34 +210,42 @@ if(plotPheno==TRUE){
 
 library(reshape2)
 library(ggplot2)
-library(plot3D)
-library(plot3Drgl)
+library(gridExtra)
 
-coeff.eff.sum<-aggregate(cbind(b.day,b.temp,b.precip)~gen,data=act.vals,mean)
+#coeff.eff.sum<-aggregate(cbind(b.day,b.cutemp,b.cuprecip)~gen,data=act.eff,mean)
+
+coeff.eff.sum<-aggregate(act.eff[,traitslist]~gen,data=act.eff,mean)
 # coeff.vals.sum<-aggregate(cbind(b.day,b.temp,b.precip)~gen,data=act.vals,mean)
 #to look at a smaller subset of the data, here up to 50 generations
 #coeff.eff.sum<-coeff.eff.sum[coeff.eff.sum$gen<50,]
 
 coeff.eff.sum.melt<- melt(coeff.eff.sum, id.var="gen")
 
-ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,fill=variable))+geom_smooth()
+p1<-ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,fill=variable))+geom_smooth()
 
-ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,color=variable))+geom_line()+geom_point()+geom_smooth()
+p2<-ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,color=variable))+geom_line()+geom_point()+geom_smooth()
+
+grid.arrange(p1,p2,ncol=1)
+dev.print(pdf,sprintf("ggtraits.eff-run%s.pdf",curgen,runName))
+
+
 
 #more 3D scatterplotting
 
-x<-coeff.eff.sum$b.day
-y<-coeff.eff.sum$b.temp
-z<-coeff.eff.sum$b.precip
-
-fit<-lm(z~x+y)
-grid.lines = 26
-x.pred<-seq(min(x),max(x),length.out=grid.lines)
-y.pred<-seq(min(y),max(y),length.out=grid.lines)
-xy<-expand.grid(x=x.pred,y=y.pred)
-z.pred<-matrix(predict(fit,newdata = xy),nrow=grid.lines,ncol=grid.lines)
-fitpoints <- predict(fit)
-
-scatter3D(x,y,z,colvar=coeff.eff.sum$gen,type = "h", ticktype = "detailed", pch = 19,xlab="b.day.eff", ylab="b.temp.eff", zlab="b.precip.eff", clab="gen",surf = list(x = x.pred, y = y.pred, z = z.pred,facets = NA, fit = fitpoints))
-
-plotrgl()
+# library(plot3D)
+# library(plot3Drgl)
+# x<-coeff.eff.sum$b.day
+# y<-coeff.eff.sum$b.temp
+# z<-coeff.eff.sum$b.precip
+#
+# fit<-lm(z~x+y)
+# grid.lines = 26
+# x.pred<-seq(min(x),max(x),length.out=grid.lines)
+# y.pred<-seq(min(y),max(y),length.out=grid.lines)
+# xy<-expand.grid(x=x.pred,y=y.pred)
+# z.pred<-matrix(predict(fit,newdata = xy),nrow=grid.lines,ncol=grid.lines)
+# fitpoints <- predict(fit)
+#
+# scatter3D(x,y,z,colvar=coeff.eff.sum$gen,type = "h", ticktype = "detailed", pch = 19,xlab="b.day.eff", ylab="b.temp.eff", zlab="b.precip.eff", clab="gen",surf = list(x = x.pred, y = y.pred, z = z.pred,facets = NA, fit = fitpoints))
+#
+# plotrgl()
