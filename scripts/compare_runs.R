@@ -35,8 +35,10 @@ setwd(resultsdir)
 #plotting scaled means of all runs
 col.list=c('red','blue')
 dev.new(width=9,height=6)
-matplot(cbind(t(sims1[["means"]][,(numYears-viewLength):numYears]/sims1[["max"]][,(numYears-viewLength):numYears]),
-              t(sims2[["means"]][,(numYears-viewLength):numYears]/sims2[["max"]][,(numYears-viewLength):numYears])),
+matplot(cbind(t(sims1[["means"]][,(length(sims1$max)-viewLength):length(sims1$max)] /
+                  sims1[["max"]][,(length(sims1$max)-viewLength):length(sims1$max)]),
+              t(sims2[["means"]][,(length(sims2$max)-viewLength):length(sims2$max)] /
+                  sims2[["max"]][,(length(sims2$max)-viewLength):length(sims2$max)])),
         type='l',col=c(rep("chocolate",numsims),rep("cornflowerblue",numsims)),
         main=paste("Scaled fitness through time for all runs",names[1],names[2]),
         xlab="generation",
@@ -56,14 +58,16 @@ meanmax.1=apply(sims1[["max"]],2,mean)
 meanmeans.2=apply(sims2[["means"]],2,mean)
 meanmax.2=apply(sims2[["max"]],2,mean)
 
-matplot(cbind(meanmax.1[(numYears-viewLength):numYears],meanmax.2[(numYears-viewLength):numYears]),
+matplot(cbind(meanmax.1[(length(sims1$max)-viewLength):length(sims1$max)],
+              meanmax.2[(length(sims2$max)-viewLength):length(sims2$max)]),
         type='l',col=c(rep('red',numsims),rep('blue',numsims)),
         main=paste("Mean fitness through time for mean of runs",names[1],names[2]),
         xlab="generation",
         ylab="Raw mean fitness",
         ylim=c(0,max(c(meanmax.1,meanmax.2)))
 )
-matpoints(cbind(meanmeans.1[(numYears-viewLength):numYears],meanmeans.2[(numYears-viewLength):numYears]),
+matpoints(cbind(meanmeans.1[(length(sims1$max)-viewLength):length(sims1$max)],
+                meanmeans.2[(length(sims2$max)-viewLength):length(sims2$max)]),
           type='l',col=c("chocolate","cornflowerblue"))
 legend(x="bottomright",legend=c(sprintf("max possible %s",names),sprintf("mean %s",names)),
        fill=c(col.list,"chocolate","cornflowerblue"),cex=2)
@@ -79,7 +83,8 @@ dev.print(pdf,paste("compare-means.pdf",sep=""))
 # dev.print(pdf,paste("difference-of-means.pdf",sep=""))
 
 #histogram of difference of means
-hist((sims1[["means"]][,(numYears-viewLength):numYears]-sims2[["means"]][,(numYears-viewLength):numYears]),
+hist((sims1[["means"]][,(length(sims1$max)-viewLength):length(sims1$max)]-
+        sims2[["means"]][,(length(sims2$max)-viewLength):length(sims2$max)]),
      breaks=30,
      main="histogram of differences",
      xlab=paste("Fitness of ",names[1],"minus",names[2]),
@@ -89,8 +94,10 @@ abline(v=mean(sims1[["means"]]-sims2[["means"]]),lwd=2,col='green')
 dev.print(pdf,paste("hist-difference-of-means.pdf",sep=""))
 
 #Scaled mean of means fitness through time
-matplot(cbind(meanmeans.1[(numYears-viewLength):numYears]/meanmax.1[(numYears-viewLength):numYears],
-              meanmeans.2[(numYears-viewLength):numYears]/meanmax.2[(numYears-viewLength):numYears]),
+matplot(cbind(meanmeans.1[(length(sims1$max)-viewLength):length(sims1$max)] /
+                meanmax.1[(length(sims1$max)-viewLength):length(sims1$max)],
+              meanmeans.2[(length(sims2$max)-viewLength):length(sims2$max)] /
+                meanmax.2[(length(sims2$max)-viewLength):length(sims2$max)]),
         type='l',col=c("chocolate","cornflowerblue"),
         main=paste("Scaled fitness through time for mean of runs",names[1],names[2]),
         xlab="generation",
@@ -99,12 +106,14 @@ matplot(cbind(meanmeans.1[(numYears-viewLength):numYears]/meanmax.1[(numYears-vi
 )
 #Add trend for first param set
 xvals=1:viewLength
-model=loess((meanmeans.1[(numYears-viewLength):numYears]/meanmax.1[(numYears-viewLength):numYears])~xvals)
+model=loess((meanmeans.1[(length(sims1$max)-viewLength):length(sims1$max)] /
+               meanmax.1[(length(sims1$max)-viewLength):length(sims1$max)])~xvals)
 pred=predict(model,xvals)
 points(pred,type='l',lwd=2,col="chocolate",lty=2)
 #Add trend for second param set
 xvals=1:viewLength
-model=loess((meanmeans.2[(numYears-viewLength):numYears]/meanmax.2[(numYears-viewLength):numYears])~xvals)
+model=loess((meanmeans.2[(length(sims2$max)-viewLength):length(sims2$max)] /
+               meanmax.2[(length(sims2$max)-viewLength):length(sims2$max)])~xvals)
 pred=predict(model,xvals)
 points(pred,type='l',lwd=2,col="cornflowerblue",lty=2)
 
@@ -113,8 +122,8 @@ legend(x="bottomright",legend=names,fill=c("chocolate","cornflowerblue"),cex=2)
 dev.print(pdf,paste("compare-means-scaled.pdf",sep=""))
 
 #barplot(ish) for the fitness values towards the end of the run
-latefit1=apply(sims1[["means"]][,(numYears-viewLength):numYears],1,sum)
-latefit2=apply(sims2[["means"]][,(numYears-viewLength):numYears],1,sum)
+latefit1=apply(sims1[["means"]][,(length(sims1$max)-viewLength):length(sims1$max)],1,sum)
+latefit2=apply(sims2[["means"]][,(length(sims1$max)-viewLength):length(sims1$max)],1,sum)
 plot(jitter(c(rep(1,numsims),rep(2,numsims)),factor=.1),c(latefit1,latefit2),
      xlim=c(.5,2.5),ylim=c(0,max(c(latefit1,latefit2))),
      xaxt='n',
