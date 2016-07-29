@@ -23,9 +23,11 @@ for(i.vals in 1:num.plots){
   fix.traits.values=fix.valmat[i.vals,] #values to be held constant, in same order as fix.traits (if there are multiple traits)
   #####################################
   fix.vals=matrix(fix.traits.values,nrow=pointdense^2,ncol=length(fix.traits.values),byrow=TRUE)
-  xtemp=seq(1/10^10,maxcues[[plot.traits[1]]]*length(traits),length=pointdense)
+  xtemp=seq(250,450,length=pointdense)
+  # xtemp=seq(1/10^10,maxcues[[plot.traits[1]]]*length(traits),length=pointdense)
   x=rep(xtemp,pointdense)
-  ytemp=seq(1/10^10,maxcues[[plot.traits[2]]]*length(traits),length=pointdense)
+  ytemp=seq(60,140,length=pointdense)
+  # ytemp=seq(1/10^10,maxcues[[plot.traits[2]]]*length(traits),length=pointdense)
   y=x*0
   for(i in 1:length(ytemp)){
     y[(1+(i-1)*pointdense):(i*pointdense)]=rep(ytemp[i],pointdense)
