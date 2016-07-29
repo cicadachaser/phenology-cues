@@ -21,7 +21,7 @@ burnIn=200 #number of years to not plot (to avoid scale issues from broad initia
 mutdist=.01 #What fraction of the total "cue space" should mutations (on average) traverse (kinda).
 yearLabel="A" #For deciding which set of year randomization to use
 fitshape="standgauss"#shape of the fitness function
-yearSet="earlylate50"
+yearSet="early.late.50"
 #######################
 # For analytic script #
 #######################
@@ -34,5 +34,5 @@ slownum=10 #number of points to test slowly
 ################################
 pointdense=100
 num.plots=10
-plot.traits=c("cuday","cutemp") #Traits to plot on countours. Must be 2 traits from the 'traits' vector
+plot.traits=c("day","cutemp") #Traits to plot on countours. Must be 2 traits from the 'traits' vector
 fix.traits=setdiff(traits, plot.traits)
