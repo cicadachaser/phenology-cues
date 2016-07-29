@@ -230,9 +230,13 @@ yeargen.template<-function(){
 yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp){
   #This file assumes the imputed data file exists
   set_wrkdir()
-  fileName="davisDat.Rdata"
+  fileName="ithacaDat.Rdata"
   # if(file.exists(paste("data-years/",fileName,sep=""))){
-    load(paste("data-years/",fileName,sep=""))
+  envdat=new.env()
+  load(paste("data-years/",fileName,sep=""),envir = envdat)
+  years.list=envdat$yearlist
+  years.ind=envdat[[yearSet]]
+  # if(file.exists(paste("data-years/",fileName,sep=""))){
   # }else{
     #THIS IS WHERE WE PULL IN THE IMPUTATION FUNCTION!
     # years.list=yearmk_davis()
@@ -261,7 +265,7 @@ yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp){
     years.list[[i.year]]$cutempsq=cumsum((years.list[[i.year]]$temp)^2);
     years.list[[i.year]]$cuprecipsq=cumsum((years.list[[i.year]]$precip)^2);
     }
-  return(years.list)
+  return(list(years.list,years.ind))
 }
 
 yeargen.ithaca<-function(best.precip,sd.precip,best.temp,sd.temp){
@@ -269,7 +273,10 @@ yeargen.ithaca<-function(best.precip,sd.precip,best.temp,sd.temp){
   set_wrkdir()
   fileName="ithacaDat.Rdata"
   # if(file.exists(paste("data-years/",fileName,sep=""))){
-  load(paste("data-years/",fileName,sep=""))
+  envdat=new.env()
+  load(paste("data-years/",fileName,sep=""),envir = envdat)
+  years.list=envdat$yearlist
+  years.ind=envdat[[yearSet]]
   # }else{
   #THIS IS WHERE WE PULL IN THE IMPUTATION FUNCTION!
   # years.list=yearmk_davis()
@@ -298,7 +305,7 @@ yeargen.ithaca<-function(best.precip,sd.precip,best.temp,sd.temp){
     years.list[[i.year]]$cutempsq=cumsum((years.list[[i.year]]$temp)^2);
     years.list[[i.year]]$cuprecipsq=cumsum((years.list[[i.year]]$precip)^2);
   }
-  return(years.list)
+  return(list(years.list,years.ind))
 }
 
 

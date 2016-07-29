@@ -13,9 +13,16 @@
   source(paste("fitcurve/",fitshape,".R",sep=""))
   years.list=NULL
   if(runType=="standard"){
-    years.list=yeargen.davis(best.temp = best.temp,sd.temp = sd.temp,
+    years.stuff=yeargen.davis(best.temp = best.temp,sd.temp = sd.temp,
                              best.precip = best.precip,sd.precip = sd.precip)
-  } else if(runType=="unitTestConst"){
+    years.list=years.stuff[[1]]
+    years.ind=years.stuff[[2]]
+  } else if(runType=="ithaca"){
+    years.stuff=yeargen.ithaca(best.temp = best.temp,sd.temp = sd.temp,
+                             best.precip = best.precip,sd.precip = sd.precip)
+    years.list=years.stuff[[1]]
+    years.ind=years.stuff[[2]]
+      } else if(runType=="unitTestConst"){
     out=yeargen.const(numYears)
     years.list=out[["years.list"]]
     years.index=rep(1,numYears)
@@ -30,11 +37,10 @@
   #check to see if there is a set of years already generated with the appropriate name
   # This will let us compare different runs across the same set of years.
   set_wrkdir()
-  years.name=paste("yearsmat-",yearSet,"-nyrs",numYears,"-nsims",numsims,"-label_",yearLabel,".csv",sep="")
+  years.name=paste(runType,"-yearsmat-",yearSet,"-nyrs",numYears,"-nsims",numsims,"-label_",yearLabel,".csv",sep="")
   if(file.exists(paste("yearinds/",years.name,sep=""))){
     years.indmat=read.csv(paste("yearinds/",years.name,sep=""),header=TRUE)
   }else{
-    years.indlist=read.csv(paste("enviromental histories/",yearSet,".csv",sep=""))
     years.indlist=years.indlist$x-1913 #kludge to turn 1900s values into 1-100
     years.indmat=matrix(sample(years.indlist,size=numYears*numsims,replace=TRUE),ncol=numYears,nrow=numsims) # This is the list of which year.list data to use for each generation of the model
     write.csv(years.indmat,paste("yearinds/",years.name,sep=""),row.names=FALSE)
