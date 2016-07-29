@@ -16,9 +16,9 @@ set_wrkdir<-function(){
   }
 }
 set_wrkdir()
-load(paste("results/",names[1],"/",names[1],"_summary.RData",sep=""))
+load(paste("results/",runsnames[1],"/",runsnames[1],"_summary.RData",sep=""))
 assign(x="sims1",value=list(means=store.mean,max=store.max,names=store.names,coEff=store.coEff,finalpops=finalpops))
-load(paste("results/",names[2],"/",names[2],"_summary.RData",sep=""))
+load(paste("results/",runsnames[2],"/",runsnames[2],"_summary.RData",sep=""))
 assign(x="sims2",value=list(means=store.mean,max=store.max,names=store.names,coEff=store.coEff,finalpops=finalpops))
 max1=apply(sims1[["max"]],2,max)
 max2=apply(sims2[["max"]],2,max)
