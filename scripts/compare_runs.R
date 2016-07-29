@@ -26,7 +26,7 @@ max2=apply(sims2[["max"]],2,max)
 
 
 setwd("results")
-resultsdir=paste("compare",names[1],names[2],sep="")
+resultsdir=paste("compare-",names[1],"-vs-",names[2],sep="")
 unlink(resultsdir,recursive = TRUE)
 dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
