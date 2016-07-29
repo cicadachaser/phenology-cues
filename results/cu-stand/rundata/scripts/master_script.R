@@ -15,13 +15,15 @@ set_wrkdir<-function(){
   }
 }
 set_wrkdir()
-runsname="cu-stand"
+names=c("cu-stand","parameterexample")
+runsname=names[1]
 source("scripts/simulation.R")
 source("scripts/analytic.R")
-source("scripts/analytic_contour.R")
-runsname="parameterexample"
+source("scripts/analytic_image.R")
+runsname=names[2]
 source("scripts/simulation.R")
 source("scripts/analytic.R")
-source("scripts/analytic_contour.R")
-# names=c("parameterexample","parameterexample2")
-# comparison(names=c("name1","name2"))
+source("scripts/analytic_image.R")
+set_wrkdir()
+source("scripts/compare_runs.R")
+

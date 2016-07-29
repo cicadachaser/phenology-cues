@@ -23,8 +23,11 @@ for(i.vals in 1:num.plots){
   fix.traits.values=fix.valmat[i.vals,] #values to be held constant, in same order as fix.traits (if there are multiple traits)
   #####################################
   fix.vals=matrix(fix.traits.values,nrow=pointdense^2,ncol=length(fix.traits.values),byrow=TRUE)
-  x=rep(seq(1/10^10,maxcues[[plot.traits[1]]]*length(traits),length=pointdense),pointdense)
-  ytemp=seq(1/10^10,maxcues[[plot.traits[2]]]*length(traits),length=pointdense)
+  xtemp=seq(250,450,length=pointdense)
+  # xtemp=seq(1/10^10,maxcues[[plot.traits[1]]]*length(traits),length=pointdense)
+  x=rep(xtemp,pointdense)
+  ytemp=seq(60,140,length=pointdense)
+  # ytemp=seq(1/10^10,maxcues[[plot.traits[2]]]*length(traits),length=pointdense)
   y=x*0
   for(i in 1:length(ytemp)){
     y[(1+(i-1)*pointdense):(i*pointdense)]=rep(ytemp[i],pointdense)
@@ -52,8 +55,7 @@ for(i.vals in 1:num.plots){
   }
   geofit=apply(yrfit,1,function(x){-sum(log(x))})
   z=matrix(geofit,pointdense,pointdense,byrow=TRUE)
-  contour(x=seq(1/10^10,maxcues[[plot.traits[1]]]*length(traits),length=pointdense),
-          y=seq(1/10^10,maxcues[[plot.traits[2]]]*length(traits),length=pointdense),
+  contour(x=xtemp, y=ytemp,
           z=z,
           xlab=plot.traits[1],
           ylab=plot.traits[2],
@@ -61,7 +63,7 @@ for(i.vals in 1:num.plots){
           main=paste("Contour of", runsname,"\n small is good"),
           cex.lab=1.6,cex.main=1.6,cex.sub=1.4)
   #marking out infinities
-  inf.geo=which(is.infinite(geofit))
+  inf.geo=which(is.infinite(z))
   points(x[inf.geo],y[inf.geo],pch='.')
   b.traits=sprintf("b.%s",plot.traits)
   points(res.slow[,b.traits[1]],res.slow[,b.traits[2]],col='red')

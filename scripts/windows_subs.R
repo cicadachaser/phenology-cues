@@ -243,6 +243,9 @@ yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp){
     # save(years.list,file = paste("data-years/",fileName,sep=""))
   # }
   years.temp=do.call(rbind.data.frame,years.list)
+  naminds=which(colnames(years.temp) %in% c("DAY.OF.YEAR","YEAR","PRCP","TMAX"))
+  colnames(years.temp)[naminds]=c("day","year","precip","temp")
+  years.temp=years.temp[,c("day","year","precip","temp")]
   #add cumulative and squared cues. NOTE THAT SQUARING HAPPENS AFTER CUMSUM!
   years.temp=cbind(years.temp,
                    cutemp=0*years.temp$temp,
@@ -283,6 +286,9 @@ yeargen.ithaca<-function(best.precip,sd.precip,best.temp,sd.temp){
   # save(years.list,file = paste("data-years/",fileName,sep=""))
   # }
   years.temp=do.call(rbind.data.frame,years.list)
+  naminds=which(colnames(years.temp) %in% c("DAY.OF.YEAR","YEAR","PRCP","TMAX"))
+  colnames(years.temp)[naminds]=c("day","year","precip","temp")
+  years.temp=years.temp[,c("day","year","precip","temp")]
   #add cumulative and squared cues. NOTE THAT SQUARING HAPPENS AFTER CUMSUM!
   years.temp=cbind(years.temp,
                    cutemp=0*years.temp$temp,

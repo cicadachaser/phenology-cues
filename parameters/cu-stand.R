@@ -21,7 +21,7 @@ burnIn=200 #number of years to not plot (to avoid scale issues from broad initia
 mutdist=.01 #What fraction of the total "cue space" should mutations (on average) traverse (kinda).
 yearLabel="A" #For deciding which set of year randomization to use
 fitshape="standgauss"
-yearSet="earlylate50"
+yearSet="early.late.50"
 #######################
 # For analytic script #
 #######################
