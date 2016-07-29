@@ -62,8 +62,15 @@ source("scripts/rate_setup.R") #here using only for the cuesmax
 years.list=NULL #initialize list
 
 if(runType=="standard"){
-  years.list=yeargen.davis(best.temp = best.temp,sd.temp = sd.temp,
-                           best.precip = best.precip,sd.precip = sd.precip)
+  years.stuff=yeargen.davis(best.temp = best.temp,sd.temp = sd.temp,
+                            best.precip = best.precip,sd.precip = sd.precip)
+  years.list=years.stuff[[1]]
+  years.indlist=years.stuff[[2]]
+} else if(runType=="ithaca"){
+  years.stuff=yeargen.ithaca(best.temp = best.temp,sd.temp = sd.temp,
+                             best.precip = best.precip,sd.precip = sd.precip)
+  years.list=years.stuff[[1]]
+  years.indlist=years.stuff[[2]]
 } else if(runType=="unitTestConst"){
   out=yeargen.const(numYears)
   years.list=out[["years.list"]]
@@ -73,8 +80,6 @@ if(runType=="standard"){
   years.list=out[["years.list"]]
 }
 set_wrkdir()
-years.indlist=read.csv(paste("enviromental histories/",yearSet,".csv",sep=""))
-years.index=years.indlist$x-1913
 
 #first, point-check
 N=pointcheck
