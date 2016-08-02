@@ -71,15 +71,13 @@ if(runType=="standard"){
                              best.precip = best.precip,sd.precip = sd.precip)
   years.list=years.stuff[[1]]
   years.indlist=years.stuff[[2]]
-} else if(runType=="unitTestConst"){
-  out=yeargen.const(numYears)
-  years.list=out[["years.list"]]
-  years.index=rep(1,numYears)
-} else if (runType=="unitTestRand"){
-  out=yeargen.rand(numYears)
-  years.list=out[["years.list"]]
 }
 set_wrkdir()
+
+#need to turn years.indlist into a list of indexes by subtracting 1913 from all entries
+#In our actual simulations, we handle this when we make the indmat
+years.index=years.indlist-1913
+
 
 #first, point-check
 N=pointcheck
