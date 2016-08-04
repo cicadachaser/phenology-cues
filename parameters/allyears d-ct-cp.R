@@ -9,7 +9,7 @@ runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #standard is for running the populations through a set of replications 
 traits=c("day","cutemp","cuprecip") 
 #traits=c("day","temp","precip","cutemp","cuprecip","daysq","tempsq","precipsq","cutempsq","cuprecipsq")
-numsims=5 # number of simulations of each type to do
+numsims=1 # number of simulations of each type to do
 plotExtra=TRUE # do we plot snapshots of emergence through time?
 plotPheno=TRUE # do we plot snapshots of phenotype through time? 3-D scatterplot
 viewLength=500 #for comparisons of simulation types,

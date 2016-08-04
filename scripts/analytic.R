@@ -1,6 +1,6 @@
 #Script for optimizing traits for geometric fitness
 #uses same parameter script files as simulation
-rm(list=setdiff(ls(), c("set_wrkdir","runsname")))
+rm(list=setdiff(ls(), c("set_wrkdir","runsname","runsnames")))
 ##############################################################################
 # The following lines are only important if you're running this script alone #
 ##############################################################################

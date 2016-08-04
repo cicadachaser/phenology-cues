@@ -15,7 +15,7 @@ set_wrkdir<-function(){
   }
 }
 set_wrkdir()
-runsnames=c("allyears d-ct-cp-1","allyears d-t-p-ct-cp")
+runsnames=c("allyears d-ct-cp","allyears d-t-p-ct-cp")
 runsname=runsnames[1]
 source("scripts/simulation.R")
 source("scripts/analytic.R")
