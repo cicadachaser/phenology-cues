@@ -1,5 +1,5 @@
 #simulation<-function(runsname){
-rm(list=setdiff(ls(), c("set_wrkdir","runsname")))
+rm(list=setdiff(ls(), c("set_wrkdir","runsname","runsnames")))
 require(timeDate)
 require(zoo)
 #Set appropriate working directory
