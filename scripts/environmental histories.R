@@ -144,5 +144,8 @@ late.25<-as.numeric(rownames(head(yearvar[order(yearvar$TMAX.SPR),],25)))  #25 y
 early.late.50<-c(early.25,late.25) #early and late years
 punctual.50<-as.numeric(rownames(yearvar[order(abs(yearvar$TMAX.SPR)),][26:75,])) #normal springs
 
-save.image(file="davis.RData")
+high.CV.TMAX.25<-as.numeric(rownames(tail(yearvar[order(yearvar$TMAX.CV),],25))) #high CV years - high within year variability
+low.CV.TMAX.25<-as.numeric(rownames(head(yearvar[order(yearvar$TMAX.CV),],25))) #low CV years - low within year variability
+
+save.image(file="ithaca.RData")
 

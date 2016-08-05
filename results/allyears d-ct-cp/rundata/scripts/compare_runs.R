@@ -26,7 +26,7 @@ max2=apply(sims2[["max"]],2,max)
 
 
 setwd("results")
-resultsdir=paste("compare-",names[1],"-vs-",names[2],sep="")
+resultsdir=paste("compare-",runsnames[1],"-vs-",runsnames[2],sep="")
 unlink(resultsdir,recursive = TRUE)
 dir.create(resultsdir,showWarnings = FALSE)
 setwd(resultsdir)
@@ -40,13 +40,13 @@ matplot(cbind(t(sims1[["means"]][,(length(sims1$max)-viewLength):length(sims1$ma
               t(sims2[["means"]][,(length(sims2$max)-viewLength):length(sims2$max)] /
                   sims2[["max"]][,(length(sims2$max)-viewLength):length(sims2$max)])),
         type='l',col=c(rep("chocolate",numsims),rep("cornflowerblue",numsims)),
-        main=paste("Scaled fitness through time for all runs",names[1],names[2]),
+        main=paste("Scaled fitness through time for all runs",runsnames[1],runsnames[2]),
         xlab="generation",
         ylab="Raw mean fitness",
         cex.lab=1.5,
         cex.main=1.8
 )
-legend(x="bottomright",legend=c(sprintf("max %s",names)),
+legend(x="bottomright",legend=c(sprintf("max %s",runsnames)),
        fill=c("chocolate","cornflowerblue"),cex=2)
 abline(h=1)
 dev.print(pdf,paste("compare-allruns-scaled.pdf",sep=""))
@@ -61,7 +61,7 @@ meanmax.2=apply(sims2[["max"]],2,mean)
 matplot(cbind(meanmax.1[(length(sims1$max)-viewLength):length(sims1$max)],
               meanmax.2[(length(sims2$max)-viewLength):length(sims2$max)]),
         type='l',col=c(rep('red',numsims),rep('blue',numsims)),
-        main=paste("Mean fitness through time for mean of runs",names[1],names[2]),
+        main=paste("Mean fitness through time for mean of runs",runsnames[1],runsnames[2]),
         xlab="generation",
         ylab="Raw mean fitness",
         ylim=c(0,max(c(meanmax.1,meanmax.2)))
@@ -69,7 +69,7 @@ matplot(cbind(meanmax.1[(length(sims1$max)-viewLength):length(sims1$max)],
 matpoints(cbind(meanmeans.1[(length(sims1$max)-viewLength):length(sims1$max)],
                 meanmeans.2[(length(sims2$max)-viewLength):length(sims2$max)]),
           type='l',col=c("chocolate","cornflowerblue"))
-legend(x="bottomright",legend=c(sprintf("max possible %s",names),sprintf("mean %s",names)),
+legend(x="bottomright",legend=c(sprintf("max possible %s",runsnames),sprintf("mean %s",runsnames)),
        fill=c(col.list,"chocolate","cornflowerblue"),cex=2)
 dev.print(pdf,paste("compare-means.pdf",sep=""))
 
@@ -87,7 +87,7 @@ hist((sims1[["means"]][,(length(sims1$max)-viewLength):length(sims1$max)]-
         sims2[["means"]][,(length(sims2$max)-viewLength):length(sims2$max)]),
      breaks=30,
      main="histogram of differences",
-     xlab=paste("Fitness of ",names[1],"minus",names[2]),
+     xlab=paste("Fitness of ",runsnames[1],"minus",runsnames[2]),
      sub="green is mean")
 abline(v=0,col='red',lwd=2)
 abline(v=mean(sims1[["means"]]-sims2[["means"]]),lwd=2,col='green')
@@ -99,7 +99,7 @@ matplot(cbind(meanmeans.1[(length(sims1$max)-viewLength):length(sims1$max)] /
               meanmeans.2[(length(sims2$max)-viewLength):length(sims2$max)] /
                 meanmax.2[(length(sims2$max)-viewLength):length(sims2$max)]),
         type='l',col=c("chocolate","cornflowerblue"),
-        main=paste("Scaled fitness through time for mean of runs",names[1],names[2]),
+        main=paste("Scaled fitness through time for mean of runs",runsnames[1],runsnames[2]),
         xlab="generation",
         ylab="Raw mean fitness",
         ylim=c(0,1)
@@ -118,7 +118,7 @@ pred=predict(model,xvals)
 points(pred,type='l',lwd=2,col="cornflowerblue",lty=2)
 
 abline(h=1,col='red')
-legend(x="bottomright",legend=names,fill=c("chocolate","cornflowerblue"),cex=2)
+legend(x="bottomright",legend=runsnames,fill=c("chocolate","cornflowerblue"),cex=2)
 dev.print(pdf,paste("compare-means-scaled.pdf",sep=""))
 
 #barplot(ish) for the fitness values towards the end of the run
@@ -131,7 +131,7 @@ plot(jitter(c(rep(1,numsims),rep(2,numsims)),factor=.1),c(latefit1,latefit2),
     xlab="",
     ylab="Sum fitness"
 )
-axis(1,at=c(1,2),labels = names)
+axis(1,at=c(1,2),labels = runsnames)
 dev.print(pdf,paste("latefitness.pdf",sep=""))
 set_wrkdir()
 dev.off()
