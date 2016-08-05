@@ -120,6 +120,8 @@ for (i in 1:length(yearnames)){
 
 # generating some environmental histories ---------------------------------
 
+all.years<-1914:2014
+
 strange.TMAX.25<-as.numeric(rownames(tail(yearvar[order(yearvar$TMAX.SS),],25))) #25 least normal TMAX years
 normal.TMAX.25<-as.numeric(rownames(head(yearvar[order(yearvar$TMAX.SS),],25))) #25 most normal TMAX years
 
@@ -146,6 +148,9 @@ punctual.50<-as.numeric(rownames(yearvar[order(abs(yearvar$TMAX.SPR)),][26:75,])
 
 high.CV.TMAX.25<-as.numeric(rownames(tail(yearvar[order(yearvar$TMAX.CV),],25))) #high CV years - high within year variability
 low.CV.TMAX.25<-as.numeric(rownames(head(yearvar[order(yearvar$TMAX.CV),],25))) #low CV years - low within year variability
+
+#add Diff measure of smoothness
+
 
 save.image(file="ithaca.RData")
 
