@@ -9,13 +9,13 @@ runType="standard" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #standard is for running the populations through a set of replications 
 traits=c("day","cutemp","cuprecip") 
 #traits=c("day","temp","precip","cutemp","cuprecip","daysq","tempsq","precipsq","cutempsq","cuprecipsq")
-numsims=1 # number of simulations of each type to do
+numsims=10 # number of simulations of each type to do
 plotExtra=TRUE # do we plot snapshots of emergence through time?
 plotPheno=TRUE # do we plot snapshots of phenotype through time? 3-D scatterplot
 viewLength=500 #for comparisons of simulation types,
 #  how many generations (starting from the final and working backwards) to plot/compare
 duration=10 #number of days organizm is emerged.
-N=50 #number of individuals
+N=1000 #number of individuals
 numYears=500 #number of years to simulate
 burnIn=200 #number of years to not plot (to avoid scale issues from broad initial population traits)
 mutdist=.01 #What fraction of the total "cue space" should mutations (on average) traverse (kinda).
