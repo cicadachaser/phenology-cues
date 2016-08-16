@@ -59,7 +59,7 @@ for(i.vals in 1:num.plots){
           z=z,
           xlab=plot.traits[1],
           ylab=plot.traits[2],
-          sub=paste(fix.traits,"set to",round(fix.traits.values)),
+          sub=paste(fix.traits,"set to",round(fix.traits.values),"\n"),
           main=paste("Contour of", runsname,"\n small is good"),
           cex.lab=1.6,cex.main=1.6,cex.sub=1.4)
   #marking out infinities

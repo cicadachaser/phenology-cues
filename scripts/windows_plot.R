@@ -190,7 +190,7 @@ if(plotPheno==TRUE){
   for(curgen in c(1,seq(2,numYears,length=20))){
     curgen=round(curgen)
     cur.pop=pophistory[[curgen]]
-    if(length(traitslist)<4){ #can just do 3d plot
+    if(length(traitslist)==4){ #can just do 3d plot
       scatterplot3d(jitter(as.matrix(cur.pop[,traitslist])),type='h',
                     xlim=c(traitmins[1],traitmaxs[1]),
                     ylim=c(traitmins[2],traitmaxs[2]),
