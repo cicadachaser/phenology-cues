@@ -65,7 +65,7 @@ for(i.vals in 1:num.plots){
              ylab=plot.traits[2],
              xlab=plot.traits[1],
              col=c(rep("transparent",.1),rev(heat.colors(n=1000,alpha=1))),
-             sub=paste(fix.traits,"set to",round(fix.traits.values)),
+             sub=paste(fix.traits,"set to",round(fix.traits.values), collapse=", "),
              main=paste("Heatmap of", runsname,"\n small is good"),
              cex.lab=1.6,cex.main=1.6,cex.sub=1.4
   )
@@ -75,7 +75,7 @@ for(i.vals in 1:num.plots){
   b.traits=sprintf("b.%s",plot.traits)
   points(res.slow[,b.traits[1]],res.slow[,b.traits[2]],col='black')
   #points(res.slow[,b.traits[1]][1],res.slow[,b.traits[2]][1],col='blue')
-  dev.print(pdf,paste(figpath,sprintf("/heat-fix-%s-at-%04.0f.pdf",fix.traits,fix.traits.values),sep=""))
+  dev.print(pdf,paste(figpath,sprintf("/%sheat-fix-%s-at-%04.0f.pdf",runsname,fix.traits,fix.traits.values),sep=""))
   #Again but broader
   maxrange=200
   z=matrix(geofit,pointdense,pointdense,byrow=TRUE)
@@ -90,7 +90,7 @@ for(i.vals in 1:num.plots){
              ylab=plot.traits[2],
              xlab=plot.traits[1],
              col=c(rep("transparent",.1),rev(heat.colors(n=1000,alpha=1))),
-             sub=paste(fix.traits,"set to",round(fix.traits.values)),
+             sub=paste(fix.traits,"set to",round(fix.traits.values), collapse=", "),
              main=paste("Heatmap of", runsname,"\n small is good"),
              cex.lab=1.6,cex.main=1.6,cex.sub=1.4
   )
@@ -100,7 +100,7 @@ for(i.vals in 1:num.plots){
   b.traits=sprintf("b.%s",plot.traits)
   points(res.slow[,b.traits[1]],res.slow[,b.traits[2]],col='black')
   #points(res.slow[,b.traits[1]][1],res.slow[,b.traits[2]][1],col='blue')
-  dev.print(pdf,paste(figpath,sprintf("/heat-fix-broad-%s-at-%04.0f.pdf",fix.traits,fix.traits.values),sep=""))
+  dev.print(pdf,paste(figpath,sprintf("/%sheat-fix-broad-%s-at-%04.0f.pdf",runsname,fix.traits,fix.traits.values),sep=""))
 
 }
 dev.off()

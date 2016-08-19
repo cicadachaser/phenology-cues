@@ -80,7 +80,7 @@ if(plotExtra==TRUE){
   }
 }
 #Calculating changes in mean fitness through time
-maxfit=maxActfit=meanfit=emerge.ideal=rep(0,length(years.index))
+maxfit=maxActfit=meanfit=emerge.ideal=quant50=rep(0,length(years.index))
 emerge=matrix(0,ncol=N,nrow=length(years.index))
 for(curgen in 1:numYears){
   meanfit[curgen]=mean(pophistory[[curgen]]$Wi)
@@ -90,6 +90,7 @@ for(curgen in 1:numYears){
   maxfit[curgen]=max(cur.fitness.durated)
   emerge[curgen,]=pophistory[[curgen]]$emerge
   emerge.ideal[curgen]=min(which(cur.fitness.durated==maxfit[curgen]))
+  quant50[curgen]=which(cumsum(cur.fitness.durated)/sum(cur.fitness.durated)>=.5)[1]
 }
 #plot emergence times
 maxCount=100 #maximum number of years to count
@@ -106,6 +107,7 @@ matplot(jitter(viewGens),emerge[viewGens,],type='p',pch=1,col='black',
         cex.lab=1.4,cex.main=1.4)
 #add `optimal emergence day' - note this is a vast oversimplification
 points(viewGens,emerge.ideal[viewGens],col="red",pch=4,lwd=2)
+points(viewGens,quant50[viewGens],col="blue",pch=4,lwd=2)
 dev.print(pdf,paste("emerge-run",runName,"-gen",curgen,".pdf",sep=""))
 
 #plot mean fitness through time, showing max possible fitness
@@ -163,16 +165,16 @@ while(ind<=length(traitslist)){
   }
   dev.print(pdf,paste("coefEffects-",paste(traitslist[plotlist],collapse='-'),"-actual-run-ylim",runName,".pdf",sep=""))
   for(cur.trait in plotlist){
-  emergePlot(indivs=act.eff[act.eff[,"gen"]>burnIn,],trait=traitslist[cur.trait])
+    emergePlot(indivs=act.eff[act.eff[,"gen"]>burnIn,],trait=traitslist[cur.trait])
   }
   dev.print(pdf,paste("coefEffects-",paste(traitslist[plotlist],collapse='-'),"-actual-postburn-run",runName,".pdf",sep=""))
   for(cur.trait in plotlist){
-  traitplot(indivs=act.vals,trait=traitslist[cur.trait])
+    traitplot(indivs=act.vals,trait=traitslist[cur.trait])
   }
   dev.print(pdf,paste("coefVals-",paste(traitslist[plotlist],collapse='-'),"-run",runName,".pdf",sep=""))
   for(cur.trait in plotlist){
-  traitplot(indivs=act.vals[act.vals[,"gen"]>burnIn,],trait=traitslist[cur.trait])
-    }
+    traitplot(indivs=act.vals[act.vals[,"gen"]>burnIn,],trait=traitslist[cur.trait])
+  }
   dev.print(pdf,paste("coefVals-",paste(traitslist[plotlist],collapse='-'),"-postburn-run",runName,".pdf",sep=""))
   ind=max(plotlist)+1
 }
@@ -187,65 +189,82 @@ for(i.trait in traitslist){traitmaxs=c(traitmaxs,max(pop.temp[,i.trait]))}
 #x11(width=9,height=6)
 if(plotPheno==TRUE){
   traitslist=sprintf("b.%s",traits)
-  for(curgen in c(1,seq(2,numYears,length=20))){
-    curgen=round(curgen)
-    cur.pop=pophistory[[curgen]]
-    if(length(traitslist)==4){ #can just do 3d plot
+  if(length(traitslist==1)){ #only one trait, do histogram
+    for(curgen in c(1,seq(2,numYears,length=20))){
+      curgen=round(curgen)
+      cur.pop=pophistory[[curgen]]
+      hist(cur.pop[,traitslist])
+      dev.print(pdf,sprintf("pheno-gen%06d-run%s.pdf",curgen,runName))
+    }
+  }else if(length(traitslist==2)){ #two traits, do 2d plot
+    for(curgen in c(1,seq(2,numYears,length=20))){
+      curgen=round(curgen)
+      cur.pop=pophistory[[curgen]]
+      plot(cur.pop[,traitslist])
+      dev.print(pdf,sprintf("pheno-gen%06d-run%s.pdf",curgen,runName))
+    }
+  }else if(length(traitslist==3)){ #do 3d plot
+    for(curgen in c(1,seq(2,numYears,length=20))){
+      curgen=round(curgen)
+      cur.pop=pophistory[[curgen]]
       scatterplot3d(jitter(as.matrix(cur.pop[,traitslist])),type='h',
                     xlim=c(traitmins[1],traitmaxs[1]),
                     ylim=c(traitmins[2],traitmaxs[2]),
                     zlim=c(traitmins[3],traitmaxs[3]))
-      dev.print(pdf,sprintf("pheno3d-gen%06d-run%s.pdf",curgen,runName))
-    }else{
+      dev.print(pdf,sprintf("pheno-gen%06d-run%s.pdf",curgen,runName))
+    }
+  }else{ #more than 3 traits, do ndms
+    for(curgen in c(1,seq(2,numYears,length=20))){
+      curgen=round(curgen)
+      cur.pop=pophistory[[curgen]]
       cur.ndms=metaMDS(cur.pop[,traitslist],k=2,trymax=100,autotransform = TRUE)
       plot(cur.ndms,main=paste("NDMS for generation", curgen))
-      dev.print(pdf,sprintf("pheno3d-gen%06d-run%s.pdf",curgen,runName))
+      dev.print(pdf,sprintf("pheno-gen%06d-run%s.pdf",curgen,runName))
     }
   }
 }
 
 
+  # a few new plotting ideas ------------------------------------------------
 
-# a few new plotting ideas ------------------------------------------------
+  library(reshape2)
+  library(ggplot2)
+  library(gridExtra)
 
-library(reshape2)
-library(ggplot2)
-library(gridExtra)
+  #coeff.eff.sum<-aggregate(cbind(b.day,b.cutemp,b.cuprecip)~gen,data=act.eff,mean)
 
-#coeff.eff.sum<-aggregate(cbind(b.day,b.cutemp,b.cuprecip)~gen,data=act.eff,mean)
+  coeff.eff.sum<-aggregate(act.eff[,traitslist]~gen,data=act.eff,mean)
+  # coeff.vals.sum<-aggregate(cbind(b.day,b.temp,b.precip)~gen,data=act.vals,mean)
+  #to look at a smaller subset of the data, here up to 50 generations
+  #coeff.eff.sum<-coeff.eff.sum[coeff.eff.sum$gen<50,]
 
-coeff.eff.sum<-aggregate(act.eff[,traitslist]~gen,data=act.eff,mean)
-# coeff.vals.sum<-aggregate(cbind(b.day,b.temp,b.precip)~gen,data=act.vals,mean)
-#to look at a smaller subset of the data, here up to 50 generations
-#coeff.eff.sum<-coeff.eff.sum[coeff.eff.sum$gen<50,]
+  coeff.eff.sum.melt<- melt(coeff.eff.sum, id.var="gen")
 
-coeff.eff.sum.melt<- melt(coeff.eff.sum, id.var="gen")
+  p1<-ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,fill=variable))+geom_smooth()
 
-p1<-ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,fill=variable))+geom_smooth()
+  p2<-ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,color=variable))+geom_line()+geom_point()+geom_smooth()
 
-p2<-ggplot(coeff.eff.sum.melt,aes(x=gen,y=value,color=variable))+geom_line()+geom_point()+geom_smooth()
-
-grid.arrange(p1,p2,ncol=1)
-dev.print(pdf,sprintf("ggtraits.eff-run%s.pdf",curgen,runName))
-
+  grid.arrange(p1,p2,ncol=1)
+  dev.print(pdf,sprintf("ggtraits.eff-run%s.pdf",curgen,runName))
 
 
-#more 3D scatterplotting
 
-# library(plot3D)
-# library(plot3Drgl)
-# x<-coeff.eff.sum$b.day
-# y<-coeff.eff.sum$b.temp
-# z<-coeff.eff.sum$b.precip
-#
-# fit<-lm(z~x+y)
-# grid.lines = 26
-# x.pred<-seq(min(x),max(x),length.out=grid.lines)
-# y.pred<-seq(min(y),max(y),length.out=grid.lines)
-# xy<-expand.grid(x=x.pred,y=y.pred)
-# z.pred<-matrix(predict(fit,newdata = xy),nrow=grid.lines,ncol=grid.lines)
-# fitpoints <- predict(fit)
-#
-# scatter3D(x,y,z,colvar=coeff.eff.sum$gen,type = "h", ticktype = "detailed", pch = 19,xlab="b.day.eff", ylab="b.temp.eff", zlab="b.precip.eff", clab="gen",surf = list(x = x.pred, y = y.pred, z = z.pred,facets = NA, fit = fitpoints))
-#
-# plotrgl()
+  #more 3D scatterplotting
+
+  # library(plot3D)
+  # library(plot3Drgl)
+  # x<-coeff.eff.sum$b.day
+  # y<-coeff.eff.sum$b.temp
+  # z<-coeff.eff.sum$b.precip
+  #
+  # fit<-lm(z~x+y)
+  # grid.lines = 26
+  # x.pred<-seq(min(x),max(x),length.out=grid.lines)
+  # y.pred<-seq(min(y),max(y),length.out=grid.lines)
+  # xy<-expand.grid(x=x.pred,y=y.pred)
+  # z.pred<-matrix(predict(fit,newdata = xy),nrow=grid.lines,ncol=grid.lines)
+  # fitpoints <- predict(fit)
+  #
+  # scatter3D(x,y,z,colvar=coeff.eff.sum$gen,type = "h", ticktype = "detailed", pch = 19,xlab="b.day.eff", ylab="b.temp.eff", zlab="b.precip.eff", clab="gen",surf = list(x = x.pred, y = y.pred, z = z.pred,facets = NA, fit = fitpoints))
+  #
+  # plotrgl()
