@@ -45,7 +45,7 @@ obj_fn<-function(x,duration,yrs,traits){
   for(i in 1:length(yrs)){ #iterate through all years, calculate fitness for each
     yrfit[i]=fitness(year=yrs[[i]],newpop=indiv,duration=duration,traits=traits)$fit
   }
-  return(-sum(log(yrfit+1/10^10)))
+  return(-sum(log(yrfit+.Machine$double.eps)))
 }
 ################################
 # Optimizing geometric fitness #

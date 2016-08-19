@@ -51,7 +51,7 @@ for(i.vals in 1:num.plots){
     pop<-fitness(year=years.list[[years.index[i]]],newpop=newpop,duration=duration,traits=traits)
     yrfit[,i]=pop$fit
   }
-  geofit=apply(yrfit,1,function(x){-sum(log(x))})
+  geofit=apply(yrfit,1,function(x){-sum(log(x+.Machine$double.eps))})
   z=matrix(geofit,pointdense,pointdense,byrow=TRUE)
   maxrange=40
   #Take every value that's more than maxrange greater than the minimum value (including infinity)
