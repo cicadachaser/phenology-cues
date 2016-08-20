@@ -15,6 +15,7 @@ plotPheno=FALSE # do we plot snapshots of phenotype through time?
 viewLength=500 #for comparisons of simulation types,
 #  how many generations (starting from the final and working backwards) to plot/compare
 duration=10 #number of days organizm is emerged.
+lag=1 #number of days between decision and obtaining fitness
 N=100 #number of individuals
 numYears=500 #number of years to simulate
 burnIn=200 #number of years to not plot (to avoid scale issues from broad initial population traits)
