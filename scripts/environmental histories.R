@@ -33,8 +33,8 @@ end.date<-as.Date("2014-12-31") #the dataset will end on 2014-12-31
 complete.dates<-data.frame(seq(start.date,end.date,1)) #all dates between the start and end dates
 colnames(complete.dates)<-c("COMPLETE.DATES") #renaming the column
 
-#daily<-read.csv("davis-data/626713.csv", header=T, na.strings="-9999")
-daily<-read.csv("ithaca-data/627453.csv", header=T, na.strings="-9999")
+#daily<-read.csv("climate data/davis-data/626713.csv", header=T, na.strings="-9999")
+daily<-read.csv("climate data/ithaca-data/627453.csv", header=T, na.strings="-9999")
 daily$DATE2<-as.Date(as.character(daily$DATE),format="%Y %m %d") #DATE2 is date formatted
 daily<-merge(daily,complete.dates,by.x="DATE2",by.y="COMPLETE.DATES",all.y=TRUE) #add missing rows
 
@@ -49,7 +49,6 @@ daily<-daily[daily$YEAR>1913 & daily$YEAR<2015,] #truncates the data to 101 comp
 daily$PRCP<-daily$PRCP/10 #precips are reported in tenths of mm, units changed to mm
 daily$TMAX<-daily$TMAX/10 #temps are reported in tenths of degree C, units changed to degree C
 daily$TMIN<-daily$TMIN/10 #temps are reported in tenths of degree C, units changed to degree C
-
 
 daily<-daily[,c("DATE2","JULIAN","YEAR","MONTH","DAY","DAY.OF.YEAR","PRCP","TMAX","TMIN")] #simplified dataframe
 
@@ -71,12 +70,16 @@ temp.priors<-cbind(1:max(nrow(daily)),8,daily$TMAX.means,daily$TMAX.sd) #matrix 
 
 a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=3,parallel="snow", npcus=detectCores()-1,bounds=temp.bounds,priors=temp.priors,leads="TMAX",lags="TMAX",max.resample = 500)
 
+#get the complete imputed 100-year data set by day
 daily.imp<-a.out$imputations[[1]]
-
 daily.imp[daily.imp$PRCP<0,"PRCP"]<-0 #set all negative precip values to zero
 
-plot(1:length(daily.imp[daily.imp$YEAR==1918,"TMAX"]),daily.imp[daily.imp$YEAR==1918,"TMAX"])
-plot(1:length(daily.imp[daily.imp$YEAR==1924,"TMAX"]),daily.imp[daily.imp$YEAR==1924,"TMAX"])
+#generate an alternative imputed data set where the data only are 30 d early
+daily.imp.30d.early<-cbind(daily.imp[,1:6],rbind(tail(daily.imp[,7:9],30),head(daily.imp[,7:9],-30)),daily.imp[,10:15])
+daily.imp.30d.late<-cbind(daily.imp[,1:6],rbind(tail(daily.imp[,7:9],-30),head(daily.imp[,7:9],30)),daily.imp[,10:15])
+
+#plot(1:length(daily.imp[daily.imp$YEAR==1918,"TMAX"]),daily.imp[daily.imp$YEAR==1918,"TMAX"])
+#plot(1:length(daily.imp[daily.imp$YEAR==1924,"TMAX"]),daily.imp[daily.imp$YEAR==1924,"TMAX"])
 
 #tscsPlot(a.out,var="TMAX",cs="1918")
 #tscsPlot(a.out,var="TMAX",cs="1924")
@@ -88,6 +91,7 @@ qplot(x=DAY.OF.YEAR,y=TMIN.means,data=daily.means)
 qplot(x=DAY.OF.YEAR,y=PRCP.means,data=daily.means)
 
 qplot(x=DAY.OF.YEAR,y=TMAX,data=daily.imp,facets= .~YEAR)
+
 
 yearnames<-unique(daily.imp$YEAR) #vector of years
 yearlist<-split(daily.imp,daily.imp$YEAR) #list of each year separated
@@ -116,6 +120,10 @@ for (i in 1:length(yearnames)){
   yearvar[i,"TMAX.SPR"]<-max(cumsum(comparison$TMAX[1:120]))
   yearvar[i,"TMIN.SPR"]<-max(cumsum(comparison$TMIN[1:120]))
   yearvar[i,"PRCP.SPR"]<-max(cumsum(comparison$PRCP[1:120]))
+  #spring totals
+  yearvar[i,"TMAX.DIF"]<-sum(diff(comparison$TMAX)^2)
+  yearvar[i,"TMIN.DIF"]<-sum(diff(comparison$TMIN)^2)
+  yearvar[i,"PRCP.DIF"]<-sum(diff(comparison$PRCP)^2)
 }  
 
 # generating some environmental histories ---------------------------------
@@ -152,5 +160,5 @@ low.CV.TMAX.25<-as.numeric(rownames(head(yearvar[order(yearvar$TMAX.CV),],25))) 
 #add Diff measure of smoothness
 
 
-save.image(file="ithaca-data/ithaca-new.RData")
+#save.image(file="data-years/ithacaDat.RData")
 
