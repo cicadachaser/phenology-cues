@@ -28,13 +28,21 @@ if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin"){ #If it
 
 # input data --------------------------------------------------------------
 
-start.date<-as.Date("1914-01-01") #the dataset will start on 1914-01-01
+start.date<-as.Date("1941-01-01") #the dataset will start on 1914-01-01 for Ithaca and Davis, but other data are shorter
+start.year<-as.numeric(format(start.date,'%Y'))
 end.date<-as.Date("2014-12-31") #the dataset will end on 2014-12-31
+end.year<-as.numeric(format(end.date,'%Y'))
 complete.dates<-data.frame(seq(start.date,end.date,1)) #all dates between the start and end dates
 colnames(complete.dates)<-c("COMPLETE.DATES") #renaming the column
 
-#daily<-read.csv("climate data/davis-data/626713.csv", header=T, na.strings="-9999")
-daily<-read.csv("climate data/ithaca-data/627453.csv", header=T, na.strings="-9999")
+#See http://fivethirtyeight.com/features/which-city-has-the-most-unpredictable-weather/
+
+#daily<-read.csv("climate data/davis-data/626713.csv", header=T, na.strings="-9999")  #Go Aggies!
+#daily<-read.csv("climate data/ithaca-data/627453.csv", header=T, na.strings="-9999") #Go Big Red!
+#daily<-read.csv("climate data/great falls-data/795486.csv", header=T, na.strings="-9999") #least predictable temp, starts April 1937
+#daily<-read.csv("climate data/rapid city-data/795493.csv", header=T, na.strings="-9999") #least predicable overall, starts May 1948
+daily<-read.csv("climate data/honolulu-data/795286.csv", header=T, na.strings="-9999")  #most predicable in temp and overall, starts May 1940
+
 daily$DATE2<-as.Date(as.character(daily$DATE),format="%Y %m %d") #DATE2 is date formatted
 daily<-merge(daily,complete.dates,by.x="DATE2",by.y="COMPLETE.DATES",all.y=TRUE) #add missing rows
 
@@ -44,7 +52,7 @@ daily$DAY<-as.numeric(format(daily$DATE2,"%d")) #simple field for day
 daily$DAY.OF.YEAR<-as.POSIXlt(daily$DATE2)$yday+1 #day of the year
 
 daily$JULIAN<-julian(daily$DATE2,origin=start.date-1) #1914-01-01 is day 1
-daily<-daily[daily$YEAR>1913 & daily$YEAR<2015,] #truncates the data to 101 complete years between 1914 and 2014
+daily<-daily[daily$YEAR>start.year-1 & daily$YEAR<end.year+1,] #truncates the data to available years
 
 daily$PRCP<-daily$PRCP/10 #precips are reported in tenths of mm, units changed to mm
 daily$TMAX<-daily$TMAX/10 #temps are reported in tenths of degree C, units changed to degree C
@@ -74,7 +82,7 @@ a.out<-amelia(daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY
 daily.imp<-a.out$imputations[[1]]
 daily.imp[daily.imp$PRCP<0,"PRCP"]<-0 #set all negative precip values to zero
 
-#generate an alternative imputed data set where the data only are 30 d early
+#generate an alternative imputed data set where the data only are 30 d early or late
 daily.imp.30d.early<-cbind(daily.imp[,1:6],rbind(tail(daily.imp[,7:9],30),head(daily.imp[,7:9],-30)),daily.imp[,10:15])
 daily.imp.30d.late<-cbind(daily.imp[,1:6],rbind(tail(daily.imp[,7:9],-30),head(daily.imp[,7:9],30)),daily.imp[,10:15])
 
@@ -120,7 +128,7 @@ for (i in 1:length(yearnames)){
   yearvar[i,"TMAX.SPR"]<-max(cumsum(comparison$TMAX[1:120]))
   yearvar[i,"TMIN.SPR"]<-max(cumsum(comparison$TMIN[1:120]))
   yearvar[i,"PRCP.SPR"]<-max(cumsum(comparison$PRCP[1:120]))
-  #spring totals
+  #sequential differences
   yearvar[i,"TMAX.DIF"]<-sum(diff(comparison$TMAX)^2)
   yearvar[i,"TMIN.DIF"]<-sum(diff(comparison$TMIN)^2)
   yearvar[i,"PRCP.DIF"]<-sum(diff(comparison$PRCP)^2)
@@ -157,8 +165,8 @@ punctual.50<-as.numeric(rownames(yearvar[order(abs(yearvar$TMAX.SPR)),][26:75,])
 high.CV.TMAX.25<-as.numeric(rownames(tail(yearvar[order(yearvar$TMAX.CV),],25))) #high CV years - high within year variability
 low.CV.TMAX.25<-as.numeric(rownames(head(yearvar[order(yearvar$TMAX.CV),],25))) #low CV years - low within year variability
 
-#add Diff measure of smoothness
+low.DIF.25<-as.numeric(rownames(head(yearvar[order(yearvar$TMAX.DIF),],25))) #high smoothness
+high.DIF.25<-as.numeric(rownames(tail(yearvar[order(yearvar$TMAX.DIF),],25))) #low smoothness
 
-
-#save.image(file="data-years/ithacaDat.RData")
+save.image(file="data-years/HonoluluDat.RData")
 
