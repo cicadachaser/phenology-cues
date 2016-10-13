@@ -10,8 +10,12 @@ require(lhs) #for use in choosing initial points to check
 
 set_wrkdir()
 source(file = paste("fitcurve/",fitfile,".R",sep=""))
-load(file=paste("data-years/",locName,"Meanyr.Rdata"))
-meanYr=as.data.frame(meanYr)
+
+e=load("data-years/",locName,"Dat.Rdata")
+precip.means=daily.means$PRCP.means
+temp.means=daily.means$TMAX.means
+####RUN LOESS on these!
+
 
 
 start<-list(#these are used to generate the starting values of individuals. Starting values will produce
