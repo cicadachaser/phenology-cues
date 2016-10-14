@@ -15,14 +15,17 @@ set_wrkdir<-function(){
 }
 fitfile="standgauss"
 locName="davis"
-traitslist=c("day","temp","cutemp")
+traits=traitslist=c("day","temp","cutemp")
 yearvarMax=2500 #max year variation to test
 dayvarMax=25 #max day variation to test
-numpts=3 #number of different levels of day and year variation to test (total of numpts^2 var combinations)
+numpts=10 #number of different levels of day and year variation to test (total of numpts^2 var combinations)
 lag=1 #
 duration=10
 pointcheck=1000
 numYears=10
+fastnum=20
+slownum=5
+runnum="test3" #for identifying run number
 
 #Creating combinations of year and day variations using matrix trick
 yrvarmat=matrix(seq(0,yearvarMax,length=numpts),ncol=numpts,nrow=numpts,byrow = TRUE)
@@ -62,7 +65,7 @@ mutdist=0 #to avoid error in the part of rate_setup.R that we're not using
 source("scripts/rate_setup.R")
 source("scripts/windows_subs.R")
 
-totnum=length(yearvars)*length(traits)
+totnum=length(yearvars)*length(traitslist)*slownum
 overall.res=data.frame(dayvar=rep(-99,totnum),
                        yearvar=rep(-99,totnum),
                        trait=rep("init",totnum),
@@ -105,16 +108,14 @@ for(i.var in 1:length(yearvars)){
   #####################
   for(trait in traitslist){ #iterate through each trait
     N=pointcheck
-    fastnum=20
-    slownum=5
     b.day=b.temp=b.precip=b.cutemp=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=rep(0,N)
-    lhc=randomLHS(N,length(traits))
+    lhc=randomLHS(N,length(trait))
     count=1
-    for(i.trait in traits){
+    for(i.trait in trait){
       if(start[[i.trait]][1]==0 & start[[i.trait]][2]==0){
         curvals=rep(0,N)
       }else{
-        randnums=lhc[,count]*maxcues[[i.trait]]*length(traits)
+        randnums=lhc[,count]*maxcues[[i.trait]]*length(trait)
         randnums[randnums==0]=1/(10^10)
         curvals=randnums
       }
@@ -126,48 +127,47 @@ for(i.var in 1:length(yearvars)){
     newpop<-data.frame(b.day,b.temp,b.precip,b.cutemp,b.cuprecip,b.daysq,b.tempsq,b.precipsq,b.cutempsq,b.cuprecipsq)
     yrfit=matrix(0,nrow=N,ncol=numYears)
     for(i in 1:numYears){
-      pop<-fitness(year=years.list[[i]],newpop=newpop,duration=duration,traits=traits)
+      pop<-fitness(year=years.list[[i]],newpop=newpop,duration=duration,traits=trait)
       yrfit[,i]=pop$fit
     }
     geofit=apply(yrfit,1,function(x){-sum(log(x))})
     ordpop=newpop[(order(geofit)),]
-    b.traits=sprintf("b.%s",traits)
+    b.traits=sprintf("b.%s",trait)
     topop=ordpop[1:fastnum,b.traits]
 
     #Now, fast-check the best points
     store.fast=list()
-    res.fast=matrix(0,ncol=length(traits)+1,nrow=fastnum)
+    res.fast=matrix(0,ncol=length(trait)+1,nrow=fastnum)
     colnames(res.fast)<-c("geofit",b.traits)
     if(length(b.traits)==1){
       for(i in 1:fastnum){
-        print(i)
-        temp=store.fast[[i]]=optim(par=ordpop[i,sprintf("b.%s",traits)],fn=obj_fn,duration=duration,
-                                   yrs=years.list,traits=traits,method="Brent",lower=1e-5,upper=maxcues[[traits]],
+        temp=store.fast[[i]]=optim(par=ordpop[i,sprintf("b.%s",trait)],fn=obj_fn,duration=duration,
+                                   yrs=years.list,traits=trait,method="Brent",lower=1e-5,upper=maxcues[[trait]],
                                    control=list(maxit=1000,abstol=1/10^4,reltol=1/10^4))
         res.fast[i,1]=temp$value
-        res.fast[i,2:(length(traits)+1)]=temp$par
+        res.fast[i,2:(length(trait)+1)]=temp$par
       }
     }
     res.fast=res.fast[order(res.fast[,"geofit"]),]
 
-
     #finally, slow convergence
     store.slow=list()
-    res.slow=matrix(0,ncol=length(traits)+1,nrow=slownum)
+    res.slow=matrix(0,ncol=length(trait)+1,nrow=slownum)
     colnames(res.slow)<-c("geofit",b.traits)
     for(i in 1:slownum){
-      print(i)
-      temp=store.slow[[i]]=optim(par=res.fast[i,2:(1+length(traits))],fn=obj_fn,duration=duration,
-                                 yrs=years.list,traits=traits,method="Brent",lower=1e-5,upper=maxcues[[traits]],
+      temp=store.slow[[i]]=optim(par=res.fast[i,2:(1+length(trait))],fn=obj_fn,duration=duration,
+                                 yrs=years.list,traits=trait,method="Brent",lower=1e-5,upper=maxcues[[trait]],
                                  control=list(maxit=50000,abstol=1/10^10))
       res.slow[i,1]=temp$value
-      res.slow[i,2:(length(traits)+1)]=temp$par
+      res.slow[i,2:(length(trait)+1)]=temp$par
     }
-    overall.res[resind:(resind+slownum-1),]=cbind(rep(dayvar,slownum),rep(yearvar,slownum),rep(paste(traits,collapse=", "),slownum),res.slow)
+    overall.res[resind:(resind+slownum-1),]=cbind(rep(dayvar,slownum),rep(yearvar,slownum),rep(paste(trait,collapse=", "),slownum),res.slow)
     resind=resind+slownum
-
+    print(resind/totnum)
   }
 }
 
 set_wrkdir()
-
+dir.create(paste("results/fig1/",runnum,sep=""))
+save.image(file=paste("results/fig1/",runnum,"/fig1dat-version",runnum,".Rdata",sep=""))
+source("scripts/var_exper/fig1_plot.R")
