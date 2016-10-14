@@ -12,10 +12,10 @@ winner=rep("init",nrow(varpts))
 for(i.pt in 1:nrow(varpts)){
   cur.ind=which(varmeans$dayvar==varpts$dayvar[i.pt] & varmeans$yearvar==varpts$yearvar[i.pt])
   curvar=varmeans[cur.ind,]
-  if(sum(curvar$x==max(curvar$x))>1){
+  if(sum(curvar$x==min(curvar$x))>1){
     winner[i.pt]="tie"
   }else{
-    winner[i.pt]=curvar[which.max(curvar$x),]$trait
+    winner[i.pt]=curvar[which.min(curvar$x),]$trait
   }
 }
 # x11()
