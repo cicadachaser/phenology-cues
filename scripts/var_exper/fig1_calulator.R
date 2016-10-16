@@ -22,9 +22,9 @@ numpts=10 #number of different levels of day and year variation to test (total o
 lag=1 #
 duration=10
 pointcheck=1000
-numYears=10
+numYears=100
 fastnum=20
-slownum=5
+slownum=10
 runnum="test3" #for identifying run number
 
 #Creating combinations of year and day variations using matrix trick
