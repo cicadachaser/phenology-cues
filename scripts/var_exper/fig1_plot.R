@@ -57,7 +57,7 @@ ggplot(df, aes(x,y))+
   labs(title="Winning trait",
        x="day to day variance",
        y="year to year variance")
-dev.print(pdf,paste("winners-heatmap-good-run-",runnum,".pdf",sep=""))
+dev.print(pdf,paste("winners-heatmap-run-",runnum,".pdf",sep=""))
 
 for(i.yearvar in unique(varmeans$yearvar)){
   cur.df=varmeans[which(varmeans$yearvar==i.yearvar),]

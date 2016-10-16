@@ -25,7 +25,7 @@ pointcheck=1000
 numYears=100
 fastnum=20
 slownum=10
-runnum="test3" #for identifying run number
+runnum="test4" #for identifying run number
 
 #Creating combinations of year and day variations using matrix trick
 yrvarmat=matrix(seq(0,yearvarMax,length=numpts),ncol=numpts,nrow=numpts,byrow = TRUE)
@@ -171,3 +171,4 @@ set_wrkdir()
 dir.create(paste("results/fig1/",runnum,sep=""))
 save.image(file=paste("results/fig1/",runnum,"/fig1dat-version",runnum,".Rdata",sep=""))
 source("scripts/var_exper/fig1_plot.R")
+proc.time()
