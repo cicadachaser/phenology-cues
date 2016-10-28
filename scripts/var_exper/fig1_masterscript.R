@@ -1,4 +1,4 @@
-runFile="example.R"
+runFile="quicktest.R"
 
 set_wrkdir<-function(){
   #function for setting working directory to the right place given the current computer/user
