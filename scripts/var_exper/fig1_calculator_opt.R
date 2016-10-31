@@ -1,18 +1,10 @@
-# set_wrkdir<-function(){
-#   #function for setting working directory to the right place given the current computer/user
-#   if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin" || Sys.getenv("USERNAME")=="Collin.work"){ #If it's collin
-#     if(Sys.info()["nodename"]=="DESKTOP-D6QSU8F"){
-#       setwd("G:\\Repos\\phenology-cues") #desktop
-#     }else{
-#       setwd("C:\\Repos\\phenology-cues") #desktop
-#     }
-#   }else{
-#     if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
-#       setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")#desktop
-#     }else{
-#       setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")} #laptop
-#   }
-# }
+#Setting up for parallel processing
+require(doSNOW); require(parallel); require(doParallel)
+nClust=detectCores(all.tests=FALSE,logical=TRUE)
+c1<-makeCluster(nClust-1)
+registerDoParallel(c1)
+
+#Getting basic information
 source(paste("scripts/var_exper/runfiles/",runFile,sep = "")) #call the runFile which as all the variables defined
 startTime=proc.time()
 #Creating combinations of year and day variations using matrix trick
@@ -22,7 +14,6 @@ yearstds=yrstdmat[1:(numpts^2)]
 daystds=daystdmat[1:(numpts^2)]
 
 require(zoo) #for use in fitness calculations
-require(lhs) #for use in choosing initial points to check
 
 #Reading in the appropriate fitness function
 set_wrkdir()
@@ -61,16 +52,11 @@ source("scripts/windows_subs.R")
 
 #Make a dataframe to store the results of each run
 totnum=length(yearstds)*length(traitslist)*slownum #total number of runs
-overall.res=data.frame(daystd=rep(-99,totnum),
-                       yearstd=rep(-99,totnum),
-                       trait=rep("init",totnum),
-                       geofit=rep(-99,totnum),
-                       traitval=rep(-99,totnum),
-                       stringsAsFactors = FALSE)
-resind=1 #results index for tracking where to put each iteration of results
-'
+
 #Iterate through each each combination of stdev'
-for(i.stdev in 1:length(yearstds)){
+res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
+  #Re-load each library needed
+  require(zoo) #for use in choosing initial points to check
   ###################################################
   # Produce a set of years of appropriate variances #
   ###################################################
@@ -96,31 +82,24 @@ for(i.stdev in 1:length(yearstds)){
                                 cuprecipsq=cumsum(pmin(0,meanYr$precip)^2)
     ))
     fit.daily=fit_fn(newYear)
-    newYear=cbind(newYear,fit.daily=fit.daily)
+    fit.tot=c(rollapply(c(year$fit.daily,rep(0,duration-1)),duration,by=1,sum),rep(0,lag+1))
+    newYear=cbind(newYear,fit.daily=fit.daily,fit.tot=fit.tot)
     years.list[[count]]<-newYear
     count=count+1
   }
 
+
   #####################
   #create initial starting points, check them
+  resmat=NULL
   for(trait in traitslist){ #iterate through each trait
     N=pointcheck
     b.day=b.temp=b.precip=b.cutemp=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=rep(0,N)
-    lhc=randomLHS(N,length(trait))
-    count=1
-    for(i.trait in trait){
-      if(start[[i.trait]][1]==0 & start[[i.trait]][2]==0){
-        curvals=rep(0,N)
-      }else{
-        randnums=lhc[,count]*maxcues[[i.trait]]*length(trait)
-        randnums[randnums==0]=1/(10^10)
-        curvals=randnums
-      }
-      curname=paste("b.",i.trait,sep="")
-      assign(curname,curvals)
-      count=count+1
-    }
-
+    randnums=runif(N)*maxcues[[i.trait]]*length(trait)
+    randnums[randnums==0]=1/(10^10)
+    curvals=randnums
+    curname=paste("b.",i.trait,sep="")
+    assign(curname,curvals)
     newpop<-data.frame(b.day,b.temp,b.precip,b.cutemp,b.cuprecip,b.daysq,b.tempsq,b.precipsq,b.cutempsq,b.cuprecipsq)
     yrfit=matrix(0,nrow=N,ncol=numYears)
     for(i in 1:numYears){
@@ -159,13 +138,15 @@ for(i.stdev in 1:length(yearstds)){
       res.slow[i,2:(length(trait)+1)]=temp$par
     }
     #Save results, update counter, print progress
-    overall.res[resind:(resind+slownum-1),]=cbind(rep(daystd,slownum),rep(yearstd,slownum),rep(paste(trait,collapse=", "),slownum),res.slow)
-    resind=resind+slownum
-    print(resind/totnum)
+    resmat=rbind(resmat,cbind(rep(daystd,slownum),rep(yearstd,slownum),rep(paste(trait,collapse=", "),slownum),res.slow))
   }
+  resmat
 }
+# df <- data.frame(matrix(unlist(res), ncol=5, byrow=F))
+overall.res = do.call(rbind.data.frame, res)
+names(overall.res)=c("daystd","yearstd","trait","geofit","traitval")
 
-#Save results, make figures
+Save results, make figures
 set_wrkdir()
 dir.create(paste("results/fig1/",runnum,sep=""))
 save.image(file=paste("results/fig1/",runnum,"/fig1dat-version",runnum,".Rdata",sep=""))

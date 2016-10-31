@@ -21,3 +21,8 @@ obj_fn<-function(x,duration,yrs,traits){
   }
   return(-sum(log(yrfit+.Machine$double.eps)))
 }
+
+
+dayOpt<-function(years.list){
+
+}

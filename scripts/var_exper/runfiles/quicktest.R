@@ -2,13 +2,13 @@
 fitfile="standgauss" #Fitness function to use. Currently only one defined is standgauss
 locName="davis" #Which location's data to use. CUrrently only tested on davis
 traits=traitslist=c("day","temp","cutemp") #which traits to compare
-runnum="newcuTest1" #Name for saving the results
+runnum="quick1" #Name for saving the results
 
 #Climate parameters
 yearstdMax=20 #max year variation to test
 daystdMax=5 #max day variation to test
-numpts=10 #number of year and day variation levels to test.
-numYears=100 #number of years of climate to generate
+numpts=2 #number of year and day variation levels to test.
+numYears=10 #number of years of climate to generate
 actprecip=FALSE #If false, set all precips to zero. If true, use the smoothed precip values
 
 #Organism parameters
