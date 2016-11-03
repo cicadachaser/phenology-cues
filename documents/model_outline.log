@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.3.19)  17 OCT 2016 23:32
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.3.19)  31 OCT 2016 13:32
 entering extended mode
 **./model_outline.tex
 (model_outline.tex
@@ -358,21 +358,45 @@ Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 \Gm@dimlist=\toks22
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\geometry\geometry.cfg"))
-(model_outline.aux)
+(C:\Users\Collin.work\AppData\Roaming\MiKTeX\2.9\tex\latex\caption\caption.sty
+Package: caption 2016/02/21 v3.3-144 Customizing captions (AR)
+
+(C:\Users\Collin.work\AppData\Roaming\MiKTeX\2.9\tex\latex\caption\caption3.sty
+Package: caption3 2016/05/22 v1.7-166 caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 67.
+\captionmargin=\dimen120
+\captionmargin@=\dimen121
+\captionwidth=\dimen122
+\caption@tempdima=\dimen123
+\caption@indent=\dimen124
+\caption@parindent=\dimen125
+\caption@hangindent=\dimen126
+)
+\c@ContinuedFloat=\count102
+)
+(C:\Users\Collin.work\AppData\Roaming\MiKTeX\2.9\tex\latex\paralist\paralist.st
+y
+Package: paralist 2016/08/07 v2.6 Extended list environments
+\pltopsep=\skip46
+\plpartopsep=\skip47
+\plitemsep=\skip48
+\plparsep=\skip49
+\pl@lab=\toks23
+) (model_outline.aux)
 \openout1 = `model_outline.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -408,45 +432,72 @@ LaTeX Font Info:    ... okay on input line 9.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Font Info:    Try loading font information for U+msa on input line 10.
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Font Info:    Try loading font information for U+msa on input line 15.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsfonts\umsa.fd"
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 10.
+LaTeX Font Info:    Try loading font information for U+msb on input line 15.
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsfonts\umsb.fd"
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [1
+)
+Underfull \hbox (badness 5359) in paragraph at lines 28--28
+[]\OT1/cmr/m/n/10.95 High year-to-year
+ []
 
-{C:/Users/Collin.work/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}] [2]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 50.
-
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 30.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\omscmr.fd"
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 50.
- [3]
-(model_outline.aux) ) 
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 30.
+
+Underfull \hbox (badness 10000) in paragraph at lines 31--32
+[]\OT1/cmr/m/n/10.95 Cumulative mea-sures
+ []
+
+
+Underfull \hbox (badness 4505) in paragraph at lines 36--37
+[]\OT1/cmr/m/n/10.95 Cumulative mea-sures fa-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 41--41
+[]\OT1/cmr/m/n/10.95 Low year-to-year
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 47--48
+[]\OT1/cmr/m/n/10.95 Cumulative mea-sures
+ []
+
+[1
+
+{C:/Users/Collin.work/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
+[2] [3] [4] [5
+
+] (model_outline.aux) ) 
 Here is how much of TeX's memory you used:
- 1890 strings out of 493634
- 22954 string characters out of 3141296
- 85801 words of memory out of 3000000
- 5275 multiletter control sequences out of 15000+200000
+ 3084 strings out of 493634
+ 44216 string characters out of 3141296
+ 115569 words of memory out of 3000000
+ 6459 multiletter control sequences out of 15000+200000
  11390 words of font info for 43 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
- 27i,6n,32p,870b,203s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsf
-onts/cm/cmbx12.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfon
-ts/cm/cmmi10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts
-/cm/cmr10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm
-/cmr12.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cm
-r17.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy1
-0.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti10.
-pfb>
-Output written on model_outline.pdf (3 pages, 100160 bytes).
+ 36i,10n,39p,870b,346s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/am
+sfonts/cm/cmbx12.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsf
+onts/cm/cmmi10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfon
+ts/cm/cmr10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/
+cm/cmr12.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/
+cmr17.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cms
+y10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti1
+0.pfb>
+Output written on model_outline.pdf (5 pages, 105860 bytes).
 PDF statistics:
- 40 PDF objects out of 1000 (max. 8388607)
+ 46 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
