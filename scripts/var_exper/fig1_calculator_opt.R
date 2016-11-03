@@ -82,7 +82,7 @@ res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
                                 cuprecipsq=cumsum(pmin(0,meanYr$precip)^2)
     ))
     fit.daily=fit_fn(newYear)
-    fit.tot=c(rollapply(c(year$fit.daily,rep(0,duration-1)),duration,by=1,sum),rep(0,lag+1))
+    fit.tot=c(rollapply(c(fit.daily,rep(0,duration-1)),duration,by=1,sum))
     newYear=cbind(newYear,fit.daily=fit.daily,fit.tot=fit.tot)
     years.list[[count]]<-newYear
     count=count+1
