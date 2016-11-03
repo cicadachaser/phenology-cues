@@ -92,6 +92,12 @@ res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
   #####################
   #create initial starting points, check them
   resmat=NULL
+  #FOR B.DAY
+  dayres=opt_day(years.list)
+  resmat=rbind(resmat,c(daystd,yearstd,paste(trait,collapse=", "),dayres))
+
+
+
   for(trait in traitslist){ #iterate through each trait
     N=pointcheck
     b.day=b.temp=b.precip=b.cutemp=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=rep(0,N)
@@ -146,7 +152,7 @@ res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
 overall.res = do.call(rbind.data.frame, res)
 names(overall.res)=c("daystd","yearstd","trait","geofit","traitval")
 
-Save results, make figures
+# Save results, make figures
 set_wrkdir()
 dir.create(paste("results/fig1/",runnum,sep=""))
 save.image(file=paste("results/fig1/",runnum,"/fig1dat-version",runnum,".Rdata",sep=""))

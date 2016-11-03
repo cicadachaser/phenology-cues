@@ -23,6 +23,12 @@ obj_fn<-function(x,duration,yrs,traits){
 }
 
 
-dayOpt<-function(years.list){
-
+opt_day<-function(years.list){
+  numYears=length(years.list)
+  fitstore=matrix(0,nrow=numYears,ncol=365) #matrix to store fitness per day
+  for(i.list in 1:numYears){
+    fitstore[i.list,]=years.list[[i.list]][,"fit.tot"]
+  }
+  geofit=apply(log(fitstore),2,sum)
+  return(c(geofit=max(geofit),b.day=which(geofit==max(geofit))))
 }
