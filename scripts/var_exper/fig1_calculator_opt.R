@@ -57,8 +57,9 @@ source("scripts/windows_subs.R")
 #Make a dataframe to store the results of each run
 totnum=length(yearstds)*length(traitslist)*slownum #total number of runs
 
+set.seed(133)
 #Iterate through each each combination of stdev'
-res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
+res=foreach(i.stdev = 1:length(yearstds)) %do% {
   #Re-load each library needed
   require(zoo) #for use in choosing initial points to check
   ###################################################

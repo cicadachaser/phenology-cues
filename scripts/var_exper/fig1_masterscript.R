@@ -1,4 +1,4 @@
-runFile="compare1-10yr.R"
+runFile="scriptname.R"
 
 set_wrkdir<-function(){
   #function for setting working directory to the right place given the current computer/user

@@ -68,7 +68,7 @@ overall.res=data.frame(daystd=rep(-99,totnum),
                        traitval=rep(-99,totnum),
                        stringsAsFactors = FALSE)
 resind=1 #results index for tracking where to put each iteration of results
-'
+set.seed(133)
 #Iterate through each each combination of stdev'
 for(i.stdev in 1:length(yearstds)){
   ###################################################

@@ -1,13 +1,14 @@
 set_wrkdir()
 load(file=paste("results/fig1/",runnum,"/fig1dat-version",runnum,".Rdata",sep=""))
 varmeans=aggregate(as.numeric(overall.res$geofit),
-                   by=list(dayvar=as.factor(overall.res$dayvar),
-                           yearvar=as.factor(overall.res$yearvar),
+                   by=list(daystd=as.factor(overall.res$daystd),
+                           yearstd=as.factor(overall.res$yearstd),
                            trait=overall.res$trait),
                    FUN=mean)
-varmeans$yearvar=as.numeric(as.character(varmeans$yearvar))
-varmeans$dayvar=as.numeric(as.character(varmeans$dayvar))
-varpts=unique(varmeans[,c("dayvar","yearvar")])
+varmeans$yearstd=as.numeric(as.character(varmeans$yearstd))
+varmeans$daystd=as.numeric(as.character(varmeans$daystd))
+varmeans$x=as.numeric(as.character(varmeans$x))
+varpts=unique(varmeans[,c("daystd","yearstd")])
 winner=rep("init",nrow(varpts))
 for(i.pt in 1:nrow(varpts)){
   cur.ind=which(varmeans$dayvar==varpts$dayvar[i.pt] & varmeans$yearvar==varpts$yearvar[i.pt])
