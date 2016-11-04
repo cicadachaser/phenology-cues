@@ -1,4 +1,4 @@
-runFile="quicktest.R"
+runFile="compare1-10yr.R"
 
 set_wrkdir<-function(){
   #function for setting working directory to the right place given the current computer/user
@@ -17,3 +17,8 @@ set_wrkdir<-function(){
 }
 set_wrkdir()
 source("scripts/var_exper/fig1_calculator.R")
+tempPath=getwd()
+set_wrkdir()
+file.copy(from=paste("scripts/var_exper/runfiles/",runFile,sep = ""),
+          to=paste(tempPath,"/pars-version-",runFile,sep="")
+          )

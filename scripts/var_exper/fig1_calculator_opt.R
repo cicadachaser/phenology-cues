@@ -1,4 +1,8 @@
 #Setting up for parallel processing
+
+#Small function to simplify rewriting factor to number
+fac2num=function(vec){return(as.numeric(as.character(vec)))}
+
 require(doSNOW); require(parallel); require(doParallel)
 nClust=detectCores(all.tests=FALSE,logical=TRUE)
 c1<-makeCluster(nClust-1)
@@ -93,68 +97,32 @@ res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
   #create initial starting points, check them
   resmat=NULL
   #FOR B.DAY
+  start.opt=proc.time()
   dayres=opt_day(years.list)
-  resmat=rbind(resmat,c(daystd,yearstd,paste(trait,collapse=", "),dayres))
-
-
-
-  for(trait in traitslist){ #iterate through each trait
-    N=pointcheck
-    b.day=b.temp=b.precip=b.cutemp=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=rep(0,N)
-    randnums=runif(N)*maxcues[[i.trait]]*length(trait)
-    randnums[randnums==0]=1/(10^10)
-    curvals=randnums
-    curname=paste("b.",i.trait,sep="")
-    assign(curname,curvals)
-    newpop<-data.frame(b.day,b.temp,b.precip,b.cutemp,b.cuprecip,b.daysq,b.tempsq,b.precipsq,b.cutempsq,b.cuprecipsq)
-    yrfit=matrix(0,nrow=N,ncol=numYears)
-    for(i in 1:numYears){
-      pop<-fitness(year=years.list[[i]],newpop=newpop,duration=duration,traits=trait)
-      yrfit[,i]=pop$fit
-    }
-    geofit=apply(yrfit,1,function(x){-sum(log(x))})
-    ordpop=newpop[(order(geofit)),]
-    b.traits=sprintf("b.%s",trait)
-    topop=ordpop[1:fastnum,b.traits]
-
-    #Now, fast-check the best points
-    store.fast=list()
-    res.fast=matrix(0,ncol=length(trait)+1,nrow=fastnum)
-    colnames(res.fast)<-c("geofit",b.traits)
-    if(length(b.traits)==1){
-      for(i in 1:fastnum){
-        temp=store.fast[[i]]=optim(par=ordpop[i,sprintf("b.%s",trait)],fn=obj_fn,duration=duration,
-                                   yrs=years.list,traits=trait,method="Brent",lower=1e-5,upper=maxcues[[trait]],
-                                   control=list(maxit=1000,abstol=1/10^4,reltol=1/10^4))
-        res.fast[i,1]=temp$value
-        res.fast[i,2:(length(trait)+1)]=temp$par
-      }
-    }
-    res.fast=res.fast[order(res.fast[,"geofit"]),]
-
-    #finally, slow convergence
-    store.slow=list()
-    res.slow=matrix(0,ncol=length(trait)+1,nrow=slownum)
-    colnames(res.slow)<-c("geofit",b.traits)
-    for(i in 1:slownum){
-      temp=store.slow[[i]]=optim(par=res.fast[i,2:(1+length(trait))],fn=obj_fn,duration=duration,
-                                 yrs=years.list,traits=trait,method="Brent",lower=1e-5,upper=maxcues[[trait]],
-                                 control=list(maxit=50000,abstol=1/10^10))
-      res.slow[i,1]=temp$value
-      res.slow[i,2:(length(trait)+1)]=temp$par
-    }
-    #Save results, update counter, print progress
-    resmat=rbind(resmat,cbind(rep(daystd,slownum),rep(yearstd,slownum),rep(paste(trait,collapse=", "),slownum),res.slow))
-  }
+  resmat=rbind(resmat,c(daystd,yearstd,"day",dayres))
+  tempres=opt_temp(years.list)
+  resmat=rbind(resmat,c(daystd,yearstd,"temp",tempres))
+  cures=opt_cutemp(years.list)
+  resmat=rbind(resmat,c(daystd,yearstd,"cutemp",cures))
+  time.opt=proc.time()-start.opt
   resmat
 }
+
+
 # df <- data.frame(matrix(unlist(res), ncol=5, byrow=F))
 overall.res = do.call(rbind.data.frame, res)
 names(overall.res)=c("daystd","yearstd","trait","geofit","traitval")
+overall.res$daystd=fac2num(overall.res$daystd)
+overall.res$yearstd=fac2num(overall.res$yearstd)
+overall.res$trait=as.character(overall.res$trait)
+overall.res$geofit=fac2num(overall.res$geofit)
+overall.res$traitval=fac2num(overall.res$traitval)
+
+
 
 # Save results, make figures
 set_wrkdir()
 dir.create(paste("results/fig1/",runnum,sep=""))
 save.image(file=paste("results/fig1/",runnum,"/fig1dat-version",runnum,".Rdata",sep=""))
-source("scripts/var_exper/fig1_plot.R")
+source("scripts/var_exper/fig1_plot_opt.R")
 runTime=proc.time()-startTime;print(runTime)
