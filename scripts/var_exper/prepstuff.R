@@ -44,15 +44,15 @@ opt_temp=function(years.list){
   fitstore=matrix(0,ncol=length(testpts),nrow=numYears)
   for(i.list in 1:numYears){
     #fitting piecewise function of day~cutemp, but add in extreme endpoints to avoid extrapolation issues
-    fcur=approxfun(x=c(-10,cummax(years.list[[1]][,"temp"]),max(testpts)*1.1),
-                   y=c(1,years.list[[1]][,"day"],365))
+    fcur=approxfun(x=c(-10,cummax(years.list[[i.list]][,"temp"]),max(testpts)*1.1),
+                   y=c(1,years.list[[i.list]][,"day"],365))
     days=floor(fcur(testpts)) #mapping test points to emergence days
     fit=years.list[[i.list]][days,"fit.tot"]
     fitstore[i.list,]=fit
   }
   geofit=apply(log(fitstore),2,sum)
   # plot(testpts,geofit,type='l')
-  return(c(geofit=max(geofit)[1],b.cutemp=testpts[geofit==max(geofit)][1]))
+  return(c(geofit=max(geofit),b.temp=testpts[geofit==max(geofit)][1]))
 }
 
 opt_cutemp<-function(years.list){
@@ -66,13 +66,13 @@ opt_cutemp<-function(years.list){
   fitstore=matrix(0,ncol=length(testpts),nrow=numYears)
   for(i.list in 1:numYears){
     #fitting piecewise function of day~cutemp, but add in extreme endpoints to avoid extrapolation issues
-    fcur=approxfun(x=c(-10,years.list[[1]][,"cutemp"],max(testpts)*1.1),
-                   y=c(1,years.list[[1]][,"day"],365))
+    fcur=approxfun(x=c(-10,years.list[[i.list]][,"cutemp"],max(testpts)*1.1),
+                   y=c(1,years.list[[i.list]][,"day"],365))
     days=floor(fcur(testpts)) #mapping test points to emergence days
     fit=years.list[[i.list]][days,"fit.tot"]
     fitstore[i.list,]=fit
   }
   geofit=apply(log(fitstore),2,sum)
   # plot(testpts,geofit,type='l')
-  return(c(geofit=max(geofit)[1],b.cutemp=testpts[geofit==max(geofit)][1]))
+  return(c(geofit=max(geofit),b.cutemp=testpts[geofit==max(geofit)][1]))
 }

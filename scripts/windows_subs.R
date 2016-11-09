@@ -11,7 +11,7 @@ emergence<-function(year,newpop,traits){
   #  year: current year data. Includes columns $day, $tmax, $precip
   # Output:
   #  day (Julian) of emergence
-  newpop[newpop==0]=10^-10
+  newpop[newpop==0]=10^10
   trans=0*newpop #trans will hold the tranformed trait values for linear combination and 0s for unused traits
   b.traits=sprintf("b.%s",traits)
   trans[,b.traits]=100/newpop[,b.traits]
