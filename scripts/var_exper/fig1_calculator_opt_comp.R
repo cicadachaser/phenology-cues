@@ -16,7 +16,8 @@ yrstdmat=matrix(seq(0,yearstdMax,length=numpts),ncol=numpts,nrow=numpts,byrow = 
 daystdmat=matrix(seq(0,daystdMax,length=numpts),ncol=numpts,nrow=numpts,byrow = FALSE)
 yearstds=yrstdmat[1:(numpts^2)]
 daystds=daystdmat[1:(numpts^2)]
-setwd("G:/Repos/phenology-cues/results/fig1/compare3-2yr")
+set_wrkdir()
+setwd("results/fig1/compare3-2yr")
 load("fig1dat-versioncompare3-2yr.Rdata",envir=brute<-new.env())
 set_wrkdir()
 

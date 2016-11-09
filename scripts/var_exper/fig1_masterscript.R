@@ -1,4 +1,4 @@
-runFile="opt3-2yr.R"
+runFile="opt3-2yr_comp1listlist.R"
 
 set_wrkdir<-function(){
   #function for setting working directory to the right place given the current computer/user

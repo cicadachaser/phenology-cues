@@ -14,10 +14,11 @@ set_wrkdir<-function(){
       setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")} #laptop
   }
 }
-setwd("G:/Repos/phenology-cues/results/fig1/compare3-2yr")
+set_wrkdir()
+setwd("results/fig1/compare3-2yr")
 load("fig1dat-versioncompare3-2yr.Rdata",envir=brute<-new.env())
 set_wrkdir()
-source("scripts/var_exper/runfiles/compare1-10yr.R") #call the runFile which as all the variables defined
+source("scripts/var_exper/runfiles/compare3-2yr.R") #call the runFile which as all the variables defined
 mutdist=0 #to avoid error in the part of rate_setup.R that we're not using
 source("scripts/rate_setup.R")
 source("scripts/windows_subs.R")
@@ -51,5 +52,13 @@ fit.tot=c(rollapply(c(years.list[[1]]$fit.daily,rep(0,duration-1)),duration,by=1
 for(i in 2:length(years.list))
   fit.tot=rbind(fit.tot,rollapply(c(years.list[[i]]$fit.daily,rep(0,duration-1)),duration,by=1,sum))
 sum(log(apply(fit.tot,1,max)))
+oldnewfit-varcompare$geofit.old
 
-yrfit()
+#testing to see if fitness function behaves as expected
+b.day=b.temp=b.precip=b.cutemp=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=0
+# start with traits = 0
+indiv<-data.frame(b.day,b.temp,b.precip,b.cutemp,b.cuprecip,b.daysq,b.tempsq,b.precipsq,b.cutempsq,b.cuprecipsq)
+indiv$b.day=99.9
+i=1
+res=fitness(year=years.list[[i]],newpop=indiv,duration=duration,traits=traits)
+fit.tot=c(rollapply(c(years.list[[1]]$fit.daily,rep(0,duration-1)),duration,by=1,sum))
