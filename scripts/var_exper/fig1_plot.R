@@ -1,6 +1,6 @@
 set_wrkdir()
 load(file=paste("results/fig1/",runnum,"/fig1dat-version",runnum,".Rdata",sep=""))
-varmeans=aggregate(as.numeric(overall.res$geofit),
+varmeans=aggregate(as.numeric(c(overall.res$geofit,overall.res$traitval)),
                    by=list(daystd=as.factor(overall.res$daystd),
                            yearstd=as.factor(overall.res$yearstd),
                            trait=overall.res$trait),

@@ -68,14 +68,17 @@ overall.res=data.frame(daystd=rep(-99,totnum),
                        traitval=rep(-99,totnum),
                        stringsAsFactors = FALSE)
 resind=1 #results index for tracking where to put each iteration of results
-set.seed(133)
+yearlistlist=list()
 #Iterate through each each combination of stdev'
+seednum=sample(1:10^5,1)
+set.seed(seednum)
 for(i.stdev in 1:length(yearstds)){
   ###################################################
   # Produce a set of years of appropriate variances #
   ###################################################
   yearstd=yearstds[i.stdev]
   daystd=daystds[i.stdev]
+  set.seed(i.stdev)
 
   #generate years of climate
   years.list=list()
@@ -96,10 +99,12 @@ for(i.stdev in 1:length(yearstds)){
                                 cuprecipsq=cumsum(pmin(0,meanYr$precip)^2)
     ))
     fit.daily=fit_fn(newYear)
-    newYear=cbind(newYear,fit.daily=fit.daily)
+    fit.tot=c(rollapply(c(fit.daily,rep(0,duration-1)),duration,by=1,sum))
+    newYear=cbind(newYear,fit.daily=fit.daily,fit.tot=fit.tot)
     years.list[[count]]<-newYear
     count=count+1
   }
+  yearlistlist[[i.stdev]]=years.list
 
   #####################
   #create initial starting points, check them

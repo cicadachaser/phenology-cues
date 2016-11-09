@@ -11,7 +11,7 @@ for(i.pt in 1:nrow(varpts)){
   if(sum(curvar$geofit==min(curvar$geofit))>1){
     winner[i.pt]="tie"
   }else{
-    winner[i.pt]=curvar[which.min(curvar$geofit),]$trait
+    winner[i.pt]=curvar[which.max(curvar$geofit),]$trait
   }
 }
 # x11()

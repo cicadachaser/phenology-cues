@@ -3,10 +3,6 @@
 #Small function to simplify rewriting factor to number
 fac2num=function(vec){return(as.numeric(as.character(vec)))}
 
-require(doSNOW); require(parallel); require(doParallel)
-nClust=detectCores(all.tests=FALSE,logical=TRUE)
-c1<-makeCluster(nClust-1)
-registerDoParallel(c1)
 
 #Getting basic information
 source(paste("scripts/var_exper/runfiles/",runFile,sep = "")) #call the runFile which as all the variables defined
@@ -54,12 +50,19 @@ mutdist=0 #to avoid error in the part of rate_setup.R that we're not using
 source("scripts/rate_setup.R")
 source("scripts/windows_subs.R")
 
+seednum=sample(1:10^5,1)
+set.seed(seednum)
+require(doSNOW); require(parallel); require(doParallel)
+nClust=detectCores(all.tests=FALSE,logical=TRUE)
+c1<-makeCluster(nClust-2)
+if(numYears>200) c1<-makeCluster(2)
+registerDoParallel(c1)
+
 #Make a dataframe to store the results of each run
 totnum=length(yearstds)*length(traitslist)*slownum #total number of runs
-
-set.seed(133)
+if(numYears<200) yearlistlist=list()
 #Iterate through each each combination of stdev'
-res=foreach(i.stdev = 1:length(yearstds)) %do% {
+res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
   #Re-load each library needed
   require(zoo) #for use in choosing initial points to check
   ###################################################
@@ -88,12 +91,12 @@ res=foreach(i.stdev = 1:length(yearstds)) %do% {
     ))
     fit.daily=fit_fn(newYear)
     fit.tot=c(rollapply(c(fit.daily,rep(0,duration-1)),duration,by=1,sum))
+    fit.tot=c(fit.tot[-1],0)
     newYear=cbind(newYear,fit.daily=fit.daily,fit.tot=fit.tot)
     years.list[[count]]<-newYear
     count=count+1
   }
-
-
+  if(numYears<200) yearlistlist[[i.stdev]]=years.list
   #####################
   #create initial starting points, check them
   resmat=NULL
@@ -108,6 +111,7 @@ res=foreach(i.stdev = 1:length(yearstds)) %do% {
   time.opt=proc.time()-start.opt
   resmat
 }
+stopCluster(c1)
 
 
 # df <- data.frame(matrix(unlist(res), ncol=5, byrow=F))
