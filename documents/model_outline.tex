@@ -3,6 +3,7 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{outlines}
 \usepackage[margin=1in]{geometry}
 \usepackage{caption} % to allow captions at bottom of table that don't include table number
 %To make itemize more compact in tables
@@ -14,9 +15,25 @@
 \begin{document}
 \maketitle
 \section{Overview}
-\section{Predictions}
+
+\begin{outline}[enumerate]
+	\1 Introducing the context of this study
+		\2 Climate change, phenological shifts and phenological mismatch
+			\3 Difficult to predict the outcomes of climate chance on phenoligical cuing without a mechanistic understanding. 
+		\2 Previous models of phenological cuing
+			\3 McNamara et al 2011
+			\3 Are there other, older references?
+		\2 The physiology of phenology framework
+			\3 The need to understand phenological cues
+			\3 A key challenge is that real organisms integrate multiple cues, and different organisms 
+			\3 Linking environment-driven, organism-driven and evolution-driven mechanisms to understand the adaptive evolution of the environment-phenology relationship (EPR): How should phenological cues evolve.
 
 
+\end{outline}
+
+\section{Questions and Predictions}
+
+\subsection{Q1.Which cues are favored in more variable environments?}
 
 \begin{table}
 \caption{Table title goes here}
@@ -58,6 +75,14 @@ Low year-to-year variation &\MPtrue
 \item Spatial variation – Depends on the balance of inter-annual and intra-annual variation in the locations being compared. General prediction is that day-to-day variation creates seasonal noise, and will favor photoperiod and cumulative measures and disfavor instantaneous measures, while year-to-year variation is informative about phenological windows, and plastic phenotypes that are able to track this variation will be favored – so maybe cumulative temp will be most favored, but photoperiod will be disfavored. 
 \item Simulated variation – we should be able to create histories that independently manipulate year-to-year variation independently of day-to-day variation. 
 \end{itemize}
+
+\subsection{Q2: Which cueing phenotypes are more resilient to climate change?}
+
+\begin{itemize}
+\item Low year-to-year variation to high year-to-year variation sequence: photoperiod will be depreciated, phenotypes that relied on photoperiod will be selected against. Flexible phenotypes that are able to track year-to-year variation will be favored.
+\item Late phenology to early phenology sequence: if climate change is directional, phenotypes that can track change will be favored; however, if the rate of change is slow, photoperiod might be able to keep up. During the lag phase, phenotypes that use direct metrics of the climate will do better at tracking climate change than phenotypes that track photoperiod. (Importantly, this means that they will maximize their fitness relative to abiotic conditions, but not necessarily to biotic conditions.)
+\end{itemize}
+
 
 \section{Underlying model}
 Organisms collect fitness for a number of days (default 10) starting \textit{lag} days after they decide to emerge (default is one day). In the simulation model, a set population size for the next generation is populated using a multinomial distribution with probabilities based on the relative fitnesses of each parent. Fitness is a function of the climate, with the default function being the product of two gaussians -- one based on rainfall, the other on temperature, centered on biologically realistic ``optimal'' values.
