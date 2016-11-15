@@ -14,11 +14,18 @@ set_wrkdir<-function(){
       setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")} #laptop
   }
 }
+<<<<<<< HEAD
 set_wrkdir()
 setwd("results/fig1/compare3-2yr")
 load("fig1dat-versioncompare3-2yr.Rdata",envir=brute<-new.env())
 set_wrkdir()
 source("scripts/var_exper/runfiles/compare3-2yr.R") #call the runFile which as all the variables defined
+=======
+setwd("G:/Repos/phenology-cues/results/fig1/compare3-2yr")
+load("fig1dat-versioncompare3-2yr.Rdata",envir=brute<-new.env())
+set_wrkdir()
+source("scripts/var_exper/runfiles/compare1-10yr.R") #call the runFile which as all the variables defined
+>>>>>>> 8f45bd1e6a5c8f2a0cfce45534c0605b131e8b45
 mutdist=0 #to avoid error in the part of rate_setup.R that we're not using
 source("scripts/rate_setup.R")
 source("scripts/windows_subs.R")
@@ -52,6 +59,7 @@ fit.tot=c(rollapply(c(years.list[[1]]$fit.daily,rep(0,duration-1)),duration,by=1
 for(i in 2:length(years.list))
   fit.tot=rbind(fit.tot,rollapply(c(years.list[[i]]$fit.daily,rep(0,duration-1)),duration,by=1,sum))
 sum(log(apply(fit.tot,1,max)))
+<<<<<<< HEAD
 oldnewfit-varcompare$geofit.old
 
 #testing to see if fitness function behaves as expected
@@ -62,3 +70,7 @@ indiv$b.day=99.9
 i=1
 res=fitness(year=years.list[[i]],newpop=indiv,duration=duration,traits=traits)
 fit.tot=c(rollapply(c(years.list[[1]]$fit.daily,rep(0,duration-1)),duration,by=1,sum))
+=======
+
+yrfit()
+>>>>>>> 8f45bd1e6a5c8f2a0cfce45534c0605b131e8b45
