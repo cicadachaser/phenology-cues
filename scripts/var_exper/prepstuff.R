@@ -63,7 +63,7 @@ opt_day<-function(years.list){
 # }
 
 opt_temp=function(years.list){
-  #checking my functional code
+  #Calculate temperature optimally
   numYears=length(years.list)
   ptstore=rep(0,365*numYears)
   for(i.list in 1:numYears){
@@ -91,6 +91,32 @@ opt_temp=function(years.list){
   return(c(geofit=max(geofit),b.temp=testpts[geofit==max(geofit)][1]))
 }
 
+fit_temp=function(years.list){
+  #Use fitness function to test all points of interest
+  numYears=length(years.list)
+  ptstore=rep(0,365*numYears)
+  for(i.list in 1:numYears){
+    ptstore[((i.list-1)*365+1):(i.list*365)]=cummax(years.list[[i.list]][,"temp"])
+  }
+  ptstore=sort(unique(ptstore))
+  testpts=ptstore[-length(ptstore)]+diff(ptstore)/2 #take midpoint between each ptstore
+  b.day=b.temp=b.precip=b.cutemp=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=rep(0,length(testpts))
+  # start with traits = 0
+  indiv<-data.frame(b.day,b.temp,b.precip,b.cutemp,b.cuprecip,b.daysq,b.tempsq,b.precipsq,b.cutempsq,b.cuprecipsq)
+  # create "empty" individual
+  traits="temp"
+  b.traits=sprintf("b.%s",traits)  # list of traits in b.day format
+  indiv[,b.traits]=testpts #fill in the values for the traits we're actually using
+  yrfit=matrix(0,nrow=length(years.list),ncol=length(testpts)) #initialize vector for storing yearly fitness
+  for(i in 1:length(years.list)){ #iterate through all years, calculate fitness for each
+    yrfit[i,]=fitness(year=years.list[[i]],newpop=indiv,duration=duration,traits=traits)$fit
+  }
+  geofit=apply(log(yrfit),2,sum)
+  # return(geofit)
+  return(c(geofit=max(geofit),b.temp=testpts[geofit==max(geofit)][1]))
+}
+
+
 opt_cutemp<-function(years.list){
   numYears=length(years.list)
   ptstore=rep(0,365*numYears)
@@ -117,4 +143,28 @@ opt_cutemp<-function(years.list){
   # plot(testpts,geofit,type='l')
   # return(geofit)
   return(c(geofit=max(geofit),b.cutemp=testpts[geofit==max(geofit)][1]))
+}
+
+fit_cutemp<-function(years.list){
+  numYears=length(years.list)
+  ptstore=rep(0,365*numYears)
+  for(i.list in 1:numYears){
+    ptstore[((i.list-1)*365+1):(i.list*365)]=years.list[[i.list]][,"cutemp"]
+  }
+  ptstore=sort(unique(ptstore))
+  testpts=ptstore[-length(ptstore)]+diff(ptstore)/2 #take midpoint between each ptstore
+  b.day=b.temp=b.precip=b.cutemp=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=rep(0,length(testpts))
+  # start with traits = 0
+  indiv<-data.frame(b.day,b.temp,b.precip,b.cutemp,b.cuprecip,b.daysq,b.tempsq,b.precipsq,b.cutempsq,b.cuprecipsq)
+  # create "empty" individual
+  traits="cutemp"
+  b.traits=sprintf("b.%s",traits)  # list of traits in b.day format
+  indiv[,b.traits]=testpts #fill in the values for the traits we're actually using
+  yrfit=matrix(0,nrow=length(years.list),ncol=length(testpts)) #initialize vector for storing yearly fitness
+  for(i in 1:length(years.list)){ #iterate through all years, calculate fitness for each
+    yrfit[i,]=fitness(year=years.list[[i]],newpop=indiv,duration=duration,traits=traits)$fit
+  }
+  geofit=apply(log(yrfit),2,sum)
+  # return(geofit)
+  return(c(geofit=max(geofit),b.temp=testpts[geofit==max(geofit)][1]))
 }

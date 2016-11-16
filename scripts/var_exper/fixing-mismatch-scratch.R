@@ -65,11 +65,15 @@ source('G:/Repos/phenology-cues/scripts/var_exper/prepstuff.R', encoding = 'UTF-
 #Now confirming that the prepstuff version works:
 official.temp=opt_temp(years.list)
 opt.temp2=opt_temp2(years.list)
+fit.temp=fit_temp(years.list)
+fit.temp-opt.temp2
 #Doesn't work!
 official.temp-geofit.new
 opt.temp2-geofit.new
 
-
+opt.cutemp=opt_cutemp(years.list)
+fit.cutemp=fit_cutemp(years.list)
+opt.cutemp-fit.cutemp
 
 
 
