@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 set_wrkdir()
 setwd("results/fig1/opt3-2yr-comp1listlist")
 load("fig1dat-versionopt3-2yr-comp1listlist.Rdata",envir=opt<-new.env())
@@ -13,16 +12,14 @@ oldtrait=aggregate(as.numeric(overall.res$traitval),
                            trait=overall.res$trait),
                    FUN=mean)
 oldtrait=oldtrait$x
-varmeans=aggregate(as.numeric(overall.res$geofit),
-=======
+# varmeans=aggregate(as.numeric(overall.res$geofit),
 setwd("G:/Repos/phenology-cues/results/fig1/opt3-2yr-comp1listlist")
 load("fig1dat-versionopt3-2yr-comp1listlist.Rdata",envir=opt<-new.env())
 opt.varmeans=opt$overall.res[order(opt$overall.res$yearstd,opt$overall.res$daystd,opt$overall.res$trait),]
 setwd("G:/Repos/phenology-cues/results/fig1/compare3-2yr")
 load("fig1dat-versioncompare3-2yr.Rdata",envir=brute<-new.env())
 overall.res=brute$overall.res
-varmeans=aggregate(as.numeric(cbind(overall.res$geofit,overall.res$traitval)),
->>>>>>> 8f45bd1e6a5c8f2a0cfce45534c0605b131e8b45
+varmeans=aggregate(as.numeric(overall.res$geofit),
                    by=list(daystd=as.factor(overall.res$daystd),
                            yearstd=as.factor(overall.res$yearstd),
                            trait=overall.res$trait),
@@ -31,15 +28,11 @@ varmeans$yearstd=as.numeric(as.character(varmeans$yearstd))
 varmeans$daystd=as.numeric(as.character(varmeans$daystd))
 varmeans$x=as.numeric(as.character(varmeans$x))
 varpts=unique(varmeans[,c("daystd","yearstd")])
-<<<<<<< HEAD
 varmeans=cbind(varmeans,oldtrait)
-=======
->>>>>>> 8f45bd1e6a5c8f2a0cfce45534c0605b131e8b45
 varmeans=varmeans[order(varmeans$yearstd,varmeans$daystd,varmeans$trait),]
 brute$varmeans=varmeans
 
 varcompare=cbind(varmeans, opt.varmeans[,c("geofit","traitval")])
-<<<<<<< HEAD
 names(varcompare)[4:7]=c("geofit.old","traital.old","geofit.new","traitval.new")
 varcompare=cbind(varcompare,res.diff=varcompare$geofit.old+varcompare$geofit.new)
 varcompare$geofit.old=-varcompare$geofit.old

@@ -16,12 +16,9 @@ yrstdmat=matrix(seq(0,yearstdMax,length=numpts),ncol=numpts,nrow=numpts,byrow = 
 daystdmat=matrix(seq(0,daystdMax,length=numpts),ncol=numpts,nrow=numpts,byrow = FALSE)
 yearstds=yrstdmat[1:(numpts^2)]
 daystds=daystdmat[1:(numpts^2)]
-<<<<<<< HEAD
 set_wrkdir()
 setwd("results/fig1/compare3-2yr")
-=======
-setwd("G:/Repos/phenology-cues/results/fig1/compare3-2yr")
->>>>>>> 8f45bd1e6a5c8f2a0cfce45534c0605b131e8b45
+# setwd("G:/Repos/phenology-cues/results/fig1/compare3-2yr")
 load("fig1dat-versioncompare3-2yr.Rdata",envir=brute<-new.env())
 set_wrkdir()
 
@@ -103,8 +100,9 @@ res=foreach(i.stdev = 1:length(yearstds)) %do% {
   # yearlistlist[[i.stdev]]=years.list
   years.list=brute$yearlistlist[[i.stdev]]
   for(i.ylist in 1:length(years.list)){
+    years.list[[i.ylist]]=years.list[[i.ylist]][,-which(names(years.list[[i.ylist]])=="fit.tot")]
    fit.tot=c(rollapply(c(years.list[[i.ylist]]$fit.daily,rep(0,duration-1)),duration,by=1,sum))
-   fit.tot=c(fit.tot[-1],0)
+   fit.tot=c(fit.tot[-(1:lag)],rep(0,lag))#for lag of 1
    years.list[[i.ylist]]=cbind(years.list[[i.ylist]],fit.tot=fit.tot)
 
   }
@@ -139,5 +137,5 @@ overall.res$traitval=fac2num(overall.res$traitval)
 set_wrkdir()
 dir.create(paste("results/fig1/",runnum,sep=""))
 save.image(file=paste("results/fig1/",runnum,"/fig1dat-version",runnum,".Rdata",sep=""))
-source("scripts/var_exper/fig1_plot_opt.R")
+# source("scripts/var_exper/fig1_plot_opt.R")
 runTime=proc.time()-startTime;print(runTime)

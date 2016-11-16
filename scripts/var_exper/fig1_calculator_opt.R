@@ -91,7 +91,7 @@ res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
     ))
     fit.daily=fit_fn(newYear)
     fit.tot=c(rollapply(c(fit.daily,rep(0,duration-1)),duration,by=1,sum))
-    fit.tot=c(fit.tot[-1],0)
+    fit.tot=c(fit.tot[-(1:lag)],rep(0,lag))#for lag of 1
     newYear=cbind(newYear,fit.daily=fit.daily,fit.tot=fit.tot)
     years.list[[count]]<-newYear
     count=count+1
