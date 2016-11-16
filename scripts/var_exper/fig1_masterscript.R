@@ -1,4 +1,4 @@
-runFile="opt3-2yr_comp1listlist.R"
+runFile="test_100yr.R"
 
 set_wrkdir<-function(){
   #function for setting working directory to the right place given the current computer/user
@@ -17,7 +17,7 @@ set_wrkdir<-function(){
 }
 set_wrkdir()
 # source("scripts/var_exper/fig1_calculator_opt_comp.R")
-source("scripts/var_exper/fig1_calculator_opt_comp.R")
+source("scripts/var_exper/fig1_calculator_opt.R")
 tempPath=getwd()
 set_wrkdir()
 file.copy(from=paste("scripts/var_exper/runfiles/",runFile,sep = ""),

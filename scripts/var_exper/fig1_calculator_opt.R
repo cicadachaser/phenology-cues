@@ -3,7 +3,6 @@
 #Small function to simplify rewriting factor to number
 fac2num=function(vec){return(as.numeric(as.character(vec)))}
 
-
 #Getting basic information
 source(paste("scripts/var_exper/runfiles/",runFile,sep = "")) #call the runFile which as all the variables defined
 startTime=proc.time()
@@ -102,11 +101,14 @@ res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
   resmat=NULL
   #FOR B.DAY
   start.opt=proc.time()
-  dayres=opt_day(years.list)
+  # dayres=opt_day(years.list)
+  dayres=fit_day(years.list)
   resmat=rbind(resmat,c(daystd,yearstd,"day",dayres))
-  tempres=opt_temp(years.list)
+  # tempres=opt_temp(years.list)
+  tempres=fit_temp(years.list)
   resmat=rbind(resmat,c(daystd,yearstd,"temp",tempres))
-  cures=opt_cutemp(years.list)
+  # cures=opt_cutemp(years.list)
+  cures=fit_cutemp(years.list)
   resmat=rbind(resmat,c(daystd,yearstd,"cutemp",cures))
   time.opt=proc.time()-start.opt
   resmat

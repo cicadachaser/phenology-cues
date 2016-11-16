@@ -1,10 +1,10 @@
 set_wrkdir()
-setwd("results/fig1/opt3-2yr-comp1listlist")
-load("fig1dat-versionopt3-2yr-comp1listlist.Rdata",envir=opt<-new.env())
+setwd("results/fig1/opt4-comp")
+load("fig1dat-versionopt4-comp.Rdata",envir=opt<-new.env())
 opt.varmeans=opt$overall.res[order(opt$overall.res$yearstd,opt$overall.res$daystd,opt$overall.res$trait),]
 set_wrkdir()
-setwd("results/fig1/compare3-2yr")
-load("fig1dat-versioncompare3-2yr.Rdata",envir=brute<-new.env())
+setwd("results/fig1/fit4-comp")
+load("fig1dat-versionfit4-comp.Rdata",envir=brute<-new.env())
 overall.res=brute$overall.res
 oldtrait=aggregate(as.numeric(overall.res$traitval),
                    by=list(daystd=as.factor(overall.res$daystd),
@@ -13,11 +13,11 @@ oldtrait=aggregate(as.numeric(overall.res$traitval),
                    FUN=mean)
 oldtrait=oldtrait$x
 # varmeans=aggregate(as.numeric(overall.res$geofit),
-setwd("G:/Repos/phenology-cues/results/fig1/opt3-2yr-comp1listlist")
-load("fig1dat-versionopt3-2yr-comp1listlist.Rdata",envir=opt<-new.env())
-opt.varmeans=opt$overall.res[order(opt$overall.res$yearstd,opt$overall.res$daystd,opt$overall.res$trait),]
-setwd("G:/Repos/phenology-cues/results/fig1/compare3-2yr")
-load("fig1dat-versioncompare3-2yr.Rdata",envir=brute<-new.env())
+# setwd("G:/Repos/phenology-cues/results/fig1/opt3-2yr-comp1listlist")
+# load("fig1dat-versionopt3-2yr-comp1listlist.Rdata",envir=opt<-new.env())
+# opt.varmeans=opt$overall.res[order(opt$overall.res$yearstd,opt$overall.res$daystd,opt$overall.res$trait),]
+# setwd("G:/Repos/phenology-cues/results/fig1/compare3-2yr")
+# load("fig1dat-versioncompare3-2yr.Rdata",envir=brute<-new.env())
 overall.res=brute$overall.res
 varmeans=aggregate(as.numeric(overall.res$geofit),
                    by=list(daystd=as.factor(overall.res$daystd),
@@ -34,8 +34,8 @@ brute$varmeans=varmeans
 
 varcompare=cbind(varmeans, opt.varmeans[,c("geofit","traitval")])
 names(varcompare)[4:7]=c("geofit.old","traital.old","geofit.new","traitval.new")
-varcompare=cbind(varcompare,res.diff=varcompare$geofit.old+varcompare$geofit.new)
-varcompare$geofit.old=-varcompare$geofit.old
+varcompare=cbind(varcompare,res.diff=varcompare$geofit.old-varcompare$geofit.new)
+varcompare$geofit.old=varcompare$geofit.old
 varcompare=cbind(varcompare,frac.diff=varcompare$res.diff/mean(varcompare$geofit.old+varcompare$geofit.new))
 names(varcompare)[9]="frac.diff"
 set_wrkdir()

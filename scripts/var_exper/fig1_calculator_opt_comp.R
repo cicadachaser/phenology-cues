@@ -111,7 +111,8 @@ res=foreach(i.stdev = 1:length(yearstds)) %do% {
   resmat=NULL
   #FOR B.DAY
   start.opt=proc.time()
-  dayres=opt_day(years.list)
+  # dayres=opt_day(years.list)
+  dayres=fit_day(years.list)
   resmat=rbind(resmat,c(daystd,yearstd,"day",dayres))
   # tempres=opt_temp(years.list)
   tempres=fit_temp(years.list)
