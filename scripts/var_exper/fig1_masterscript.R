@@ -1,4 +1,4 @@
-runFile="test_100yr.R"
+runFile="test_longyr.R"
 
 set_wrkdir<-function(){
   #function for setting working directory to the right place given the current computer/user

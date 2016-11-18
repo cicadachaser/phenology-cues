@@ -49,8 +49,7 @@ mutdist=0 #to avoid error in the part of rate_setup.R that we're not using
 source("scripts/rate_setup.R")
 source("scripts/windows_subs.R")
 
-seednum=sample(1:10^5,1)
-set.seed(seednum)
+seedvect=sample(1:10^5,length(yearstds))
 require(doSNOW); require(parallel); require(doParallel)
 nClust=detectCores(all.tests=FALSE,logical=TRUE)
 c1<-makeCluster(nClust-2)
@@ -59,7 +58,6 @@ registerDoParallel(c1)
 
 #Make a dataframe to store the results of each run
 totnum=length(yearstds)*length(traitslist)*slownum #total number of runs
-if(numYears<200) yearlistlist=list()
 #Iterate through each each combination of stdev'
 res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
   #Re-load each library needed
@@ -69,6 +67,7 @@ res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
   ###################################################
   yearstd=yearstds[i.stdev]
   daystd=daystds[i.stdev]
+  set.seed(seedvect[i.stdev])
 
   #generate years of climate
   years.list=list()
@@ -95,20 +94,19 @@ res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
     years.list[[count]]<-newYear
     count=count+1
   }
-  if(numYears<200) yearlistlist[[i.stdev]]=years.list
   #####################
   #create initial starting points, check them
   resmat=NULL
   #FOR B.DAY
   start.opt=proc.time()
   # dayres=opt_day(years.list)
-  dayres=fit_day(years.list)
+  dayres=opt_day(years.list)
   resmat=rbind(resmat,c(daystd,yearstd,"day",dayres))
   # tempres=opt_temp(years.list)
-  tempres=fit_temp(years.list)
+  tempres=opt_temp(years.list)
   resmat=rbind(resmat,c(daystd,yearstd,"temp",tempres))
   # cures=opt_cutemp(years.list)
-  cures=fit_cutemp(years.list)
+  cures=opt_cutemp(years.list)
   resmat=rbind(resmat,c(daystd,yearstd,"cutemp",cures))
   time.opt=proc.time()-start.opt
   resmat
