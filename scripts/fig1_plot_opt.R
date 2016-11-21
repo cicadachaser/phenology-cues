@@ -3,10 +3,11 @@ load(file=paste("results/fig1/",runnum,"/fig1dat-version",runnum,".Rdata",sep=""
 varmeans=overall.res
 varpts=unique(varmeans[,c("daystd","yearstd")])
 winner=rep("init",nrow(varpts))
-yearstds=daystds=rep(-10,nrow(varpts))
+yearstd=daystd=rep(-10,nrow(varpts))
 for(i.pt in 1:nrow(varpts)){
   cur.ind=which(varmeans$daystd==varpts$daystd[i.pt] & varmeans$yearstd==varpts$yearstd[i.pt])
   curvar=varmeans[cur.ind,]
+  yearstd=
   if(sum(curvar$geofit==min(curvar$geofit))>1){
     winner[i.pt]="tie"
   }else{
@@ -54,23 +55,23 @@ print(ggplot(df, aes(x,y))+
        y="year to year variance"))
 dev.print(pdf,paste("winners-heatmap-run-",runnum,".pdf",sep=""))
 
-for(i.yearstds in unique(varmeans$yearstds)){
-  cur.df=varmeans[which(varmeans$yearstds==i.yearstds),]
-  print(ggplot(cur.df,aes(daystds,geofit))+
+for(i.yearstd in unique(varmeans$yearstd)){
+  cur.df=varmeans[which(varmeans$yearstd==i.yearstd),]
+  print(ggplot(cur.df,aes(daystd,geofit))+
     geom_line(aes(color=factor(cur.df$trait)))+
-    labs(title=paste("fitness by stdev, yearstdsev at",i.yearstds),
+    labs(title=paste("fitness by stdev, yearstdev at",i.yearstd),
          x="day to day stdev",
          y="geometric fitness"))
-  dev.print(pdf,paste("day-by-fit-yrstd",round(i.yearstds),"-run-",runnum,".pdf",sep=""))
+  dev.print(pdf,paste("day-by-fit-yrstd",round(i.yearstd),"-run-",runnum,".pdf",sep=""))
 }
 
 
-for(i.daystds in unique(varmeans$daystds)){
-  cur.df=varmeans[which(varmeans$daystds==i.daystds),]
-  print(ggplot(cur.df,aes(yearstds,geofit))+
+for(i.daystd in unique(varmeans$daystd)){
+  cur.df=varmeans[which(varmeans$daystd==i.daystd),]
+  print(ggplot(cur.df,aes(yearstd,geofit))+
     geom_line(aes(color=factor(trait)))+
-    labs(title=paste("fitness by stdev, daystds at",i.daystds),
+    labs(title=paste("fitness by stdev, daystd at",i.daystd),
          x="year to year std",
          y="geometric fitness"))
-  dev.print(pdf,paste("year-by-fit-daystds",round(i.daystds),"-run-",runnum,".pdf",sep=""))
+  dev.print(pdf,paste("year-by-fit-daystd",round(i.daystd),"-run-",runnum,".pdf",sep=""))
 }

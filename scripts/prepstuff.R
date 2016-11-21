@@ -207,38 +207,3 @@ fit_day<-function(years.list){
   # return(geofit)
   return(c(geofit=max(geofit),b.temp=testpts[geofit==max(geofit)][1]))
 }
-
-
-fit_multi=function(years.list){
-  #Function for explicitly calculating geometric fitness for all possible temp, cutemp, and day combinations
-  #This will be slow
-  numYears=length(years.list)
-  #calculating day cutoffs
-  testpts.day=(1:365)-.1
-  #Calculating temp and cutemp cutoffs
-  ptstore.cutemp=ptstore.temp=rep(0,365*numYears)
-  for(i.list in 1:numYears){
-    ptstore.cutemp[((i.list-1)*365+1):(i.list*365)]=years.list[[i.list]][,"cutemp"]
-    ptstore.temp[((i.list-1)*365+1):(i.list*365)]=cummax(years.list[[i.list]][,"temp"])
-  }
-  ptstore.cutemp=sort(unique(ptstore.cutemp))
-  ptstore.temp=sort(unique(ptstore.temp))
-  testpts.cutemp=ptstore.cutemp[-length(ptstore.cutemp)]+diff(ptstore.cutemp)/2 #take midpoint between each ptstore
-  testpts.temp=ptstore.temp[-length(ptstore.temp)]+diff(ptstore.temp)/2 #take midpoint between each ptstore
-  combos=expand.grid(b.day=testpts.day,b.temp=testpts.temp,b.cutemp=testpts.cutemp)
-  b.precip=b.cuprecip=b.daysq=b.tempsq=b.precipsq=b.cutempsq=b.cuprecipsq=rep(0,nrow(combos))
-  # start with traits = 0
-  indiv<-data.frame(b.day=combos$b.day,b.temp=combos$b.temp,b.precip,b.cutemp=combos$b.temp,b.cuprecip,b.daysq,b.tempsq,b.precipsq,b.cutempsq,b.cuprecipsq)
-  # create "empty" individual
-  traits=c("day","temp","cutemp")
-  b.traits=sprintf("b.%s",traits)  # list of traits in b.day format
-  yrfit=matrix(0,nrow=length(years.list),
-               ncol=10^6)
-               #ncol=nrow(combos)) #initialize vector for storing yearly fitness
-  for(i in 1:length(years.list)){ #iterate through all years, calculate fitness for each
-    yrfit[i,]=fitness(year=years.list[[i]],newpop=indiv[1:10^6,],duration=duration,traits=traits)$fit
-  }
-  geofit=apply(log(yrfit),2,sum)
-  # return(geofit)
-  return(c(geofit=max(geofit),b.trait=indiv[geofit==max(geofit),]))
-}

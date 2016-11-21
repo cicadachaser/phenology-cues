@@ -8,6 +8,7 @@ source(paste("scripts/var_exper/runfiles/",runFile,sep = "")) #call the runFile 
 startTime=proc.time()
 #Creating combinations of year and day variations using matrix trick
 yrstdmat=matrix(seq(0,yearstdMax,length=numpts),ncol=numpts,nrow=numpts,byrow = TRUE)
+meanYr
 daystdmat=matrix(seq(0,daystdMax,length=numpts),ncol=numpts,nrow=numpts,byrow = FALSE)
 yearstds=yrstdmat[1:(numpts^2)]
 daystds=daystdmat[1:(numpts^2)]
@@ -86,8 +87,8 @@ res=foreach(i.stdev = 1:length(yearstds)) %dopar% {
   cures=opt_cutemp(years.list)
   resmat=rbind(resmat,c(daystd,yearstd,"cutemp",cures))
   time.opt=proc.time()-start.opt
-  resmat
 }
+
 
 # df <- data.frame(matrix(unlist(res), ncol=5, byrow=F))
 overall.res = do.call(rbind.data.frame, res)
@@ -99,7 +100,6 @@ overall.res$geofit=fac2num(overall.res$geofit)
 overall.res$traitval=fac2num(overall.res$traitval)
 
 
-stopCluster(c1)
 
 # Save results, make figures
 set_wrkdir()
@@ -107,3 +107,4 @@ dir.create(paste("results/fig1/",runnum,sep=""))
 save.image(file=paste("results/fig1/",runnum,"/fig1dat-version",runnum,".Rdata",sep=""))
 source("scripts/var_exper/fig1_plot_opt.R")
 runTime=proc.time()-startTime;print(runTime)
+stopCluster(c1)
