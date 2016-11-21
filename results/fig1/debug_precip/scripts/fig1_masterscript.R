@@ -20,12 +20,6 @@ set_wrkdir()
 source("scripts/var_exper/fig1_calculator_opt.R")
 tempPath=getwd()
 set_wrkdir()
-
-dir.create(paste(tempPath,"/scripts",sep=""))
 file.copy(from=paste("scripts/var_exper/runfiles/",runFile,sep = ""),
-          to=paste(tempPath,"/scripts/pars-version-",runFile,sep="")
+          to=paste(tempPath,"/pars-version-",runFile,sep="")
           )
-scriptlist=c("fig1_calculator_opt.R","fig1_masterscript.R","fig1_plot_opt.R","prepstuff.R")
-file.copy(from=paste("scripts/var_exper/",scriptlist,sep = ""),
-          to=paste(tempPath,"/scripts/",scriptlist,sep="")
-)
