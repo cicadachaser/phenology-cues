@@ -18,7 +18,7 @@ In order to examine the evolution of multiple-trait cueing decisions, we constru
 E=100\frac{cue_1}{trait_1}+100\frac{cue_2}{trait_2}\dots
 \]
 
-When the emergence value E is greater than or equal to 100, the organism decides to emerge. Note that we use E=100 because we liked larger numbers - there's no reason that E couldn't equal 1. We multiply by our threshhold E value (here 100) so that the interpretation of each trait value is simple. If an organism has a $trait_1=X$, then that means that this organism would emerge when $cue_1=X$ if other cues remained at zero. 
+When the emergence value E is greater than or equal to 100, the organism decides to emerge. Note that we use E=100 because we liked larger numbers - there's no reason that E couldn't equal 1. We multiply by our threshhold E value (here 100) so that the interpretation of each trait value is simple. If an organism has a $trait_1=X$, then that means that this organism would emerge when $cue_1=X$ if other cues remained at zero (or the organisms other trait values were zero). 
 
 Organisms actually emerge \textit{lag} days after deciding to emerge (default 1), which both increases biological realism and allows to remove this potential source of autocorrelation. They then collect fitness for \textit{duration} days (default 10), and their total fitness is the sum of the daily fitness they collected. 
 

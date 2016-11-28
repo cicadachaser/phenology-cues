@@ -62,9 +62,9 @@ print(ggplot(df, aes(x,y))+
        y="year to year variance"))
 dev.print(pdf,paste("winners-heatmap-bw-run-",runnum,".pdf",sep=""))
 
-for(i.yearstds in unique(varmeans$yearstd)){
-  cur.df=varmeans[which(varmeans$yearstd==i.yearstds),]
-  print(ggplot(cur.df,aes(daystd,geofit))+
+for(i.yearstds in unique(varmeans$yearstds)){
+  cur.df=varmeans[which(varmeans$yearstds==i.yearstds),]
+  print(ggplot(cur.df,aes(daystds,geofit))+
     geom_line(aes(color=factor(cur.df$trait)))+
     labs(title=paste("fitness by stdev, yearstdsev at",i.yearstds),
          x="day to day stdev",
@@ -73,9 +73,9 @@ for(i.yearstds in unique(varmeans$yearstd)){
 }
 
 
-for(i.daystds in unique(varmeans$daystd)){
-  cur.df=varmeans[which(varmeans$daystd==i.daystds),]
-  print(ggplot(cur.df,aes(yearstd,geofit))+
+for(i.daystds in unique(varmeans$daystds)){
+  cur.df=varmeans[which(varmeans$daystds==i.daystds),]
+  print(ggplot(cur.df,aes(yearstds,geofit))+
     geom_line(aes(color=factor(trait)))+
     labs(title=paste("fitness by stdev, daystds at",i.daystds),
          x="year to year std",

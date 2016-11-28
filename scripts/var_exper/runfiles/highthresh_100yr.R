@@ -4,7 +4,7 @@
 fitfile="standgauss" #Fitness function to use. Currently only one defined is standgauss
 locName="davis" #Which location's data to use. CUrrently only tested on davis
 traits=traitslist=c("day","temp","cutemp") #which traits to compare
-runnum="test-100yr" #Name for saving the results
+runnum="highthres-100yr" #Name for saving the results
 
 #Climate parameters
 yearstdMax=20 #max year variation to test
@@ -16,7 +16,7 @@ actprecip=FALSE #If false, set all precips to zero. If true, use the smoothed pr
 #Organism parameters
 lag=1 #number of days of lag between orgs deciding to emerge and them collecting fitness.
 duration=10 #number of days organisms are emerged and collecting fitness
-baseTempQ=10 #quantile of temperature to use for "base temp". Applied to the MEAN YEAR temperatures.
+baseTempQ=20 #quantile of temperature to use for "base temp". Applied to the MEAN YEAR temperatures.
 
 #Optimization
 pointcheck=1000 #total number of points to check in initial pass

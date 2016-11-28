@@ -1,5 +1,5 @@
 rm(list=ls())
-runFiles=c("test_1000yr.R")
+runFiles=c("highthresh_100yr.R")
 
 set_wrkdir<-function(){
   #function for setting working directory to the right place given the current computer/user
