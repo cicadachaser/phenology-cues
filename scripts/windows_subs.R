@@ -190,6 +190,7 @@ actTraitEff<-function(years.ind,years.list,pophistory,N,traits){
   #  Function for calculating the actual effect size of each coefficient for each indiv
   #    This is done by finding the conditions when each individual emerged, and calculating the effect of each coefficient on that day.
   #  Inputs:
+  numYears=length(pophistory)
   traitslist=sprintf("b.%s",traits)
   coef.indiv=matrix(data=0,ncol=(3+length(traitslist)),nrow=N*numYears,
                     dimnames = list(NULL,c("gen",traitslist,"relfit","emerge")))
@@ -227,15 +228,15 @@ yeargen.template<-function(){
   daily.fit=dnorm(years.temp$temp,mean=best.temp,sd=sd.temp)*dnorm(years.temp$precip,mean=best.precip,sd=sd.precip)
 }
 
-yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp){
+yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp,baseTemp=0){
   #This file assumes the imputed data file exists
   set_wrkdir()
-  fileName="ithacaDat.Rdata"
+  fileName="davisDat.Rdata"
   # if(file.exists(paste("data-years/",fileName,sep=""))){
   envdat=new.env()
   load(paste("data-years/",fileName,sep=""),envir = envdat)
   years.list=envdat$yearlist
-  years.ind=envdat[[yearSet]]
+  years.ind=envdat$yearnames
   # if(file.exists(paste("data-years/",fileName,sep=""))){
   # }else{
     #THIS IS WHERE WE PULL IN THE IMPUTATION FUNCTION!
@@ -246,7 +247,6 @@ yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp){
   naminds=which(colnames(years.temp) %in% c("DAY.OF.YEAR","YEAR","PRCP","TMAX"))
   colnames(years.temp)[naminds]=c("day","year","precip","temp")
   years.temp=years.temp[,c("day","year","precip","temp")]
-  #add cumulative and squared cues. NOTE THAT SQUARING HAPPENS AFTER CUMSUM!
   years.temp=cbind(years.temp,
                    cutemp=0*years.temp$temp,
                    cuprecip=0*(years.temp$precip),
@@ -260,7 +260,7 @@ yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp){
   years.temp=cbind(years.temp,fit.daily)
   years.list=split(years.temp,f=years.temp$year)
   for(i.year in 1:length(years.list)){
-    years.list[[i.year]]$cutemp=cumsum(years.list[[i.year]]$temp);
+    years.list[[i.year]]$cutemp=cumsum(pmax(0,years.list[[i.year]]$temp-baseTemp));
     years.list[[i.year]]$cuprecip=cumsum(years.list[[i.year]]$precip);
     years.list[[i.year]]$daysq=(years.list[[i.year]]$day)^2;
     years.list[[i.year]]$tempsq=(years.list[[i.year]]$temp)^2;
@@ -271,7 +271,7 @@ yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp){
   return(list(years.list,years.ind))
 }
 
-yeargen.ithaca<-function(best.precip,sd.precip,best.temp,sd.temp){
+yeargen.ithaca<-function(best.precip,sd.precip,best.temp,sd.temp,baseTemp=0){
   #This file assumes the imputed data file exists
   set_wrkdir()
   fileName="ithacaDat.Rdata"
@@ -303,7 +303,7 @@ yeargen.ithaca<-function(best.precip,sd.precip,best.temp,sd.temp){
   years.temp=cbind(years.temp,fit.daily)
   years.list=split(years.temp,f=years.temp$year)
   for(i.year in 1:length(years.list)){
-    years.list[[i.year]]$cutemp=cumsum(years.list[[i.year]]$temp);
+    years.list[[i.year]]$cutemp=cumsum(pmax(0,years.list[[i.year]]$temp-baseTemp));
     years.list[[i.year]]$cuprecip=cumsum(years.list[[i.year]]$precip);
     years.list[[i.year]]$daysq=(years.list[[i.year]]$day)^2;
     years.list[[i.year]]$tempsq=(years.list[[i.year]]$temp)^2;
