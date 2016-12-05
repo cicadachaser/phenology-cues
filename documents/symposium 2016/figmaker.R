@@ -161,8 +161,12 @@ store.endeff=as.data.frame(store.endeff)
 save.image("rawdump.Rdat")
 }
 
+
 ggtern(data=store.endeff,aes(b.day,b.temp,b.precip)) +
-  geom_point(fill=factor(store.endeff$sim),shape=21,size=3)
+  geom_point(fill=factor(store.endeff$sim),shape=21,size=3)+
+  theme(text=element_text(size=18))
+#  theme(plot.margin=unit(c(2,2,2,2),"cm"))
+
 setwd("documents/symposium 2016/figs")
 dev.print(pdf,"coeff-eff-tern.pdf")
 

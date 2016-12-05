@@ -190,6 +190,7 @@ actTraitEff<-function(years.ind,years.list,pophistory,N,traits){
   #  Function for calculating the actual effect size of each coefficient for each indiv
   #    This is done by finding the conditions when each individual emerged, and calculating the effect of each coefficient on that day.
   #  Inputs:
+  numYears=length(pophistory)
   traitslist=sprintf("b.%s",traits)
   coef.indiv=matrix(data=0,ncol=(3+length(traitslist)),nrow=N*numYears,
                     dimnames = list(NULL,c("gen",traitslist,"relfit","emerge")))

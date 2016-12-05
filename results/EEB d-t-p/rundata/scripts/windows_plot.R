@@ -50,7 +50,7 @@ if(plotExtra==TRUE){
          cex.main=1.3)
     arheight=jitter(rep(max(FitSum)*1.05,N),factor=.8)
     arrows(y0=arheight+.05*max(FitSum),x0=emergeDay+lag,y1=arheight,length=.1)
-    points(meanFitSum,type='l',lty=3)
+    points(meanFitSum,type='l',lty=3,lwd=2)
     dev.print(pdf,paste("dailyfitSum-run",runName,"-gen",curgen,"-actualfit.pdf",sep=""))
     #Now plot each of the coefs by emergence day.
     #     for(coefName in c("b.day","b.temp","b.precip")){
