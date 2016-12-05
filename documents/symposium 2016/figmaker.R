@@ -2,7 +2,7 @@
 
 require(graphics)
 require(fields)
-
+par(xpd=FALSE)
 set_wrkdir<-function(){
   #function for setting working directory to the right place given the current computer/user
   if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin" || Sys.getenv("USERNAME")=="Collin.work"){ #If it's collin
@@ -243,3 +243,4 @@ plot(x=ndysd,y=nyrsd,col=factor(varmeans$trait),cex=size,pch=19,
 legend("topright",inset=c(-.2,0),legend=temp.names,fill=factor(varmeans$trait),cex=1.4,bty="n")
 legend(x=1,legend=temp.names,fill=factor(varmeans$trait))
 dev.print(pdf,"trait-response-surface.pdf")
+par(xpd=FALSE)

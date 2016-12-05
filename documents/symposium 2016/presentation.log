@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.3.19)  5 DEC 2016 07:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.3.19)  5 DEC 2016 08:12
 entering extended mode
 **./presentation.tex
 (presentation.tex
@@ -971,7 +971,7 @@ LaTeX Font Warning: Font shape `OT1/cmss/m/n' in size <4> not available
 ]
 (presentation.toc) [2
 
-] <figs/germination.jpg, id=102, 2055.68pt x 1541.76pt>
+] <figs/germination.jpg, id=98, 2055.68pt x 1541.76pt>
 File: figs/germination.jpg Graphic file (type jpg)
 
 <use figs/germination.jpg>
@@ -980,21 +980,21 @@ Package pdftex.def Info: figs/germination.jpg used on input line 50.
  [3
 
  <./figs/germination.jpg>]
-<figs/animal-weatherman.jpg, id=133, 2122.93124pt x 1558.82375pt>
+<figs/animal-weatherman.jpg, id=129, 2122.93124pt x 1558.82375pt>
 File: figs/animal-weatherman.jpg Graphic file (type jpg)
 
 <use figs/animal-weatherman.jpg>
 Package pdftex.def Info: figs/animal-weatherman.jpg used on input line 50.
-(pdftex.def)             Requested size: 245.83282pt x 180.5097pt.
+(pdftex.def)             Requested size: 276.559pt x 203.05856pt.
  [4
 
  <./figs/animal-weatherman.jpg>]
-<figs/climate-change.jpg, id=162, 1882.03125pt x 880.03781pt>
+<figs/climate-change.jpg, id=158, 1882.03125pt x 880.03781pt>
 File: figs/climate-change.jpg Graphic file (type jpg)
 
 <use figs/climate-change.jpg>
 Package pdftex.def Info: figs/climate-change.jpg used on input line 50.
-(pdftex.def)             Requested size: 245.83282pt x 114.94606pt.
+(pdftex.def)             Requested size: 276.559pt x 129.31432pt.
  [5
 
  <./figs/climate-change.jpg>] [6
@@ -1027,142 +1027,142 @@ thkerncmss.
 ] [10
 
 ]
-<figs/cue-temp.pdf, id=343, 700.6175pt x 567.11874pt>
+<figs/cue-temp.pdf, id=339, 863.225pt x 668.4975pt>
 File: figs/cue-temp.pdf Graphic file (type pdf)
  <use figs/cue-temp.pdf>
 Package pdftex.def Info: figs/cue-temp.pdf used on input line 119.
-(pdftex.def)             Requested size: 73.7506pt x 59.692pt.
+(pdftex.def)             Requested size: 73.7506pt x 57.11224pt.
 
-<figs/cue-precip.pdf, id=344, 700.6175pt x 567.11874pt>
+<figs/cue-precip.pdf, id=340, 863.225pt x 668.4975pt>
 File: figs/cue-precip.pdf Graphic file (type pdf)
 
 <use figs/cue-precip.pdf>
 Package pdftex.def Info: figs/cue-precip.pdf used on input line 119.
-(pdftex.def)             Requested size: 73.7506pt x 59.692pt.
+(pdftex.def)             Requested size: 73.7506pt x 57.11224pt.
 
-<figs/cue-cutemp.pdf, id=345, 700.6175pt x 567.11874pt>
+<figs/cue-cutemp.pdf, id=341, 863.225pt x 668.4975pt>
 File: figs/cue-cutemp.pdf Graphic file (type pdf)
 
 <use figs/cue-cutemp.pdf>
 Package pdftex.def Info: figs/cue-cutemp.pdf used on input line 119.
-(pdftex.def)             Requested size: 73.7506pt x 59.692pt.
+(pdftex.def)             Requested size: 73.7506pt x 57.11224pt.
  [11
 
  <./figs/cue-temp.pdf> <./figs/cue-precip.pdf> <./figs/cue-cutemp.pdf>]
 File: figs/cue-temp.pdf Graphic file (type pdf)
  <use figs/cue-temp.pdf>
 Package pdftex.def Info: figs/cue-temp.pdf used on input line 119.
-(pdftex.def)             Requested size: 73.7506pt x 59.692pt.
+(pdftex.def)             Requested size: 73.7506pt x 57.11224pt.
 File: figs/cue-precip.pdf Graphic file (type pdf)
  <use figs/cue-precip.pdf>
 Package pdftex.def Info: figs/cue-precip.pdf used on input line 119.
-(pdftex.def)             Requested size: 73.7506pt x 59.692pt.
+(pdftex.def)             Requested size: 73.7506pt x 57.11224pt.
 File: figs/cue-cutemp.pdf Graphic file (type pdf)
 
 <use figs/cue-cutemp.pdf>
 Package pdftex.def Info: figs/cue-cutemp.pdf used on input line 119.
-(pdftex.def)             Requested size: 73.7506pt x 59.692pt.
+(pdftex.def)             Requested size: 73.7506pt x 57.11224pt.
  [12
 
 ]
 File: figs/cue-temp.pdf Graphic file (type pdf)
  <use figs/cue-temp.pdf>
 Package pdftex.def Info: figs/cue-temp.pdf used on input line 119.
-(pdftex.def)             Requested size: 73.7506pt x 59.692pt.
+(pdftex.def)             Requested size: 73.7506pt x 57.11224pt.
 File: figs/cue-precip.pdf Graphic file (type pdf)
 
 <use figs/cue-precip.pdf>
 Package pdftex.def Info: figs/cue-precip.pdf used on input line 119.
-(pdftex.def)             Requested size: 73.7506pt x 59.692pt.
+(pdftex.def)             Requested size: 73.7506pt x 57.11224pt.
 File: figs/cue-cutemp.pdf Graphic file (type pdf)
  <use figs/cue-cutemp.pdf>
 Package pdftex.def Info: figs/cue-cutemp.pdf used on input line 119.
-(pdftex.def)             Requested size: 73.7506pt x 59.692pt.
+(pdftex.def)             Requested size: 73.7506pt x 57.11224pt.
  [13
 
 ] [14
 
 ]
-<figs/E-example1-1.pdf, id=483, 700.6175pt x 567.11874pt>
+<figs/E-example1-1.pdf, id=479, 863.225pt x 668.4975pt>
 File: figs/E-example1-1.pdf Graphic file (type pdf)
 
 <use figs/E-example1-1.pdf>
 Package pdftex.def Info: figs/E-example1-1.pdf used on input line 148.
-(pdftex.def)             Requested size: 204.65517pt x 165.6544pt.
+(pdftex.def)             Requested size: 204.65517pt x 158.48419pt.
  [15
 
  <./figs/E-example1-1.pdf>]
-<figs/E-example1-2.pdf, id=522, 700.6175pt x 567.11874pt>
+<figs/E-example1-2.pdf, id=518, 863.225pt x 668.4975pt>
 File: figs/E-example1-2.pdf Graphic file (type pdf)
 
 <use figs/E-example1-2.pdf>
 Package pdftex.def Info: figs/E-example1-2.pdf used on input line 148.
-(pdftex.def)             Requested size: 204.65517pt x 165.6544pt.
+(pdftex.def)             Requested size: 204.65517pt x 158.48419pt.
  [16
 
  <./figs/E-example1-2.pdf>]
-<figs/E-example1-3.pdf, id=557, 700.6175pt x 567.11874pt>
+<figs/E-example1-3.pdf, id=553, 863.225pt x 668.4975pt>
 File: figs/E-example1-3.pdf Graphic file (type pdf)
 
 <use figs/E-example1-3.pdf>
 Package pdftex.def Info: figs/E-example1-3.pdf used on input line 148.
-(pdftex.def)             Requested size: 204.65517pt x 165.6544pt.
+(pdftex.def)             Requested size: 204.65517pt x 158.48419pt.
  [17
 
  <./figs/E-example1-3.pdf>] [18
 
 ]
-<figs/Fitness-function.pdf, id=623, 700.6175pt x 567.11874pt>
+<figs/Fitness-function.pdf, id=619, 863.225pt x 668.4975pt>
 File: figs/Fitness-function.pdf Graphic file (type pdf)
 
 <use figs/Fitness-function.pdf>
-Package pdftex.def Info: figs/Fitness-function.pdf used on input line 172.
-(pdftex.def)             Requested size: 147.50119pt x 119.39267pt.
+Package pdftex.def Info: figs/Fitness-function.pdf used on input line 178.
+(pdftex.def)             Requested size: 147.50119pt x 114.22449pt.
  [19
 
  <./figs/Fitness-function.pdf>]
-<figs/Fitness-function-wpoints.pdf, id=659, 700.6175pt x 567.11874pt>
+<figs/Fitness-function-wpoints.pdf, id=655, 863.225pt x 668.4975pt>
 File: figs/Fitness-function-wpoints.pdf Graphic file (type pdf)
 
 <use figs/Fitness-function-wpoints.pdf>
 Package pdftex.def Info: figs/Fitness-function-wpoints.pdf used on input line 1
-72.
-(pdftex.def)             Requested size: 147.50119pt x 119.39267pt.
+78.
+(pdftex.def)             Requested size: 147.50119pt x 114.22449pt.
  [20
 
- <./figs/Fitness-function-wpoints.pdf>] <figs/dailyfit.pdf, id=695, 700.6175pt 
-x 567.11874pt>
+ <./figs/Fitness-function-wpoints.pdf>] <figs/dailyfit.pdf, id=691, 863.225pt x
+ 668.4975pt>
 File: figs/dailyfit.pdf Graphic file (type pdf)
 
 <use figs/dailyfit.pdf>
-Package pdftex.def Info: figs/dailyfit.pdf used on input line 184.
-(pdftex.def)             Requested size: 215.10196pt x 174.1089pt.
+Package pdftex.def Info: figs/dailyfit.pdf used on input line 190.
+(pdftex.def)             Requested size: 215.10196pt x 166.57314pt.
  [21
 
  <./figs/dailyfit.pdf>]
-<figs/dailyfit-2.pdf, id=733, 700.6175pt x 567.11874pt>
+<figs/dailyfit-2.pdf, id=729, 863.225pt x 668.4975pt>
 File: figs/dailyfit-2.pdf Graphic file (type pdf)
 
 <use figs/dailyfit-2.pdf>
-Package pdftex.def Info: figs/dailyfit-2.pdf used on input line 184.
-(pdftex.def)             Requested size: 215.10196pt x 174.1089pt.
+Package pdftex.def Info: figs/dailyfit-2.pdf used on input line 190.
+(pdftex.def)             Requested size: 215.10196pt x 166.57314pt.
  [22
 
  <./figs/dailyfit-2.pdf>]
-<figs/dailyfit-3.pdf, id=769, 700.6175pt x 567.11874pt>
+<figs/dailyfit-3.pdf, id=765, 863.225pt x 668.4975pt>
 File: figs/dailyfit-3.pdf Graphic file (type pdf)
 
 <use figs/dailyfit-3.pdf>
-Package pdftex.def Info: figs/dailyfit-3.pdf used on input line 184.
-(pdftex.def)             Requested size: 215.10196pt x 174.1089pt.
+Package pdftex.def Info: figs/dailyfit-3.pdf used on input line 190.
+(pdftex.def)             Requested size: 215.10196pt x 166.57314pt.
  [23
 
  <./figs/dailyfit-3.pdf>]
-<figs/totfit.pdf, id=804, 700.6175pt x 567.11874pt>
+<figs/totfit.pdf, id=800, 863.225pt x 668.4975pt>
 File: figs/totfit.pdf Graphic file (type pdf)
  <use figs/totfit.pdf>
-Package pdftex.def Info: figs/totfit.pdf used on input line 184.
-(pdftex.def)             Requested size: 215.10196pt x 174.1089pt.
+Package pdftex.def Info: figs/totfit.pdf used on input line 190.
+(pdftex.def)             Requested size: 215.10196pt x 166.57314pt.
 
 [24
 
@@ -1170,221 +1170,209 @@ Package pdftex.def Info: figs/totfit.pdf used on input line 184.
 
 ]
 <"../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen1-actua
-lfit".pdf, id=869, 649.42625pt x 432.61626pt>
+lfit".pdf, id=865, 649.42625pt x 432.61626pt>
 File: "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen1-
 actualfit".pdf Graphic file (type pdf)
 
 <use "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen1-a
 ctualfit".pdf>
 Package pdftex.def Info: "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-
-runEEB d-t-p1-gen1-actualfit".pdf used on input line 210.
+runEEB d-t-p1-gen1-actualfit".pdf used on input line 216.
 (pdftex.def)             Requested size: 245.83282pt x 163.76216pt.
  [26
 
  <../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen1-actua
 lfit.pdf>]
 <"../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen5-actua
-lfit".pdf, id=907, 649.42625pt x 432.61626pt>
+lfit".pdf, id=903, 649.42625pt x 432.61626pt>
 File: "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen5-
 actualfit".pdf Graphic file (type pdf)
 
 <use "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen5-a
 ctualfit".pdf>
 Package pdftex.def Info: "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-
-runEEB d-t-p1-gen5-actualfit".pdf used on input line 210.
+runEEB d-t-p1-gen5-actualfit".pdf used on input line 216.
 (pdftex.def)             Requested size: 245.83282pt x 163.76216pt.
  [27
 
  <../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen5-actua
 lfit.pdf>]
 <"../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen130-act
-ualfit".pdf, id=943, 649.42625pt x 432.61626pt>
+ualfit".pdf, id=939, 649.42625pt x 432.61626pt>
 File: "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen13
 0-actualfit".pdf Graphic file (type pdf)
 
 <use "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen130
 -actualfit".pdf>
 Package pdftex.def Info: "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-
-runEEB d-t-p1-gen130-actualfit".pdf used on input line 210.
+runEEB d-t-p1-gen130-actualfit".pdf used on input line 216.
 (pdftex.def)             Requested size: 245.83282pt x 163.76216pt.
  [28
 
  <../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen130-act
 ualfit.pdf>]
 <"../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen1000-ac
-tualfit".pdf, id=978, 649.42625pt x 432.61626pt>
+tualfit".pdf, id=974, 649.42625pt x 432.61626pt>
 File: "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen10
 00-actualfit".pdf Graphic file (type pdf)
 
 <use "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen100
 0-actualfit".pdf>
 Package pdftex.def Info: "../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-
-runEEB d-t-p1-gen1000-actualfit".pdf used on input line 210.
+runEEB d-t-p1-gen1000-actualfit".pdf used on input line 216.
 (pdftex.def)             Requested size: 245.83282pt x 163.76216pt.
  [29
 
  <../../results/EEB d-t-p/resRunEEB d-t-p1/dailyfitSum-runEEB d-t-p1-gen1000-ac
 tualfit.pdf>]
 <"../../results/EEB d-t-p/resRunEEB d-t-p1/coefVals-b.day-b.temp-b.precip-postb
-urn-runEEB d-t-p1".pdf, id=1013, 649.42625pt x 432.61626pt>
+urn-runEEB d-t-p1".pdf, id=1009, 649.42625pt x 432.61626pt>
 File: "../../results/EEB d-t-p/resRunEEB d-t-p1/coefVals-b.day-b.temp-b.precip-
 postburn-runEEB d-t-p1".pdf Graphic file (type pdf)
 
 <use "../../results/EEB d-t-p/resRunEEB d-t-p1/coefVals-b.day-b.temp-b.precip-p
 ostburn-runEEB d-t-p1".pdf>
 Package pdftex.def Info: "../../results/EEB d-t-p/resRunEEB d-t-p1/coefVals-b.d
-ay-b.temp-b.precip-postburn-runEEB d-t-p1".pdf used on input line 218.
+ay-b.temp-b.precip-postburn-runEEB d-t-p1".pdf used on input line 224.
 (pdftex.def)             Requested size: 245.83282pt x 163.76216pt.
  [30
 
  <../../results/EEB d-t-p/resRunEEB d-t-p1/coefVals-b.day-b.temp-b.precip-postb
 urn-runEEB d-t-p1.pdf>]
 <"../../results/EEB d-t-p/resRunEEB d-t-p1/coefEffects-b.day-b.temp-b.precip-ac
-tual-postburn-runEEB d-t-p1".pdf, id=1050, 649.42625pt x 432.61626pt>
+tual-postburn-runEEB d-t-p1".pdf, id=1046, 649.42625pt x 432.61626pt>
 File: "../../results/EEB d-t-p/resRunEEB d-t-p1/coefEffects-b.day-b.temp-b.prec
 ip-actual-postburn-runEEB d-t-p1".pdf Graphic file (type pdf)
 
 <use "../../results/EEB d-t-p/resRunEEB d-t-p1/coefEffects-b.day-b.temp-b.preci
 p-actual-postburn-runEEB d-t-p1".pdf>
 Package pdftex.def Info: "../../results/EEB d-t-p/resRunEEB d-t-p1/coefEffects-
-b.day-b.temp-b.precip-actual-postburn-runEEB d-t-p1".pdf used on input line 218
+b.day-b.temp-b.precip-actual-postburn-runEEB d-t-p1".pdf used on input line 224
 .
 (pdftex.def)             Requested size: 245.83282pt x 163.76216pt.
  [31
 
  <../../results/EEB d-t-p/resRunEEB d-t-p1/coefEffects-b.day-b.temp-b.precip-ac
 tual-postburn-runEEB d-t-p1.pdf>]
-<"figs/coeff-eff-tern".pdf, id=1087, 673.51625pt x 569.12625pt>
+<"figs/coeff-eff-tern".pdf, id=1083, 863.225pt x 668.4975pt>
 File: "figs/coeff-eff-tern".pdf Graphic file (type pdf)
 
 <use "figs/coeff-eff-tern".pdf>
-Package pdftex.def Info: "figs/coeff-eff-tern".pdf used on input line 228.
-(pdftex.def)             Requested size: 245.83282pt x 207.73369pt.
+Package pdftex.def Info: "figs/coeff-eff-tern".pdf used on input line 234.
+(pdftex.def)             Requested size: 245.83282pt x 190.37076pt.
+ [32
 
-Overfull \vbox (16.02965pt too high) detected at line 228
- []
+ <./figs/coeff-eff-tern.pdf>]
+(presentation.toc) [33
 
-[32
-
- <./figs/coeff-eff-tern.pdf>] (presentation.toc) [33
-
-]
-<"figs/basyear".pdf, id=1154, 700.6175pt x 567.11874pt>
+] <"figs/basyear".pdf, id=1151, 863.225pt x 668.4975pt>
 File: "figs/basyear".pdf Graphic file (type pdf)
 
 <use "figs/basyear".pdf>
-Package pdftex.def Info: "figs/basyear".pdf used on input line 242.
-(pdftex.def)             Requested size: 245.83282pt x 198.98778pt.
-
-Overfull \vbox (7.28374pt too high) detected at line 242
- []
-
-[34
+Package pdftex.def Info: "figs/basyear".pdf used on input line 248.
+(pdftex.def)             Requested size: 245.83282pt x 190.37076pt.
+ [34
 
  <./figs/basyear.pdf>]
-<"figs/basyear-plus-d2d".pdf, id=1192, 700.6175pt x 567.11874pt>
+<"figs/basyear-plus-d2d".pdf, id=1189, 863.225pt x 668.4975pt>
 File: "figs/basyear-plus-d2d".pdf Graphic file (type pdf)
 
 <use "figs/basyear-plus-d2d".pdf>
-Package pdftex.def Info: "figs/basyear-plus-d2d".pdf used on input line 242.
-(pdftex.def)             Requested size: 245.83282pt x 198.98778pt.
-
-Overfull \vbox (7.28374pt too high) detected at line 242
- []
-
-[35
+Package pdftex.def Info: "figs/basyear-plus-d2d".pdf used on input line 248.
+(pdftex.def)             Requested size: 245.83282pt x 190.37076pt.
+ [35
 
  <./figs/basyear-plus-d2d.pdf>]
-<"figs/basyear-plus-all".pdf, id=1227, 700.6175pt x 567.11874pt>
+<"figs/basyear-plus-all".pdf, id=1224, 863.225pt x 668.4975pt>
 File: "figs/basyear-plus-all".pdf Graphic file (type pdf)
 
 <use "figs/basyear-plus-all".pdf>
-Package pdftex.def Info: "figs/basyear-plus-all".pdf used on input line 242.
-(pdftex.def)             Requested size: 245.83282pt x 198.98778pt.
-
-Overfull \vbox (7.28374pt too high) detected at line 242
- []
-
-[36
+Package pdftex.def Info: "figs/basyear-plus-all".pdf used on input line 248.
+(pdftex.def)             Requested size: 245.83282pt x 190.37076pt.
+ [36
 
  <./figs/basyear-plus-all.pdf>]
-<"../../results/fig1/test-1000yr/winners-heatmap-run-test-1000yr".pdf, id=1262,
+<"../../results/fig1/test-1000yr/winners-heatmap-run-test-1000yr".pdf, id=1259,
  504.88625pt x 504.88625pt>
 File: "../../results/fig1/test-1000yr/winners-heatmap-run-test-1000yr".pdf Grap
 hic file (type pdf)
 
 <use "../../results/fig1/test-1000yr/winners-heatmap-run-test-1000yr".pdf>
 Package pdftex.def Info: "../../results/fig1/test-1000yr/winners-heatmap-run-te
-st-1000yr".pdf used on input line 254.
+st-1000yr".pdf used on input line 260.
 (pdftex.def)             Requested size: 199.73653pt x 199.73988pt.
 
 [37
 
  <../../results/fig1/test-1000yr/winners-heatmap-run-test-1000yr.pdf>]
-<"../../results/fig1/test-1000yr/day-by-fit-yrstd6-run-test-1000yr".pdf, id=130
-0, 504.88625pt x 504.88625pt>
+<"../../results/fig1/test-1000yr/day-by-fit-yrstd6-run-test-1000yr".pdf, id=129
+7, 504.88625pt x 504.88625pt>
 File: "../../results/fig1/test-1000yr/day-by-fit-yrstd6-run-test-1000yr".pdf Gr
 aphic file (type pdf)
 
 <use "../../results/fig1/test-1000yr/day-by-fit-yrstd6-run-test-1000yr".pdf>
 Package pdftex.def Info: "../../results/fig1/test-1000yr/day-by-fit-yrstd6-run-
-test-1000yr".pdf used on input line 254.
+test-1000yr".pdf used on input line 260.
 (pdftex.def)             Requested size: 199.73653pt x 199.73988pt.
 
 [38
 
  <../../results/fig1/test-1000yr/day-by-fit-yrstd6-run-test-1000yr.pdf>]
-<"figs/trait-response-surface".pdf, id=1334, 700.6175pt x 567.11874pt>
+<"figs/trait-response-surface".pdf, id=1331, 710.655pt x 668.4975pt>
 File: "figs/trait-response-surface".pdf Graphic file (type pdf)
 
 <use "figs/trait-response-surface".pdf>
 Package pdftex.def Info: "figs/trait-response-surface".pdf used on input line 2
-54.
-(pdftex.def)             Requested size: 245.83282pt x 198.98778pt.
- [39
+60.
+(pdftex.def)             Requested size: 245.83282pt x 231.24391pt.
+
+Overfull \vbox (31.00397pt too high) detected at line 260
+ []
+
+[39
 
  <./figs/trait-response-surface.pdf>]
-Overfull \hbox (36.90742pt too wide) detected at line 268
+Overfull \hbox (36.90742pt too wide) detected at line 274
 \OT1/mathkerncmss/m/sl/6 E \OT1/cmss/m/n/6 = [] + [] + []
  []
 
 [40
 
 ]
-Overfull \hbox (36.90742pt too wide) detected at line 268
+Overfull \hbox (36.90742pt too wide) detected at line 274
 \OT1/mathkerncmss/m/sl/6 E \OT1/cmss/m/n/6 = [] + [] + []
  []
 
 File: "figs/coeff-eff-tern".pdf Graphic file (type pdf)
 <use "figs/coeff-eff-tern".pdf>
-Package pdftex.def Info: "figs/coeff-eff-tern".pdf used on input line 268.
-(pdftex.def)             Requested size: 92.1879pt x 77.89688pt.
+Package pdftex.def Info: "figs/coeff-eff-tern".pdf used on input line 274.
+(pdftex.def)             Requested size: 92.1879pt x 71.38266pt.
  [41
 
 ]
-Overfull \hbox (36.90742pt too wide) detected at line 268
+Overfull \hbox (36.90742pt too wide) detected at line 274
 \OT1/mathkerncmss/m/sl/6 E \OT1/cmss/m/n/6 = [] + [] + []
  []
 
 File: "figs/coeff-eff-tern".pdf Graphic file (type pdf)
 <use "figs/coeff-eff-tern".pdf>
-Package pdftex.def Info: "figs/coeff-eff-tern".pdf used on input line 268.
-(pdftex.def)             Requested size: 92.1879pt x 77.89688pt.
+Package pdftex.def Info: "figs/coeff-eff-tern".pdf used on input line 274.
+(pdftex.def)             Requested size: 92.1879pt x 71.38266pt.
 File: "figs/trait-response-surface".pdf Graphic file (type pdf)
  <use "figs/trait-response-surface".pdf>
 Package pdftex.def Info: "figs/trait-response-surface".pdf used on input line 2
-68.
-(pdftex.def)             Requested size: 92.1879pt x 74.61932pt.
+74.
+(pdftex.def)             Requested size: 92.1879pt x 86.71391pt.
 
 [42
 
 ]
 File: figs/animal-weatherman.jpg Graphic file (type jpg)
  <use figs/animal-weatherman.jpg>
-Package pdftex.def Info: figs/animal-weatherman.jpg used on input line 273.
+Package pdftex.def Info: figs/animal-weatherman.jpg used on input line 279.
 (pdftex.def)             Requested size: 307.28987pt x 225.6312pt.
 
-Overfull \vbox (21.92715pt too high) detected at line 273
+Overfull \vbox (21.92715pt too high) detected at line 279
  []
 
 [43
@@ -1399,25 +1387,31 @@ Overfull \vbox (21.92715pt too high) detected at line 273
 \tf@snm=\write8
 \openout8 = `presentation.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 275.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 275.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 281.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 281.
  (presentation.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 275.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 275.
-Package rerunfilecheck Info: File `presentation.out' has not changed.
-(rerunfilecheck)             Checksum: 020C77C45CF665820AE0752E5FBFEFCC;150.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 281.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 281.
 
+
+Package rerunfilecheck Warning: File `presentation.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `presentation.out':
+(rerunfilecheck)             Before: 7CEF4FA283BF5FF42D17C2A9E5ADDCFE;94
+(rerunfilecheck)             After:  020C77C45CF665820AE0752E5FBFEFCC;150.
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 275.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 281.
  ) 
 Here is how much of TeX's memory you used:
- 17030 strings out of 493634
- 335307 string characters out of 3141296
- 390536 words of memory out of 3000000
- 19893 multiletter control sequences out of 15000+200000
+ 17029 strings out of 493634
+ 335295 string characters out of 3141296
+ 390535 words of memory out of 3000000
+ 19892 multiletter control sequences out of 15000+200000
  11735 words of font info for 43 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
  56i,19n,64p,532b,638s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1429,9 +1423,9 @@ gram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Progra
 m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmssi10.pfb><C:/Program
  Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmssi8.pfb><C:/Program F
 iles (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on presentation.pdf (43 pages, 3650764 bytes).
+Output written on presentation.pdf (43 pages, 3623304 bytes).
 PDF statistics:
- 1535 PDF objects out of 1728 (max. 8388607)
+ 1532 PDF objects out of 1728 (max. 8388607)
  90 named destinations out of 1000 (max. 500000)
- 225 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 217 words of extra memory for PDF output out of 10000 (max. 10000000)
 
