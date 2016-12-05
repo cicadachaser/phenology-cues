@@ -1,0 +1,33 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\title{Code summaries}
+\begin{document}
+\maketitle
+\subsection{Statement of purpose}
+This document was written to describe the methods taken to answer questions in the Phenology project, as well as point out how to use the code. This is intended as an internal document, although may be useful for methods or supplements in any future publications.
+
+\section{Underlying model}
+
+In order to examine the evolution of multiple-trait cueing decisions, we constructed a general mathematical model. Each day, an organism can calculate their emergence value:
+
+\[
+E=100\frac{cue_1}{trait_1}+100\frac{cue_2}{trait_2}\dots
+\]
+
+When the emergence value E is greater than or equal to 100, the organism decides to emerge. Note that we use E=100 because we liked larger numbers - there's no reason that E couldn't equal 1. We multiply by our threshhold E value (here 100) so that the interpretation of each trait value is simple. If an organism has a $trait_1=X$, then that means that this organism would emerge when $cue_1=X$ if other cues remained at zero (or the organisms other trait values were zero). 
+
+Organisms actually emerge \textit{lag} days after deciding to emerge (default 1), which both increases biological realism and allows to remove this potential source of autocorrelation. They then collect fitness for \textit{duration} days (default 10), and their total fitness is the sum of the daily fitness they collected. 
+
+\end{document}
+
+\section{Finding optimal trait values}
+Among other things, we wanted to know which trait value was the most important for any given climatic regime. To do this, we needed to create climatic regimes with controlled levels of year-to-year and day-to-day variation, and then we needed to find the maximum geometic fitness than an organism could obtain if they relied only on a single trait (and the associated trait).
+\subsection{Climate creation}
+We started by constructing a base climate which we could modify to generate variable climates. To do this, we obtained 100 years of climate data from a weather station in Davis, and averaged daily precipitation and max daily temperature across all years for each day. This created an `average year'. We then created a sequence of three of these identical years, and ran a smoother (loess, can't remember smoothing parameter) across the years. Finally, we took the middle year out of that sequence, providing us with a single year that was smooth throughout, and smoothly transitioned from its last day to its first day.
+
+We decided to explore two forms of variation: year to year phenological variation, and day to day `noise'. The year to year variation we create by drawing a normally distributed random variable with mean 0 and standard deviation $\sigma$, rounding it, and phase shifting our year forwards or backwards by that amount.
+\subsection{First pass: fun with optim()}
