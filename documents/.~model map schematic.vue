@@ -1,14 +1,14 @@
 <!-- Tufts VUE 3.3.0 concept-map (model map schematic.vue) 2016-12-20 -->
 <!-- Tufts VUE: http://vue.tufts.edu/ -->
 <!-- Do Not Remove: VUE mapping @version(1.1) jar:file:/C:/Program%20Files%20(x86)/VUE/VUE.jar!/tufts/vue/resources/lw_mapping_1_1.xml -->
-<!-- Do Not Remove: Saved date Tue Dec 20 15:05:18 PST 2016 by louie on platform Windows 8 6.2 in JVM 1.7.0_21-b11 -->
+<!-- Do Not Remove: Saved date Tue Dec 20 14:03:33 PST 2016 by louie on platform Windows 8 6.2 in JVM 1.7.0_21-b11 -->
 <!-- Do Not Remove: Saving version @(#)VUE: built October 8 2015 at 1658 by tomadm on Linux 2.6.32-504.23.4.el6.x86_64 i386 JVM 1.7.0_21-b11(bits=32) -->
 <?xml version="1.0" encoding="US-ASCII"?>
 <LW-MAP xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="none" ID="0"
     label="model map schematic.vue" created="1481919570299" x="0.0"
     y="0.0" width="1.4E-45" height="1.4E-45" strokeWidth="0.0" autoSized="false">
-    <resource referenceCreated="1482275118731" size="34646"
+    <resource referenceCreated="1482271413691" size="56054"
         spec="C:\Users\louie\Documents\GitHub\phenology-cues\documents\model map schematic.vue"
         type="1" xsi:type="URLResource">
         <title>model map schematic.vue</title>
@@ -187,16 +187,16 @@
         </child>
         <shape arcwidth="20.0" archeight="20.0" xsi:type="roundRect"/>
     </child>
-    <child ID="8" layerID="1" created="1481919875552" x="566.3645"
-        y="226.20703" width="2.269226" height="32.689453"
+    <child ID="8" layerID="1" created="1481919875552" x="566.15735"
+        y="205.95605" width="2.9984741" height="52.939453"
         strokeWidth="1.0" autoSized="false" controlCount="0"
         arrowState="2" xsi:type="link">
         <strokeColor>#404040</strokeColor>
         <textColor>#404040</textColor>
         <font>Arial-plain-11</font>
         <URIString>http://vue.tufts.edu/rdf/resource/09cc20c8a9ed4d2e0111057bf7a780d7</URIString>
-        <point1 x="568.1337" y="226.70703"/>
-        <point2 x="566.8645" y="258.39648"/>
+        <point1 x="568.6559" y="206.45605"/>
+        <point2 x="566.6574" y="258.3955"/>
         <ID1 xsi:type="node">27</ID1>
         <ID2 xsi:type="node">7</ID2>
     </child>
@@ -449,7 +449,7 @@
     </child>
     <child ID="27" label="pre-emergence cues" layerID="1"
         created="1481920972592" x="483.75513" y="58.353844"
-        width="175.5" height="168.35275" strokeWidth="1.0"
+        width="175.5" height="148.10275" strokeWidth="1.0"
         autoSized="true" xsi:type="node">
         <fillColor>#FC938D</fillColor>
         <strokeColor>#000000</strokeColor>
@@ -516,54 +516,44 @@
             <URIString>http://vue.tufts.edu/rdf/resource/1e42d5daa9ed4d2e01ca132f7f551d40</URIString>
             <shape arcwidth="20.0" archeight="20.0" xsi:type="roundRect"/>
         </child>
-        <child ID="66" label="quadratics?" created="1482271444092"
-            x="34.0" y="145.10275" width="76.0" height="23.0"
-            strokeWidth="1.0" autoSized="true" xsi:type="node">
-            <fillColor>#FC938D</fillColor>
-            <strokeColor>#000000</strokeColor>
-            <textColor>#000000</textColor>
-            <font>Arial-plain-12</font>
-            <URIString>http://vue.tufts.edu/rdf/resource/1e7b5e9ba9ed4d2e01ca132ff7b1d9fd</URIString>
-            <shape arcwidth="20.0" archeight="20.0" xsi:type="roundRect"/>
-        </child>
         <shape arcwidth="20.0" archeight="20.0" xsi:type="roundRect"/>
     </child>
     <child ID="28" layerID="1" created="1481921040391" x="658.7551"
-        y="36.59384" width="119.53308" height="61.585205"
+        y="36.59384" width="116.509705" height="55.164124"
         strokeWidth="1.0" autoSized="false" controlCount="0"
         arrowState="2" xsi:type="link">
         <strokeColor>#404040</strokeColor>
         <textColor>#404040</textColor>
         <font>Arial-plain-11</font>
         <URIString>http://vue.tufts.edu/rdf/resource/09cc20dba9ed4d2e0111057bd552a195</URIString>
-        <point1 x="777.7882" y="37.09384"/>
-        <point2 x="659.2551" y="97.67905"/>
+        <point1 x="774.76483" y="37.09384"/>
+        <point2 x="659.2551" y="91.257965"/>
         <ID1 xsi:type="node">6</ID1>
         <ID2 xsi:type="node">27</ID2>
     </child>
     <child ID="57" label="imperfect correlation" layerID="1"
-        created="1481926119601" x="658.7551" y="129.90945"
+        created="1481926119601" x="658.7551" y="124.1315"
         width="279.50116" height="14.0" strokeWidth="1.0"
         autoSized="false" controlCount="0" arrowState="2" xsi:type="link">
         <strokeColor>#404040</strokeColor>
         <textColor>#404040</textColor>
         <font>Arial-plain-11</font>
         <URIString>http://vue.tufts.edu/rdf/resource/09cc20dba9ed4d2e0111057b2521a52f</URIString>
-        <point1 x="659.2551" y="140.35744"/>
-        <point2 x="937.7563" y="133.46147"/>
+        <point1 x="659.2551" y="131.91284"/>
+        <point2 x="937.7563" y="130.35017"/>
         <ID1 xsi:type="node">27</ID1>
         <ID2 xsi:type="node">25</ID2>
     </child>
     <child ID="64" label="plotted correlation?" layerID="1"
-        created="1482267756524" x="658.7551" y="153.37335"
-        width="478.57117" height="158.62668" strokeWidth="1.0"
+        created="1482267756524" x="658.7551" y="145.92249"
+        width="478.57117" height="166.07755" strokeWidth="1.0"
         strokeStyle="4" autoSized="false" controlCount="1"
         arrowState="2" xsi:type="link">
         <strokeColor>#404040</strokeColor>
         <textColor>#404040</textColor>
         <font>Arial-plain-11</font>
         <URIString>http://vue.tufts.edu/rdf/resource/1e42d5daa9ed4d2e01ca132f42f6197b</URIString>
-        <point1 x="659.2551" y="153.87335"/>
+        <point1 x="659.2551" y="146.42249"/>
         <point2 x="1136.8263" y="311.50003"/>
         <ID1 xsi:type="node">27</ID1>
         <ID2 xsi:type="node">12</ID2>
@@ -574,7 +564,7 @@
         <URIString>http://vue.tufts.edu/rdf/resource/09cc20dba9ed4d2e0111057b8220a949</URIString>
     </layer>
     <userZoom>1.747881406425127</userZoom>
-    <userOrigin x="637.6838" y="-86.671715"/>
+    <userOrigin x="637.6838" y="-64.33698"/>
     <presentationBackground>#202020</presentationBackground>
     <PathwayList currentPathway="0" revealerIndex="-1">
         <pathway ID="0" label="Untitled Pathway" created="1481919570203"
