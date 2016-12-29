@@ -13,12 +13,12 @@ source(paste("parameters/",runsname,".R",sep="")) #read in all the parameters
 source(paste("fitcurve/",fitshape,".R",sep=""))
 years.list=NULL
 if(runType=="standard"){
-  years.stuff=yeargen.davis(best.temp = best.temp,sd.temp = sd.temp,
+  years.stuff=yeargen(dat.file="davisDat.Rdata", best.temp = best.temp,sd.temp = sd.temp,
                             best.precip = best.precip,sd.precip = sd.precip)
   years.list=years.stuff[[1]]
   years.indlist=years.stuff[[2]]
 } else if(runType=="ithaca"){
-  years.stuff=yeargen.ithaca(best.temp = best.temp,sd.temp = sd.temp,
+  years.stuff=yeargen(dat.file="ithacaDat.Rdata", best.temp = best.temp,sd.temp = sd.temp,
                              best.precip = best.precip,sd.precip = sd.precip)
   years.list=years.stuff[[1]]
   years.indlist=years.stuff[[2]]

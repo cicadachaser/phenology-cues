@@ -13,23 +13,19 @@ source(paste("parameters/",runsname,".R",sep="")) #read in all the parameters
 #reading in fitness shape file
 source(paste("fitcurve/",fitshape,".R",sep=""))
 years.list=NULL
-if(runType=="standard"){
-  years.stuff=yeargen.davis(best.temp = best.temp,sd.temp = sd.temp,
-                            best.precip = best.precip,sd.precip = sd.precip)
-  years.list=years.stuff[[1]]
-  years.indlist=years.stuff[[2]]
-} else if(runType=="ithaca"){
-  years.stuff=yeargen.ithaca(best.temp = best.temp,sd.temp = sd.temp,
-                             best.precip = best.precip,sd.precip = sd.precip)
-  years.list=years.stuff[[1]]
-  years.indlist=years.stuff[[2]]
-} else if(runType=="unitTestConst"){
+if(runType=="unitTestConst"){
   out=yeargen.const(numYears)
   years.list=out[["years.list"]]
   years.index=rep(1,numYears)
 } else if (runType=="unitTestRand"){
   out=yeargen.rand(numYears)
   years.list=out[["years.list"]]
+} else{
+  years.stuff=yeargen.ithaca(runType, best.temp = best.temp,sd.temp = sd.temp,
+                             best.precip = best.precip,sd.precip = sd.precip)
+  years.list=years.stuff[[1]]
+  years.indlist=years.stuff[[2]]
+
 }
 #setting up all the mutation rates etc
 source("scripts/rate_setup.R")  #this sets up mutation rates, distances, etc.

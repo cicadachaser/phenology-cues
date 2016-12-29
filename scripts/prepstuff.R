@@ -17,7 +17,7 @@ create_yrs=function(meanYr,numYears,yearstd,daystd){
                                 cutempsq=cumsum(pmin(0,newtemp-baseTemp)^2),
                                 cuprecipsq=cumsum(pmin(0,meanYr$precip)^2)
     ))
-    fit.daily=fit_fn(newYear)
+    fit.daily=fit_fn(newYear,other.name)
     fit.tot=c(rollapply(c(fit.daily,rep(0,duration-1)),duration,by=1,sum))
     fit.tot=c(fit.tot[-(1:lag)],rep(0,lag))#for lag of 1
     newYear=cbind(newYear,fit.daily=fit.daily,fit.tot=fit.tot)
