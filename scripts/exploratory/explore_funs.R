@@ -32,7 +32,7 @@ exp_fitfun <- function(fit.file="standgauss.R",
                                       skew.t=10,skew.o=-10,corr=0),
                        min.temp=0,max.temp=50,min.other=0,max.other=50,
                        numpts=500, #Resolution of image - number points in each X and Y dimension
-                       dat.file="davisDat.R", #for plotting some random actual data.
+                       dat.file="davisDat.Rdata", #for plotting some random actual data.
                        other.name="moist",
                        n.plotyears=3){ #number of random years to plot data from, set to FALSE if you want to not include points on the plot
   #Function for producing plot of fitness function
@@ -135,10 +135,10 @@ exp_corr_plot <- function(df.yr,interest,textpos="top"){
        ylab="Total fitness",
        xlab=interest,
        cex.lab=1.5)
-  abline(out,col='blue',lwd=2)
+  # abline(out,col='blue',lwd=2)
   #Add information about our line
-  legend(x=textpos,legend=paste("r-squared =", round(summary(out)$r.squared,digits=4)),
-         bty="n",cex=1.5)
+  # legend(x=textpos,legend=paste("r-squared =", round(summary(out)$r.squared,digits=4)),
+         # bty="n",cex=1.5)
 }
 
 exp_corr <- function(dat.file="davisDat.Rdata", #Whiche climate file to use

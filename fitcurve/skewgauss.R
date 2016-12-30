@@ -30,10 +30,10 @@ fit.parms=list(loc.t,loc.o,
                skew.t,skew.o)
 
 ## Use the lines below to visualize what the skew normal curves look like.
-# x=seq(0,80,.1)
-# plot(x,dsn(x,xi=loc.t,omega=shape.temp,alpha=skew.t),type='l')
-# abline(v=best.temp)
-
+x=seq(0,80,.1)
+plot(x,dsn(x,xi=loc.t,omega=shape.temp,alpha=skew.t)^2,type='l')
+abline(v=best.temp)
+#
 fit_fn<-function(years,other.name,fit.parms){
   #note: using with() to essentially attach fit.parms, but without using attach, which pushes them to the global environment (ewwww)
   with(fit.parms,

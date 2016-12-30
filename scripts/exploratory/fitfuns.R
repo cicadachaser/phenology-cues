@@ -23,5 +23,12 @@ list.files("fitcurve/")
 cat("Climate data files we can use:")
 list.files("data-years/")
 x11()
+#Parameters for exp_fitfun:
+# fit.file: name of fitness file to use (fitness file is within "fitcurve" folder
+# fit.parms: list of fitness parameters to use. It looks like R is just using the ones defined in the fitness file, though
+# dat.file: file of the climate data to use
+# other.name: name of other parameter to use. Default is "moist", probably keep it that way.
+# n.plotyears: number of years to use when plotting points.
+
 #Example call of the function:
-exp_fitfun(fit.file="multivargauss.R",dat.file="ithacaDat.Rdata")
+exp_fitfun(fit.file="multivargauss.R",dat.file="ithacaDat.Rdata",max.temp=60)
