@@ -228,7 +228,7 @@ nyrsd=varmeans$yearstd
 varmeans$geofit=varmeans$geofit/numYears
 nyrsd=nyrsd-yrdiff/5*as.numeric(varmeans$trait=='temp')+yrdiff/5*as.numeric(varmeans$trait=='cutemp')
 ndysd=varmeans$daystd+ddiff/5*as.numeric(varmeans$trait=='day')
-size=(varmeans$geofit-min(varmeans$geofit)+.025)*15
+size=exp(varmeans$geofit)*1000
 
 # x11()
 # par(fig=c(0.1,1,0.1,0.8), new=TRUE)
