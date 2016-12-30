@@ -24,4 +24,12 @@ cat("Climate data files we can use:")
 list.files("data-years/")
 x11()
 #Example call of the function:
-exp_fitfun(fit.file="standgauss.R",climate.fun="yeargen.ithaca")
+exp_corr(dat.file="ithacaDat.Rdata")
+
+#Full list of traits:
+x11()
+exp_corr(dat.file="RapidCityDat.Rdata",
+         traits=c("day","year", "precip", "temp",   "moist",  "cutemp", "cuprecip",
+                  "daysq",  "tempsq", "precipsq", "cutempsq", "cuprecipsq"),
+         fit.file = "skewgauss.R"
+)

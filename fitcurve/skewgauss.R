@@ -25,12 +25,19 @@ goal=best.other
 loc.o=optimize(obj_fun,interval = c(goal/2,goal*2),goal=goal,maxrange=80,omega=shape.other,alpha=skew.o)
 loc.o=loc.o$minimum #Location parameter (xi) that gives target shape
 
+#Turning our parameters into a list for feeding into the fit_fn
+fit.parms=list(loc.t,loc.o,
+               shape.temp,shape.other,
+               skew.t,skew.o)
+
 ## Use the lines below to visualize what the skew normal curves look like.
 # x=seq(0,80,.1)
 # plot(x,dsn(x,xi=loc.t,omega=shape.temp,alpha=skew.t),type='l')
 # abline(v=best.temp)
 
-fit_fn<-function(years,other.name){
- dsn(years$temp,xi=loc.t,omega=shape.temp,alpha=skew.t)*
-    dsn(years[,other.name],xi=loc.o,omega=shape.other,alpha=skew.o)
+fit_fn<-function(years,other.name,fit.parms){
+  #note: using with() to essentially attach fit.parms, but without using attach, which pushes them to the global environment (ewwww)
+  with(fit.parms,
+       dsn(years$temp,xi=loc.t,omega=shape.temp,alpha=skew.t)*
+         dsn(years[,other.name],xi=loc.o,omega=shape.other,alpha=skew.o))
 }

@@ -21,8 +21,12 @@ numYears=500 #number of years to simulate
 burnIn=200 #number of years to not plot (to avoid scale issues from broad initial population traits)
 mutdist=.01 #What fraction of the total "cue space" should mutations (on average) traverse (kinda).
 yearLabel="A" #For deciding which set of year randomization to use
-fitshape="standgauss"
-yearSet="early.late.50"
+fitshape="standgauss" #which fitness shape to use. use the name of file in fitcurve folder, minuse the .R
+yearSet="early.late.50" #which set of years do we want to use?
+baseTemp=0 #cutoff when calculating degree days/cumulative temperature
+other.name="moist" #can change this to base fitness of temp and something other than moisture
+decay=.2 #decay parameter for moisture calculation
+##NOTE: specific fitness parameters can be found in the fitness scripts in fitcurve folder.
 #######################
 # For analytic script #
 #######################
