@@ -27,15 +27,14 @@ fittot_fun <- function(years.list,duration=10,lag=1){
 }
 
 exp_fitfun <- function(fit.file="standgauss.R",
-                       min.temp=0, #min temp value to plot
-                       max.temp=50, #max temp value to plot
-                       min.other=0, #min "other" value to plot
-                       max.other=50, #max "other" value to plot
+                       fit.parms=list(best.temp=40, sd.temp=10, shape.temp=10, #this is a list for feeding into the fitfun. change as needed.
+                                      best.other=10, sd.other=30, shape.other=30,
+                                      skew.t=10,skew.o=-10,corr=0),
+                       min.temp=0,max.temp=50,min.other=0,max.other=50,
                        numpts=500, #Resolution of image - number points in each X and Y dimension
                        dat.file="davisDat.R", #for plotting some random actual data.
-                       n.plotyears=3 #number of random years to plot data from
-                       #  set to FALSE if you want to not include points on the plot
-){
+                       other.name="moist",
+                       n.plotyears=3){ #number of random years to plot data from, set to FALSE if you want to not include points on the plot
   #Function for producing plot of fitness function
   # Note that it uses temp and "other" as the two traits used by the fitness function
   # 'other' might be precip, or it might be our upcoming "moisture" or any other climate factor
@@ -53,7 +52,7 @@ exp_fitfun <- function(fit.file="standgauss.R",
   otherv=othermat[1:(numpts^2)] #make vector of other values to test
   pseudo.year=data.frame(temp=tempv,placeholder=otherv) #Turn our vectors into a fake year to feed the fit_fn
   names(pseudo.year)[2] = other.name #replaces "placeholder" with the specified other.name
-  fit=fit_fn(pseudo.year,other.name=other.name) #calculate fitness
+  fit=fit_fn(years=pseudo.year,other.name=other.name,fit.parms=fit.parms) #calculate fitness
   fit.mat=matrix(fit,numpts,numpts) #convert fitness to matrix
   image.plot(x=seq(min.other,max.other,length=numpts), #make a heatmap of fitness in the given range of temp and other
              y=seq(min.temp,max.temp,length=numpts),
@@ -61,9 +60,10 @@ exp_fitfun <- function(fit.file="standgauss.R",
              xlab=other.name,
              ylab="Temperature",
              main="Fitness gained per day",
+             sub=paste("Using: ", fit.file, ", ", dat.file, sep=""),
              cex.lab=1.6,cex.main=1.6,cex.axis=1.5
   )
-  if(climate.fun!=FALSE){ #if climate.File is a string
+  if(dat.file!=FALSE){ #if climate.File is a string
     source("scripts/windows_subs.R")
     list.yr=yeargen(dat.file=dat.file, fit.parms=fit.parms)[[1]]
     #Pull in the appropriate year data
@@ -73,14 +73,42 @@ exp_fitfun <- function(fit.file="standgauss.R",
   }
 }
 
-exp_moist <- function(dat.file="davisDat.Rdata", #Whiche climate file to use
-                      fit.file="standgauss.R", #Which fitness file to use
-                      decay=.2, #The decay parameter for calculating moisture
-                      baseTemp=0, #The base temperature to use for calucating cumulative temperature
-                      numyears=3, #the number of years to plot for the individual plots
-                      other.name="moist", #The second climate variable to use for fitness (in addition to temp)
-                      duration=10, #duration used in calculating total fitness
-                      lag=1){ #lag used in calculating total fitness
+
+exp_covars_sub <- function(years.list, #list of years with all info
+                           interest, #single string for a single covariate of interest
+                           numyears){ #number of years to plot
+  store=NULL
+  for(i.year in 1:length(years.list)){
+    #SOLUTION: MOVE THE LOOP!
+    store=cbind(store,years.list[[i.year]][1:365,interest])
+  }
+  mean=apply(store,1,mean)
+  plot(1:365,mean,col="black",lwd=2,lty=1,type='l',
+       main=paste("Mean",interest,"through time"),
+       ylab=interest,
+       xlab="day",
+       cex.lab=1.5)
+  plot(1:365,years.list[[1]][1:365,interest],col="black",lwd=1,lty=1,type='l',
+       main=paste(interest, "for first",numyears,"years"),
+       ylab=interest,
+       xlab="day",
+       cex.lab=1.5)
+  if(numyears>1){
+    for(i in 2:numyears){
+      points(1:365,years.list[[i]][1:365,interest],type='l',col=i)
+    }
+  }
+}
+
+exp_covars <- function(dat.file="davisDat.Rdata", #Whiche climate file to use
+                       fit.file="standgauss.R", #Which fitness file to use
+                       decay=.2, #The decay parameter for calculating moisture
+                       interests=c("moist"),
+                       baseTemp=0, #The base temperature to use for calucating cumulative temperature
+                       numyears=3, #the number of years to plot for the individual plots
+                       other.name="moist", #The second climate variable to use for fitness (in addition to temp)
+                       duration=10, #duration used in calculating total fitness
+                       lag=1){ #lag used in calculating total fitness
   set_wrkdir()
   source(paste("fitcurve/",fit.file,sep=""))
   source("scripts/windows_subs.R")
@@ -88,41 +116,9 @@ exp_moist <- function(dat.file="davisDat.Rdata", #Whiche climate file to use
   list.yr=yearstuff[[1]] #grab the years.list part of yearstuff
   list.yr=fittot_fun(years.list=list.yr,duration=duration,lag=lag) #add total fitness
   #Create average moisture measure
-  moiststore=NULL
-  fitstore=NULL
-  for(i.year in 1:length(list.yr)){
-    moiststore=cbind(moiststore,list.yr[[i.year]]$moist[1:365])
-    fitstore=cbind(fitstore,list.yr[[i.year]]$fit.tot[1:365])
-  }
-  meanmoist=apply(moiststore,1,mean)
-  meanfit=apply(fitstore,1,mean)
-  #Plotting
-  par(mfcol=c(2,2),oma=c(0,0,2,0))
-  plot(1:365,meanmoist,col="black",lwd=2,lty=1,type='l',
-       main="Mean moisture across all years",
-       ylab="Moisture",
-       xlab="day")
-  plot(1:365,meanfit,col="black",lwd=2,lty=1,type='l',
-       main="Mean fitness across all years",
-       ylab="Fitness",
-       xlab="day")
-  plot(1:365,list.yr[[1]]$moist[1:365],col="black",lwd=1,lty=1,type='l',
-       main=paste("Moisture for first",numyears,"years"),
-       ylab="Moisture",
-       xlab="day")
-  if(numyears>1){
-    for(i in 2:numyears){
-      points(1:365,list.yr[[i]]$moist[1:365],type='l',col=i)
-    }
-  }
-  plot(1:365,list.yr[[1]]$fit.tot[1:365],col="black",lwd=1,lty=1,type='l',
-       main=paste("fitness for first",numyears,"years"),
-       ylab="fitness",
-       xlab="day")
-  if(numyears>1){
-    for(i in 2:numyears){
-      points(1:365,list.yr[[i]]$fit.tot[1:365],type='l',col=i)
-    }
+  par(mfcol=c(2,length(interests)),oma=c(0,0,2,0))
+  for(cur.interest in interests){
+    exp_covars_sub(years.list=list.yr,interest=cur.interest,numyears=numyears)
   }
   mtext(paste("Using: ", dat.file,", ", fit.file,", decay = ",decay,sep=""), outer = TRUE, cex = 1.5)
 }
@@ -162,12 +158,12 @@ exp_corr <- function(dat.file="davisDat.Rdata", #Whiche climate file to use
   list.yr=fittot_fun(years.list=yearstuff[[1]],duration=duration,lag=lag) #grab the years.list part of yearstuff
   df.yr=do.call(rbind.data.frame,list.yr)
   numrows=floor(sqrt(length(traits)))
-  numcols=ceiling(sqrt(length(traits)))
+  numcols=ceiling(length(traits)/numrows)
   par(mfrow=c(numrows,numcols),oma=c(0,0,2,0))
   text.position=rep("top",length(traits))
   if(text.pos[1]!=FALSE) text.position=text.pos
   for(i in 1:length(traits)){
-      exp_corr_plot(df.yr=df.yr,interest=traits[i], textpos=text.position[i])
+    exp_corr_plot(df.yr=df.yr,interest=traits[i], textpos=text.position[i])
   }
   mtext(paste("Using: ", dat.file,", ", fit.file,", decay = ",decay,sep=""), outer = TRUE, cex = 1.5)
 }

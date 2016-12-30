@@ -238,6 +238,9 @@ yeargen<-function(dat.file, #the climate data file to use
   years.temp=years.temp[,c("day","year","precip","temp")]
   years.temp=cbind(years.temp,
                    moist=0*years.temp$temp,
+                   dprecip=0*years.temp$temp,
+                   dtemp=0*years.temp$temp,
+                   dmoist=0*years.temp$temp,
                    cutemp=0*years.temp$temp,
                    cuprecip=0*(years.temp$precip),
                    daysq=0*(years.temp$day),
@@ -258,6 +261,9 @@ yeargen<-function(dat.file, #the climate data file to use
     }
     years.list[[i.year]]$moist=moist.vec;
     #calculating everything else
+    years.list[[i.year]]$dprecip=c(0,diff(years.list[[i.year]]$precip));
+    years.list[[i.year]]$dtemp=c(0,diff(years.list[[i.year]]$temp));
+    years.list[[i.year]]$dmoist=c(0,diff(years.list[[i.year]]$moist));
     years.list[[i.year]]$cutemp=cumsum(pmax(0,years.list[[i.year]]$temp-baseTemp));
     years.list[[i.year]]$cuprecip=cumsum(years.list[[i.year]]$precip);
     years.list[[i.year]]$daysq=(years.list[[i.year]]$day)^2;

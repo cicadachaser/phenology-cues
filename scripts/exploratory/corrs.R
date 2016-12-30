@@ -29,7 +29,7 @@ exp_corr(dat.file="ithacaDat.Rdata")
 #Full list of traits:
 x11()
 exp_corr(dat.file="RapidCityDat.Rdata",
-         traits=c("day","year", "precip", "temp",   "moist",  "cutemp", "cuprecip",
+         traits=c("day","year", "precip", "temp",   "moist", "dprecip","dtemp","dmoist", "cutemp", "cuprecip",
                   "daysq",  "tempsq", "precipsq", "cutempsq", "cuprecipsq"),
          fit.file = "skewgauss.R"
 )

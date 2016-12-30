@@ -24,4 +24,6 @@ cat("Climate data files we can use:")
 list.files("data-years/")
 x11()
 #Example call of the function:
-exp_moist(dat.file="GreatFallsDat.Rdata",fit.file = "standgauss.R",decay=10)
+exp_covars(dat.file="GreatFallsDat.Rdata",fit.file = "standgauss.R",decay=10,interests=c("dtemp","dprecip","dmoist","fit.tot"))
+x11()
+exp_covars(dat.file="GreatFallsDat.Rdata",fit.file = "standgauss.R",decay=.2,interests=c("moist","precip","temp","fit.tot"))

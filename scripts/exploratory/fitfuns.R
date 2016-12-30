@@ -24,4 +24,4 @@ cat("Climate data files we can use:")
 list.files("data-years/")
 x11()
 #Example call of the function:
-exp_fitfun(fit.file="standgauss.R",climate.fun="yeargen.ithaca")
+exp_fitfun(fit.file="multivargauss.R",dat.file="ithacaDat.Rdata")

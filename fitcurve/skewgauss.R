@@ -8,7 +8,6 @@
 require(sn)
 best.temp=40; shape.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.other=10; shape.other=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
-other.name="precip" #what is the "other" climate covariate we're using?
 skew.t=skew.o=-10 #skew values for temp and other skewed gaussians
 
 #Converting best.temp and best.other to location parameters
