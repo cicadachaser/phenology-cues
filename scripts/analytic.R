@@ -62,12 +62,12 @@ source("scripts/rate_setup.R") #here using only for the cuesmax
 years.list=NULL #initialize list
 
 if(runType=="standard"){
-  years.stuff=yeargen.davis(best.temp = best.temp,sd.temp = sd.temp,
+  years.stuff=yeargen(dat.file="davisDat.Rdata",best.temp = best.temp,sd.temp = sd.temp,
                             best.precip = best.precip,sd.precip = sd.precip)
   years.list=years.stuff[[1]]
   years.indlist=years.stuff[[2]]
 } else if(runType=="ithaca"){
-  years.stuff=yeargen.ithaca(best.temp = best.temp,sd.temp = sd.temp,
+  years.stuff=yeargen(dat.file="ithacaDat.Rdata",best.temp = best.temp,sd.temp = sd.temp,
                              best.precip = best.precip,sd.precip = sd.precip)
   years.list=years.stuff[[1]]
   years.indlist=years.stuff[[2]]

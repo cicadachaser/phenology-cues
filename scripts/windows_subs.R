@@ -228,26 +228,25 @@ yeargen.template<-function(){
   daily.fit=dnorm(years.temp$temp,mean=best.temp,sd=sd.temp)*dnorm(years.temp$precip,mean=best.precip,sd=sd.precip)
 }
 
-yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp,baseTemp=0){
-  #This file assumes the imputed data file exists
+yeargen<-function(dat.file,best.other,sd.other,best.temp,sd.temp,baseTemp=0,other.name="precip",decay=.2){
+  #I have recently changed this!
+  #We now use a single yeargen function for any climate data - the dat.file argument lets us specify the climate
+  #And it uses "temp" and "other" as the two climate covariates to feed into the fitness function. Other might refer
+  # to precip or moisture, but could be anything we want. Specified with the "other.name" variable
+  # The decay parameter is used when creating the moisture coefficient
+  #the datFile should refer to a pre-existing imputed data faile, like datFile="davisDat.Rdata"
   set_wrkdir()
-  fileName="davisDat.Rdata"
-  # if(file.exists(paste("data-years/",fileName,sep=""))){
+  fileName=dat.file
   envdat=new.env()
   load(paste("data-years/",fileName,sep=""),envir = envdat)
   years.list=envdat$yearlist
   years.ind=envdat$yearnames
-  # if(file.exists(paste("data-years/",fileName,sep=""))){
-  # }else{
-    #THIS IS WHERE WE PULL IN THE IMPUTATION FUNCTION!
-    # years.list=yearmk_davis()
-    # save(years.list,file = paste("data-years/",fileName,sep=""))
-  # }
   years.temp=do.call(rbind.data.frame,years.list)
   naminds=which(colnames(years.temp) %in% c("DAY.OF.YEAR","YEAR","PRCP","TMAX"))
   colnames(years.temp)[naminds]=c("day","year","precip","temp")
   years.temp=years.temp[,c("day","year","precip","temp")]
   years.temp=cbind(years.temp,
+                   moist=0*years.temp$temp,
                    cutemp=0*years.temp$temp,
                    cuprecip=0*(years.temp$precip),
                    daysq=0*(years.temp$day),
@@ -256,53 +255,20 @@ yeargen.davis<-function(best.precip,sd.precip,best.temp,sd.temp,baseTemp=0){
                    cutempsq=0*(cumsum(years.temp$temp)),
                    cuprecipsq=0*(cumsum(years.temp$precip))
   )
-   fit.daily=fit_fn(years=years.temp)
+  fit.daily=fit_fn(years=years.temp,other.name)
   years.temp=cbind(years.temp,fit.daily)
   years.list=split(years.temp,f=years.temp$year)
   for(i.year in 1:length(years.list)){
-    years.list[[i.year]]$cutemp=cumsum(pmax(0,years.list[[i.year]]$temp-baseTemp));
-    years.list[[i.year]]$cuprecip=cumsum(years.list[[i.year]]$precip);
-    years.list[[i.year]]$daysq=(years.list[[i.year]]$day)^2;
-    years.list[[i.year]]$tempsq=(years.list[[i.year]]$temp)^2;
-    years.list[[i.year]]$precipsq=(years.list[[i.year]]$precip)^2;
-    years.list[[i.year]]$cutempsq=cumsum((years.list[[i.year]]$temp)^2);
-    years.list[[i.year]]$cuprecipsq=cumsum((years.list[[i.year]]$precip)^2);
+    #calculating moisture
+    rain=years.list[[i.year]]$precip
+    moist.vec=rain*0
+    moist=0
+    for(i in 1:length(rain)){
+      moist=moist*exp(-decay)+rain[i]
+      moist.vec[i]=moist
     }
-  return(list(years.list,years.ind))
-}
-
-yeargen.ithaca<-function(best.precip,sd.precip,best.temp,sd.temp,baseTemp=0){
-  #This file assumes the imputed data file exists
-  set_wrkdir()
-  fileName="ithacaDat.Rdata"
-  # if(file.exists(paste("data-years/",fileName,sep=""))){
-  envdat=new.env()
-  load(paste("data-years/",fileName,sep=""),envir = envdat)
-  years.list=envdat$yearlist
-  years.ind=envdat[[yearSet]]
-  # }else{
-  #THIS IS WHERE WE PULL IN THE IMPUTATION FUNCTION!
-  # years.list=yearmk_davis()
-  # save(years.list,file = paste("data-years/",fileName,sep=""))
-  # }
-  years.temp=do.call(rbind.data.frame,years.list)
-  naminds=which(colnames(years.temp) %in% c("DAY.OF.YEAR","YEAR","PRCP","TMAX"))
-  colnames(years.temp)[naminds]=c("day","year","precip","temp")
-  years.temp=years.temp[,c("day","year","precip","temp")]
-  #add cumulative and squared cues. NOTE THAT SQUARING HAPPENS AFTER CUMSUM!
-  years.temp=cbind(years.temp,
-                   cutemp=0*years.temp$temp,
-                   cuprecip=0*(years.temp$precip),
-                   daysq=0*(years.temp$day),
-                   tempsq=0*(years.temp$temp),
-                   precipsq=0*(years.temp$precip),
-                   cutempsq=0*(cumsum(years.temp$temp)),
-                   cuprecipsq=0*(cumsum(years.temp$precip))
-  )
-  fit.daily=fit_fn(years=years.temp)
-  years.temp=cbind(years.temp,fit.daily)
-  years.list=split(years.temp,f=years.temp$year)
-  for(i.year in 1:length(years.list)){
+    years.list[[i.year]]$moist=moist.vec;
+    #calculating everything else
     years.list[[i.year]]$cutemp=cumsum(pmax(0,years.list[[i.year]]$temp-baseTemp));
     years.list[[i.year]]$cuprecip=cumsum(years.list[[i.year]]$precip);
     years.list[[i.year]]$daysq=(years.list[[i.year]]$day)^2;
@@ -313,6 +279,49 @@ yeargen.ithaca<-function(best.precip,sd.precip,best.temp,sd.temp,baseTemp=0){
   }
   return(list(years.list,years.ind))
 }
+
+# yeargen.ithaca<-function(best.other,sd.other,best.temp,sd.temp,baseTemp=0,other.name){
+#   #This file assumes the imputed data file exists
+#   set_wrkdir()
+#   fileName="ithacaDat.Rdata"
+#   # if(file.exists(paste("data-years/",fileName,sep=""))){
+#   envdat=new.env()
+#   load(paste("data-years/",fileName,sep=""),envir = envdat)
+#   years.list=envdat$yearlist
+#   years.ind=envdat$yearnames
+#   # }else{
+#   #THIS IS WHERE WE PULL IN THE IMPUTATION FUNCTION!
+#   # years.list=yearmk_davis()
+#   # save(years.list,file = paste("data-years/",fileName,sep=""))
+#   # }
+#   years.temp=do.call(rbind.data.frame,years.list)
+#   naminds=which(colnames(years.temp) %in% c("DAY.OF.YEAR","YEAR","PRCP","TMAX"))
+#   colnames(years.temp)[naminds]=c("day","year","precip","temp")
+#   years.temp=years.temp[,c("day","year","precip","temp")]
+#   #add cumulative and squared cues. NOTE THAT SQUARING HAPPENS AFTER CUMSUM!
+#   years.temp=cbind(years.temp,
+#                    cutemp=0*years.temp$temp,
+#                    cuprecip=0*(years.temp$precip),
+#                    daysq=0*(years.temp$day),
+#                    tempsq=0*(years.temp$temp),
+#                    precipsq=0*(years.temp$precip),
+#                    cutempsq=0*(cumsum(years.temp$temp)),
+#                    cuprecipsq=0*(cumsum(years.temp$precip))
+#   )
+#   fit.daily=fit_fn(years=years.temp,other.name)
+#   years.temp=cbind(years.temp,fit.daily)
+#   years.list=split(years.temp,f=years.temp$year)
+#   for(i.year in 1:length(years.list)){
+#     years.list[[i.year]]$cutemp=cumsum(pmax(0,years.list[[i.year]]$temp-baseTemp));
+#     years.list[[i.year]]$cuprecip=cumsum(years.list[[i.year]]$precip);
+#     years.list[[i.year]]$daysq=(years.list[[i.year]]$day)^2;
+#     years.list[[i.year]]$tempsq=(years.list[[i.year]]$temp)^2;
+#     years.list[[i.year]]$precipsq=(years.list[[i.year]]$precip)^2;
+#     years.list[[i.year]]$cutempsq=cumsum((years.list[[i.year]]$temp)^2);
+#     years.list[[i.year]]$cuprecipsq=cumsum((years.list[[i.year]]$precip)^2);
+#   }
+#   return(list(years.list,years.ind))
+# }
 
 
 
