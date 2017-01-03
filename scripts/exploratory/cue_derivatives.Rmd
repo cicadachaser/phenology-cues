@@ -1,5 +1,5 @@
 ---
-title: "Comparing smoothing approaches"
+title: "Using derivative of temperature for seasonality"
 author: "Collin Edwards"
 date: "January 3, 2017"
 output: html_document
