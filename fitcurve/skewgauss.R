@@ -8,7 +8,7 @@
 require(sn)
 best.temp=40; shape.temp=10; #The optimal temp and the sd for the temp-by-fitness curve (which is gaussian)
 best.other=10; shape.other=30; #The optimal precip and the sd for the precip-by-fitness curve (which is gaussian)
-skew.t=skew.o=-10 #skew values for temp and other skewed gaussians
+skew.t=skew.o=10 #skew values for temp and other skewed gaussians
 
 #Converting best.temp and best.other to location parameters
 obj_fun <- function(location,goal,maxrange,omega,alpha){

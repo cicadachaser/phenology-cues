@@ -22,7 +22,6 @@ cat("fitness files you might use:")
 list.files("fitcurve/")
 cat("Climate data files we can use:")
 list.files("data-years/")
-x11()
 #Parameters for the function
 # dat.file: climate file to use, found in years-data folder
 # traits: vector of strings for the cues to plot

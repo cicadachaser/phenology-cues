@@ -31,4 +31,4 @@ x11()
 # n.plotyears: number of years to use when plotting points.
 
 #Example call of the function:
-exp_fitfun(fit.file="multivargauss.R",dat.file="ithacaDat.Rdata",max.temp=60)
+exp_fitfun(fit.file="skewgauss.R",dat.file="ithacaDat.Rdata",max.temp=60,fit.parms = fit.parms)

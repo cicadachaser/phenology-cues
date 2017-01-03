@@ -33,6 +33,6 @@ list.files("data-years/")
 # duration: duration used when calculating fitness, default is 10
 # lag: lag used when calculating fitness, default is 1
 
-  #Example call of the function:
-  x11()
-  exp_covars(dat.file="davisDat.Rdata",fit.file = "standgauss.R",decay=.1,interests=c("temp","tempsq","fit.tot"))
+#Example call of the function:
+x11()
+exp_covars(dat.file="davisDat.Rdata",fit.file = "standgauss.R",decay=.1,interests=c("temp","photo","fit.tot"))

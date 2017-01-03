@@ -219,6 +219,7 @@ yeargen<-function(dat.file, #the climate data file to use
                   baseTemp=0,
                   other.name="moist",
                   decay=.2,
+                  latitude=38.5,
                   moist.norm=FALSE){
   #I have recently changed this!
   #We now use a single yeargen function for any climate data - the dat.file argument lets us specify the climate
@@ -226,6 +227,7 @@ yeargen<-function(dat.file, #the climate data file to use
   # to precip or moisture, but could be anything we want. Specified with the "other.name" variable
   # The decay parameter is used when creating the moisture coefficient
   #the datFile should refer to a pre-existing imputed data faile, like datFile="davisDat.Rdata"
+  require(geosphere)
   set_wrkdir()
   fileName=dat.file
   envdat=new.env()
@@ -236,8 +238,10 @@ yeargen<-function(dat.file, #the climate data file to use
   naminds=which(colnames(years.temp) %in% c("DAY.OF.YEAR","YEAR","PRCP","TMAX"))
   colnames(years.temp)[naminds]=c("day","year","precip","temp")
   years.temp=years.temp[,c("day","year","precip","temp")]
+  years.temp=years.temp[years.temp$day<366,]#REMOVE LEAP DAY BY TAKING OFF LAST DAY OF YEAR FOR THOSE YEARS
   years.temp=cbind(years.temp,
-                   moist=0*years.temp$temp,
+                   moist=0*years.temp$temp, #environmental moisture
+                   photo=0*years.temp$temp, #photoperiod
                    dprecip=0*years.temp$temp,
                    dtemp=0*years.temp$temp,
                    dmoist=0*years.temp$temp,
@@ -262,6 +266,7 @@ yeargen<-function(dat.file, #the climate data file to use
     }
     years.list[[i.year]]$moist=moist.vec;
     #calculating everything else
+    years.list[[i.year]]$photo=daylength(latitude,1:365)
     years.list[[i.year]]$dprecip=c(0,diff(years.list[[i.year]]$precip));
     years.list[[i.year]]$dtemp=c(0,diff(years.list[[i.year]]$temp));
     years.list[[i.year]]$dmoist=c(0,diff(years.list[[i.year]]$moist));
@@ -274,13 +279,13 @@ yeargen<-function(dat.file, #the climate data file to use
     years.list[[i.year]]$cutempsq=cumsum((years.list[[i.year]]$temp)^2);
     years.list[[i.year]]$cuprecipsq=cumsum((years.list[[i.year]]$precip)^2);
   }
-    yrsdf=do.call(rbind.data.frame,years.list)
-    if(moist.norm!=FALSE){
-      yrsdf$moist=yrsdf$moist/max(yrsdf$moist)*moist.norm
-    }
-    fit.daily=fit_fn(years=yrsdf, other.name=other.name, fit.parms=fit.parms)
-    yrsdf=cbind(yrsdf,fit.daily)
-    years.list=split(yrsdf,yrsdf$year)
+  yrsdf=do.call(rbind.data.frame,years.list)
+  if(moist.norm!=FALSE){
+    yrsdf$moist=yrsdf$moist/max(yrsdf$moist)*moist.norm
+  }
+  fit.daily=fit_fn(years=yrsdf, other.name=other.name, fit.parms=fit.parms)
+  yrsdf=cbind(yrsdf,fit.daily)
+  years.list=split(yrsdf,yrsdf$year)
   return(list(years.list,years.ind))
 }
 

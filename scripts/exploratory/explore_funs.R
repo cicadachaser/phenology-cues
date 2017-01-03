@@ -29,7 +29,7 @@ fittot_fun <- function(years.list,duration=10,lag=1){
 exp_fitfun <- function(fit.file="standgauss.R",
                        fit.parms=list(best.temp=40, sd.temp=10, shape.temp=10, #this is a list for feeding into the fitfun. change as needed.
                                       best.other=10, sd.other=30, shape.other=30,
-                                      skew.t=10,skew.o=-10,corr=0),
+                                      skew.t=-10,skew.o=-10,corr=0),
                        min.temp=0,max.temp=50,min.other=0,max.other=50,
                        numpts=500, #Resolution of image - number points in each X and Y dimension
                        dat.file="davisDat.Rdata", #for plotting some random actual data.
