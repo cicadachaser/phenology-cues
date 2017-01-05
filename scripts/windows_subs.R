@@ -214,27 +214,20 @@ actTraitEff<-function(years.ind,years.list,pophistory,N,traits){
 # Year generation functions
 ####################################
 
-yeargen.template<-function(){
-  set_wrkdir()
-  fileName="fileName.Rdata"
-  if(file.exists(paste("data-years/",fileName,sep=""))){
-    attach(filename)
-  }else{
-    #THIS IS WHERE WE PULL IN THE IMPUTATION FUNCTION!
-    #years.list=imputation_function()
-    save(list=years.list,file = paste("data-years/",fileName,sep=""))
-  }
-  years.temp=do.call(rbind.data.frame,years.list)
-  daily.fit=dnorm(years.temp$temp,mean=best.temp,sd=sd.temp)*dnorm(years.temp$precip,mean=best.precip,sd=sd.precip)
-}
-
-yeargen<-function(dat.file,best.other,sd.other,best.temp,sd.temp,baseTemp=0,other.name="precip",decay=.2){
+yeargen<-function(dat.file, #the climate data file to use
+                  fit.parms, #LIST of fitness parameters for the given fitness file
+                  baseTemp=0,
+                  other.name="moist",
+                  decay=.2,
+                  latitude=38.5,
+                  moist.norm=FALSE){
   #I have recently changed this!
   #We now use a single yeargen function for any climate data - the dat.file argument lets us specify the climate
   #And it uses "temp" and "other" as the two climate covariates to feed into the fitness function. Other might refer
   # to precip or moisture, but could be anything we want. Specified with the "other.name" variable
   # The decay parameter is used when creating the moisture coefficient
   #the datFile should refer to a pre-existing imputed data faile, like datFile="davisDat.Rdata"
+  require(geosphere)
   set_wrkdir()
   fileName=dat.file
   envdat=new.env()
@@ -245,9 +238,15 @@ yeargen<-function(dat.file,best.other,sd.other,best.temp,sd.temp,baseTemp=0,othe
   naminds=which(colnames(years.temp) %in% c("DAY.OF.YEAR","YEAR","PRCP","TMAX"))
   colnames(years.temp)[naminds]=c("day","year","precip","temp")
   years.temp=years.temp[,c("day","year","precip","temp")]
+  years.temp=years.temp[years.temp$day<366,]#REMOVE LEAP DAY BY TAKING OFF LAST DAY OF YEAR FOR THOSE YEARS
   years.temp=cbind(years.temp,
-                   moist=0*years.temp$temp,
+                   moist=0*years.temp$temp, #environmental moisture
+                   photo=0*years.temp$temp, #photoperiod
+                   dprecip=0*years.temp$temp,
+                   dtemp=0*years.temp$temp,
+                   dmoist=0*years.temp$temp,
                    cutemp=0*years.temp$temp,
+                   dcutemp=0*years.temp$temp,
                    cuprecip=0*(years.temp$precip),
                    daysq=0*(years.temp$day),
                    tempsq=0*(years.temp$temp),
@@ -255,8 +254,6 @@ yeargen<-function(dat.file,best.other,sd.other,best.temp,sd.temp,baseTemp=0,othe
                    cutempsq=0*(cumsum(years.temp$temp)),
                    cuprecipsq=0*(cumsum(years.temp$precip))
   )
-  fit.daily=fit_fn(years=years.temp,other.name)
-  years.temp=cbind(years.temp,fit.daily)
   years.list=split(years.temp,f=years.temp$year)
   for(i.year in 1:length(years.list)){
     #calculating moisture
@@ -269,7 +266,12 @@ yeargen<-function(dat.file,best.other,sd.other,best.temp,sd.temp,baseTemp=0,othe
     }
     years.list[[i.year]]$moist=moist.vec;
     #calculating everything else
+    years.list[[i.year]]$photo=daylength(latitude,1:365)
+    years.list[[i.year]]$dprecip=c(0,diff(years.list[[i.year]]$precip));
+    years.list[[i.year]]$dtemp=c(0,diff(years.list[[i.year]]$temp));
+    years.list[[i.year]]$dmoist=c(0,diff(years.list[[i.year]]$moist));
     years.list[[i.year]]$cutemp=cumsum(pmax(0,years.list[[i.year]]$temp-baseTemp));
+    years.list[[i.year]]$dcutemp=c(0,diff(years.list[[i.year]]$cutemp));
     years.list[[i.year]]$cuprecip=cumsum(years.list[[i.year]]$precip);
     years.list[[i.year]]$daysq=(years.list[[i.year]]$day)^2;
     years.list[[i.year]]$tempsq=(years.list[[i.year]]$temp)^2;
@@ -277,112 +279,16 @@ yeargen<-function(dat.file,best.other,sd.other,best.temp,sd.temp,baseTemp=0,othe
     years.list[[i.year]]$cutempsq=cumsum((years.list[[i.year]]$temp)^2);
     years.list[[i.year]]$cuprecipsq=cumsum((years.list[[i.year]]$precip)^2);
   }
+  yrsdf=do.call(rbind.data.frame,years.list)
+  if(moist.norm!=FALSE){
+    yrsdf$moist=yrsdf$moist/max(yrsdf$moist)*moist.norm
+  }
+  fit.daily=fit_fn(years=yrsdf, other.name=other.name, fit.parms=fit.parms)
+  yrsdf=cbind(yrsdf,fit.daily)
+  years.list=split(yrsdf,yrsdf$year)
   return(list(years.list,years.ind))
 }
 
-# yeargen.ithaca<-function(best.other,sd.other,best.temp,sd.temp,baseTemp=0,other.name){
-#   #This file assumes the imputed data file exists
-#   set_wrkdir()
-#   fileName="ithacaDat.Rdata"
-#   # if(file.exists(paste("data-years/",fileName,sep=""))){
-#   envdat=new.env()
-#   load(paste("data-years/",fileName,sep=""),envir = envdat)
-#   years.list=envdat$yearlist
-#   years.ind=envdat$yearnames
-#   # }else{
-#   #THIS IS WHERE WE PULL IN THE IMPUTATION FUNCTION!
-#   # years.list=yearmk_davis()
-#   # save(years.list,file = paste("data-years/",fileName,sep=""))
-#   # }
-#   years.temp=do.call(rbind.data.frame,years.list)
-#   naminds=which(colnames(years.temp) %in% c("DAY.OF.YEAR","YEAR","PRCP","TMAX"))
-#   colnames(years.temp)[naminds]=c("day","year","precip","temp")
-#   years.temp=years.temp[,c("day","year","precip","temp")]
-#   #add cumulative and squared cues. NOTE THAT SQUARING HAPPENS AFTER CUMSUM!
-#   years.temp=cbind(years.temp,
-#                    cutemp=0*years.temp$temp,
-#                    cuprecip=0*(years.temp$precip),
-#                    daysq=0*(years.temp$day),
-#                    tempsq=0*(years.temp$temp),
-#                    precipsq=0*(years.temp$precip),
-#                    cutempsq=0*(cumsum(years.temp$temp)),
-#                    cuprecipsq=0*(cumsum(years.temp$precip))
-#   )
-#   fit.daily=fit_fn(years=years.temp,other.name)
-#   years.temp=cbind(years.temp,fit.daily)
-#   years.list=split(years.temp,f=years.temp$year)
-#   for(i.year in 1:length(years.list)){
-#     years.list[[i.year]]$cutemp=cumsum(pmax(0,years.list[[i.year]]$temp-baseTemp));
-#     years.list[[i.year]]$cuprecip=cumsum(years.list[[i.year]]$precip);
-#     years.list[[i.year]]$daysq=(years.list[[i.year]]$day)^2;
-#     years.list[[i.year]]$tempsq=(years.list[[i.year]]$temp)^2;
-#     years.list[[i.year]]$precipsq=(years.list[[i.year]]$precip)^2;
-#     years.list[[i.year]]$cutempsq=cumsum((years.list[[i.year]]$temp)^2);
-#     years.list[[i.year]]$cuprecipsq=cumsum((years.list[[i.year]]$precip)^2);
-#   }
-#   return(list(years.list,years.ind))
-# }
-
-
-
-# This is behind the times. Use Louie's scripts for the data file
-# yearmk_davis<-function(){
-#   #libraries
-#   library(timeDate)
-#   library(Amelia)
-#   library(parallel)
-#   #Set appropriate working directory
-#   set_wrkdir()
-#   #input data
-#   davis.daily<-read.csv("davis-data/626713.csv", header=T, na.strings="-9999")
-#   davis.daily$YEAR<-as.numeric(substr(davis.daily$DATE,1,4)) #simple field for year
-#   davis.daily<-davis.daily[davis.daily$YEAR>1913 & davis.daily$YEAR<2015,] #truncates the data to 101 complete years between 1914 and 2014
-#   davis.daily$PRCP<-davis.daily$PRCP/10 #precips are reported in tenths of mm
-#   davis.daily$TMAX<-davis.daily$TMAX/10 #temps are reported in tenths of degree C
-#   davis.daily$TMIN<-davis.daily$TMIN/10 #temps are reported in tenths of degree C
-#   davis.daily$DATE2<-as.Date(as.character(davis.daily$DATE),format="%Y %m %d") #DATE2 is date formatted
-#   davis.daily$JULIAN<-julian(davis.daily$DATE2,origin=as.Date("1913-12-31")) #1914-01-01 is day 1
-#   davis.daily$MONTH<-as.numeric(substr(davis.daily$DATE,5,6)) #simple field for month
-#   davis.daily$DAY<-as.numeric(substr(davis.daily$DATE,7,8)) #simple field for day
-#   davis.daily<-davis.daily[,c("DATE2","JULIAN", "YEAR","MONTH","DAY","PRCP","TMAX","TMIN")] #simplified dataframe
-#   #however, there are 143 missing rows
-#   missing.row.count<-max(davis.daily$JULIAN)-length(davis.daily$JULIAN)
-#   #this is a list of the missing JULIAN days
-#   missing.days<-which((seq(1:max(davis.daily$JULIAN)) %in% davis.daily$JULIAN)=="FALSE")
-#   #create a empty dataframe with 143 rows
-#   missing.days.df <- data.frame(matrix(ncol = 8, nrow = missing.row.count))  #this need to be generalized for any number of missing rows
-#   #create matching column names
-#   colnames(missing.days.df)<-colnames(davis.daily)
-#   #fill in the missing Julian days
-#   missing.days.df$JULIAN<-missing.days
-#   missing.days.df$DATE2<-as.Date(origin=as.Date("1913-12-31"),missing.days.df$JULIAN)
-#   missing.days.df$YEAR<-as.numeric(format(missing.days.df$DATE2, format="%Y"))
-#   missing.days.df$MONTH<-as.numeric(format(missing.days.df$DATE2, format="%m"))
-#   missing.days.df$DAY<-as.numeric(format(missing.days.df$DATE2, format="%d"))
-#   #Combine the two dataframes
-#   davis.daily.w.missing.days<-rbind(missing.days.df,davis.daily)
-#   #sort by JULIAN
-#   davis.daily.w.missing.days<-davis.daily.w.missing.days[order(davis.daily.w.missing.days$JULIAN),]
-#   #this is just a shortcut to expedite - should be cleaned up?
-#   davis.daily<-davis.daily.w.missing.days
-#   davis.yearlist<-split(davis.daily,davis.daily$YEAR) #list of each year separated
-#   davis.yearnames<-unique(davis.daily$YEAR) #gives a list of all the years in the data
-#   #calculates the "day of year", i.e. Jan 1 is 1, and 12/31 is 365
-#   #adds a DAY.OF.YEAR column to each dataframe in the year list
-#   for (i in 1:length(davis.yearnames)){
-#     davis.yearlist[[i]]$DAY.OF.YEAR<-julian(davis.yearlist[[i]]$DATE2, origin=as.Date(paste(davis.yearnames[i],"01","01",sep="-")))+1 #add +1 so that the first day of the year is 1, not zero.
-#   }
-#   davis.daily<-unsplit(davis.yearlist,davis.daily$YEAR)
-#   davis.daily.means<-aggregate(cbind(TMAX,TMIN,PRCP)~DAY.OF.YEAR, data=davis.daily, mean)
-#   a.out<-amelia(davis.daily,m=1,ts="DAY.OF.YEAR",cs="YEAR",idvars=c("DATE2","MONTH","DAY","JULIAN"),intercs=T,splinetime=6)
-#   years.temp=a.out[[1]]$imp1
-#   years.temp=years.temp[c("DAY.OF.YEAR","TMAX","PRCP","YEAR")]
-#   colnames(years.temp)<-c("day","temp","precip","year")
-#   temp=cbind(years.temp$temp,years.temp$temp*0) #for use in following line
-#   years.temp$temp=apply(temp,1,max) #ensuring that temperatures are all positive
-#   years.list=split(x=years.temp,f=years.temp$year)
-#   return(years.list)
-# }
 
 yeargen.const<-function(numYears){
   #generate a sequence of years with identical, gaussian fitness curves, and constant envi conditions.

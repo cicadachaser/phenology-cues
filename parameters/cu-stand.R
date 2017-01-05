@@ -12,7 +12,7 @@ numsims=5 # number of simulations of each type to do
 #traits=c("day","temp","precip","cutemp","cuprecip","daysq","tempsq","precipsq","cutempsq","cuprecipsq")
 plotExtra=TRUE # do we plot snapshots of emergence through time?
 plotPheno=FALSE # do we plot snapshots of phenotype through time?
-viewLength=500 #for comparisons of simulation types,
+viewLength=500 #for comparisons of simulation types
 #  how many generations (starting from the final and working backwards) to plot/compare
 duration=10 #number of days organizm is emerged.
 lag=1 #number of days between decision and obtaining fitness
@@ -21,8 +21,13 @@ numYears=500 #number of years to simulate
 burnIn=200 #number of years to not plot (to avoid scale issues from broad initial population traits)
 mutdist=.01 #What fraction of the total "cue space" should mutations (on average) traverse (kinda).
 yearLabel="A" #For deciding which set of year randomization to use
-fitshape="standgauss"
-yearSet="early.late.50"
+fitshape="standgauss" #which fitness shape to use. use the name of file in fitcurve folder, minuse the .R
+yearSet="early.late.50" #which set of years do we want to use?
+baseTemp=0 #cutoff when calculating degree days/cumulative temperature
+other.name="moist" #can change this to base fitness of temp and something other than moisture
+decay=.2 #decay parameter for moisture calculation
+latitude=38.5#for use in photoperiod - chose value near davis
+##NOTE: specific fitness parameters can be found in the fitness scripts in fitcurve folder.
 #######################
 # For analytic script #
 #######################

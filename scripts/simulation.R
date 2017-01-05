@@ -21,8 +21,11 @@ if(runType=="unitTestConst"){
   out=yeargen.rand(numYears)
   years.list=out[["years.list"]]
 } else{
-  years.stuff=yeargen.ithaca(runType, best.temp = best.temp,sd.temp = sd.temp,
-                             best.precip = best.precip,sd.precip = sd.precip)
+  years.stuff=yeargen(dat.file=runType, fit.parms=fit.parms,
+                  baseTemp=baseTemp,
+                  other.name=other.name,
+                  decay=decay,
+                  moist.norm=moist.norm){
   years.list=years.stuff[[1]]
   years.indlist=years.stuff[[2]]
 

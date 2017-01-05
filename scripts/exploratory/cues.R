@@ -22,13 +22,17 @@ cat("fitness files you might use:")
 list.files("fitcurve/")
 cat("Climate data files we can use:")
 list.files("data-years/")
-x11()
-#Parameters for exp_fitfun:
-# fit.file: name of fitness file to use (fitness file is within "fitcurve" folder
-# fit.parms: list of fitness parameters to use. It looks like R is just using the ones defined in the fitness file, though
-# dat.file: file of the climate data to use
-# other.name: name of other parameter to use. Default is "moist", probably keep it that way.
-# n.plotyears: number of years to use when plotting points.
+#List of parameters:
+# dat.file: name of climate file to use, found in data-years folder
+# fit.file: name of fitness file to use, found in fitcurve folder
+# decay=.2: decay rate for calculating moisture
+# interests: vector of strings for the name of the cues we're interested in
+# baseTemp: base temperature to use for calucating cumulative temperature, defaults to zero
+# numyears: number of years to plot for the individual plots
+# other.name: second climate variable to use when calculating fitness, default is "moist"
+# duration: duration used when calculating fitness, default is 10
+# lag: lag used when calculating fitness, default is 1
 
 #Example call of the function:
-exp_fitfun(fit.file="skewgauss.R",dat.file="ithacaDat.Rdata",max.temp=60,fit.parms = fit.parms)
+x11()
+exp_covars(dat.file="davisDat.Rdata",fit.file = "standgauss.R",decay=.1,interests=c("temp","photo","fit.tot"))
