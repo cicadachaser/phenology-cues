@@ -10,7 +10,7 @@ set_wrkdir<-function(){
     }
   }else{
     if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
-      setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")#desktop
+      setwd("C:\\Users\\louie\\Documents\\GitHub\\pihenology-cues")#desktop
     }else{
       setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")} #laptop
   }
@@ -31,4 +31,4 @@ x11()
 # n.plotyears: number of years to use when plotting points.
 
 #Example call of the function:
-exp_fitfun(fit.file="skewgauss.R",dat.file="ithacaDat.Rdata",max.temp=60,fit.parms = fit.parms)
+exp_fitfun(fit.file="multiskewgauss.R",dat.file="ithacaDat.Rdata",max.temp=60,fit.parms = fit.parms)
