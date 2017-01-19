@@ -18,8 +18,8 @@ set_wrkdir()
 runsnames=c("cu-stand_par")
 start.time<-proc.time()
 runsname=runsnames[1]
-# source("scripts/simulation_par2.R")
-source("scripts/simulation.R")
+# source("scripts/simulation.R")
+source("scripts/simulation_par.R")
 # source("scripts/analytic.R")
 # source("scripts/analytic_image.R")
 # runsname=runsnames[2]
