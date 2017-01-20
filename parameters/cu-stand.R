@@ -26,7 +26,7 @@ yearSet="early.late.50" #which set of years do we want to use?
 baseTemp=0 #cutoff when calculating degree days/cumulative temperature
 other.name="moist" #can change this to base fitness of temp and something other than moisture
 decay=.2 #decay parameter for moisture calculation
-fattail=TRUE #decision on whether or not to use fattail distribution (cauchy) for generating mutation distances
+fattail=FALSE#decision on whether or not to use fattail distribution (cauchy) for generating mutation distances
 latitude=38.5#for use in photoperiod - chose value near davis
 moist.norm=FALSE
 ##NOTE: specific fitness parameters can be found in the fitness scripts in fitcurve folder.

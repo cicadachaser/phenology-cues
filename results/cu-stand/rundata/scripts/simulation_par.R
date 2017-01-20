@@ -1,5 +1,6 @@
 #simulation<-function(runsname){
-rm(list=setdiff(ls(), c("set_wrkdir","runsname","runsnames")))
+rm(list=setdiff(ls(), c("set_wrkdir","runsname","runsname.old","runsnames.first","runsname.second","runsnames","start.time")))
+follow.run=FALSE
 require(timeDate)
 require(zoo)
 #Set appropriate working directory
@@ -12,23 +13,22 @@ source(paste("parameters/",runsname,".R",sep="")) #read in all the parameters
 #reading in fitness shape file
 source(paste("fitcurve/",fitshape,".R",sep=""))
 years.list=NULL
-if(runType=="standard"){
-  years.stuff=yeargen(dat.file="davisDat.Rdata", best.temp = best.temp,sd.temp = sd.temp,
-                            best.precip = best.precip,sd.precip = sd.precip)
-  years.list=years.stuff[[1]]
-  years.indlist=years.stuff[[2]]
-} else if(runType=="ithaca"){
-  years.stuff=yeargen(dat.file="ithacaDat.Rdata", best.temp = best.temp,sd.temp = sd.temp,
-                             best.precip = best.precip,sd.precip = sd.precip)
-  years.list=years.stuff[[1]]
-  years.indlist=years.stuff[[2]]
-} else if(runType=="unitTestConst"){
+if(runType=="unitTestConst"){
   out=yeargen.const(numYears)
   years.list=out[["years.list"]]
   years.index=rep(1,numYears)
 } else if (runType=="unitTestRand"){
   out=yeargen.rand(numYears)
   years.list=out[["years.list"]]
+} else{
+  years.stuff=yeargen(dat.file=runType, fit.parms=fit.parms,
+                      baseTemp=baseTemp,
+                      other.name=other.name,
+                      decay=decay,
+                      moist.norm=moist.norm)
+  years.list=years.stuff[[1]]
+  years.indlist=years.stuff[[2]]
+
 }
 #setting up all the mutation rates etc
 source("scripts/rate_setup.R")  #this sets up mutation rates, distances, etc.
@@ -48,12 +48,7 @@ if(file.exists(paste("yearinds/",years.name,sep=""))){
 
 
 #Stuff for storing summary stats of multiple sims
-store.mean=store.max=matrix(0,nrow=numsims,ncol=numYears)
-store.coEff=matrix(0,nrow=numsims,ncol=length(traits)) #for storing coefficient effects
-colnames(store.coEff)<-traits
 #matrices for storing mean and maximum possible fitness
-store.names=rep(0,numsims) #vector for storing run names, corresponds to rows of store.mean
-finalpops=NULL #for storing the final populations of each run.
 
 #Create folder for saving results, making a backup folder to save scripts into
 
@@ -68,42 +63,49 @@ write.csv(years.indmat,paste("results/",runsname,"/rundata/",years.name,sep=""))
 file.copy(from = paste("fitcurve/",fitshape,".R"),
           to = paste("results/",runsname,"/rundata/",fitshape,".R",sep=""))
 
-
 require(doSNOW); require(parallel); require(doParallel)
 nClust=detectCores(all.tests=FALSE,logical=TRUE)
 c1<-makeCluster(min(nClust-1,5))
 registerDoParallel(c1)
-foreach(i.sim = 1:numsims,.packages=c("timeDate","zoo")) %dopar% {
-  require(timeDate);require(zoo);
+res=foreach(i.sim = 1:numsims, .packages=c("timeDate","zoo","vegan","scatterplot3d")) %dopar% {
   years.index=as.numeric(years.indmat[i.sim,])
   runName=sprintf("%s%d",runsname[1],i.sim)
   set_wrkdir()
-  source("scripts/sim_runner.R")  #this sets up mutation rates, distances, etc.
+  pophistory=simrunner(N=N,traits=traits,start=start,years.list=years.list,years.index=years.index,
+                       duration=duration,sds=sds,mutrate=mutrate,numyears=numyears,fattail=fattail)
   #####################
   #Saving our results #
   #####################
   #Set appropriate working directory
   set_wrkdir()
   #We have a "save data" script called windows_save.R
-  source("scripts/windows_save.R")
-  #
-  #   ############
-  #   # Plotting #
-  #   ############
-  #   set_wrkdir()
-  #   source("scripts/windows_plot.R")
-  #   dev.off()
-  #   store.mean[i.sim,]=meanfit
-  #   store.max[i.sim,]=maxfit
-  #   store.names[i.sim]=runName
-  #   #Note that act.eff has been calculated already for windows_plot.R
-  #   wrk.acteff=(act.eff[act.eff[,"gen"]>(numYears-50),]) #choose only the final values of act.eff
-  #   store.coEff[i.sim,]=apply(wrk.acteff[,sprintf("b.%s",traits)],2,mean)
-  #   temppop=cbind(run=rep(runName,N),pophistory[[numYears]])
-  #   finalpops=rbind(finalpops,temppop)
+  list.all=list(mget(ls(all.names=TRUE)))
+  windows_save(list.all)
+  set_wrkdir()
+  plotres=windows_plot(list.all) #this function returns act.eff for later use
+  attach(plotres)
+  dev.off()
+
+  # Note that act.eff has been calculated already for windows_plot.R
+  wrk.acteff=(act.eff[act.eff[,"gen"]>(numYears-50),]) #choose only the final values of act.eff
+  store.coEff=apply(wrk.acteff[,sprintf("b.%s",traits)],2,mean)
+  temppop=cbind(run=rep(runName,N),pophistory[[numYears]])
+  return(list(meanfit=meanfit,maxfit=maxfit,runName=runName,wrk.acteff=wrk.acteff,store.coEff=store.coEff,finalpops=temppop))
 }
 stopCluster(c1)
-set_wrkdir()
-save(list=c("store.mean","store.max","store.names","finalpops","store.coEff"),file=paste("results/",runsname,"/",runsname,"_summary.RData",sep=""))
+# set_wrkdir()
+store.meanfit=store.maxfit=store.runName=store.wrk.acteff=store.coEff=store.finalpops=NULL
+for(i in 1:length(res)){
+ store.meanfit=rbind(store.meanfit,res[[i]]$meanfit)
+ store.maxfit=rbind(store.maxfit,res[[i]]$maxfit)
+ store.runName=c(store.runName, res[[i]]$runName)
+ store.wrk.acteff=rbind(store.wrk.acteff,
+                  cbind(runName=rep(res[[i]]$runName,nrow(res[[i]]$wrk.acteff)),
+                        res[[i]]$wrk.acteff))
+ store.coEff=rbind(store.coEff,res[[i]]$store.coEff)
+ store.finalpops=rbind(store.finalpops,res[[i]]$finalpops)
+}
+
+save(list=c("store.meanfit","store.maxfit","store.runName","store.wrk.acteff","store.finalpops","store.coEff"),file=paste("results/",runsname,"/",runsname,"_summary.RData",sep=""))
 #}
 

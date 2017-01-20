@@ -89,7 +89,7 @@ mutation<-function(poptraits, sds, mutrate, N, fattail){
   if(fattail==TRUE)
   vals.mutate = matrix(rcauchy(n = N*length(sds), location = 0, scale = unlist(sds)), N, length(sds), byrow = TRUE)
   colnames(vals.mutate)<-sprintf("b.%s", names(sds))
-  poptraits = poptraits+vals.mutate[mat.mutate] #Take current population, add mutations only for individuals and traits that mutated.
+  poptraits = poptraits+vals.mutate*mat.mutate #Take current population, add mutations only for individuals and traits that mutated.
   return(poptraits)
 }
 
@@ -802,7 +802,6 @@ windows_save = function(list.all){
     unlink(resultsdir,recursive = TRUE)
     dir.create(resultsdir,showWarnings = FALSE)
     setwd(resultsdir)
-
     save(list=ls(all.names=TRUE),file="dat.RData")
   })
 }

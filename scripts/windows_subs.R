@@ -89,7 +89,7 @@ mutation<-function(poptraits, sds, mutrate, N, fattail){
   if(fattail==TRUE)
   vals.mutate = matrix(rcauchy(n = N*length(sds), location = 0, scale = unlist(sds)), N, length(sds), byrow = TRUE)
   colnames(vals.mutate)<-sprintf("b.%s", names(sds))
-  poptraits = poptraits+vals.mutate[mat.mutate] #Take current population, add mutations only for individuals and traits that mutated.
+  poptraits = poptraits+vals.mutate*mat.mutate #Take current population, add mutations only for individuals and traits that mutated.
   return(poptraits)
 }
 
@@ -645,7 +645,8 @@ windows_plot = function(list.all){
             main=paste("Emergence days"),
             xlab="Generation",
             ylab="Emergence day",
-            cex.lab=1.4,cex.main=1.4)
+            cex.lab=1.4,cex.main=1.4,
+            sub="Red is ideal emergence day, blue is climate midpoint")
     #add `optimal emergence day' - note this is a vast oversimplification
     points(viewGens,emerge.ideal[viewGens],col="red",pch=4,lwd=2)
     points(viewGens,quant50[viewGens],col="blue",pch=4,lwd=2)
@@ -802,7 +803,6 @@ windows_save = function(list.all){
     unlink(resultsdir,recursive = TRUE)
     dir.create(resultsdir,showWarnings = FALSE)
     setwd(resultsdir)
-
     save(list=ls(all.names=TRUE),file="dat.RData")
   })
 }

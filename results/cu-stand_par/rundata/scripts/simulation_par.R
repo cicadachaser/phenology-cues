@@ -79,7 +79,7 @@ res=foreach(i.sim = 1:numsims, .packages=c("timeDate","zoo","vegan","scatterplot
   #Set appropriate working directory
   set_wrkdir()
   #We have a "save data" script called windows_save.R
-  list.all=list(mget(ls(all.names=TRUE)))
+  list.all=mget(ls(all.names=TRUE))
   windows_save(list.all)
   set_wrkdir()
   plotres=windows_plot(list.all) #this function returns act.eff for later use
@@ -88,12 +88,24 @@ res=foreach(i.sim = 1:numsims, .packages=c("timeDate","zoo","vegan","scatterplot
 
   # Note that act.eff has been calculated already for windows_plot.R
   wrk.acteff=(act.eff[act.eff[,"gen"]>(numYears-50),]) #choose only the final values of act.eff
-  store.coEff=apply(wrk.acteff[,sprintf("b.%s",traits)],2,mean)
+  store.coEff=apply(wrk.acteff[,sprintf("b.%s",traits)],2,mean,na.rm=TRUE)
   temppop=cbind(run=rep(runName,N),pophistory[[numYears]])
   return(list(meanfit=meanfit,maxfit=maxfit,runName=runName,wrk.acteff=wrk.acteff,store.coEff=store.coEff,finalpops=temppop))
 }
 stopCluster(c1)
 # set_wrkdir()
-save(list=c("res"),file=paste("results/",runsname,"/",runsname,"_summary.RData",sep=""))
+store.meanfit=store.maxfit=store.runName=store.wrk.acteff=store.coEff=store.finalpops=NULL
+for(i in 1:length(res)){
+ store.meanfit=rbind(store.meanfit,res[[i]]$meanfit)
+ store.maxfit=rbind(store.maxfit,res[[i]]$maxfit)
+ store.runName=c(store.runName, res[[i]]$runName)
+ store.wrk.acteff=rbind(store.wrk.acteff,
+                  cbind(runName=rep(res[[i]]$runName,nrow(res[[i]]$wrk.acteff)),
+                        res[[i]]$wrk.acteff))
+ store.coEff=rbind(store.coEff,res[[i]]$store.coEff)
+ store.finalpops=rbind(store.finalpops,res[[i]]$finalpops)
+}
+
+save(list=c("store.meanfit","store.maxfit","store.runName","store.wrk.acteff","store.finalpops","store.coEff"),file=paste("results/",runsname,"/",runsname,"_summary.RData",sep=""))
 #}
 

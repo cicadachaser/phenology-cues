@@ -22,7 +22,7 @@ runsname=runsnames[1]
 source("scripts/simulation_par.R")
 # source("scripts/analytic.R")
 # source("scripts/analytic_image.R")
-# runsname=runsnames[2]
+# runsname=runsnames[2]i
 # source("scripts/simulation.R")
 # source("scripts/analytic.R")
 # source("scripts/analytic_image.R")
