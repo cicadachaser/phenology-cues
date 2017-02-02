@@ -1,0 +1,135 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{outlines}
+\usepackage[margin=1in]{geometry}
+\usepackage{caption} % to allow captions at bottom of table that don't include table number
+%To make itemize more compact in tables
+\usepackage{paralist}
+\makeatletter\let\MPtrue\@minipagetrue\makeatother
+
+\author{Louie Yang \\ Collin Edwards}
+\title{Phenology project model description}
+\begin{document}
+\maketitle
+\section{Overview}
+
+\begin{outline}[enumerate]
+	\1 Introducing the context of this study
+		\2 Climate change, phenological shifts and phenological mismatch
+			\3 Difficult to predict the outcomes of climate chance on phenoligical cuing without a mechanistic understanding. 
+		\2 Previous models of phenological cuing
+			\3 McNamara et al 2011
+			\3 Are there other, older references?
+		\2 The physiology of phenology framework
+			\3 The need to understand phenological cues
+			\3 A key challenge is that real organisms integrate multiple cues, and different organisms 
+			\3 Linking environment-driven, organism-driven and evolution-driven mechanisms to understand the adaptive evolution of the environment-phenology relationship (EPR): How should phenological cues evolve.
+
+
+\end{outline}
+
+\section{Questions and Predictions}
+
+\subsection{Q1.Which cues are favored in more variable environments?}
+
+\begin{table}
+\caption{Table title goes here}
+\begin{tabular}{|p{.2\linewidth}||p{.35\linewidth}|p{.35\linewidth}|}
+\hline
+& Low day-to-day variation & High day-to-day variation \\
+\hline
+\hline 
+High year-to-year variation & \MPtrue
+\begin{compactitem}
+  \item Instantaneous measures favored
+  \item Cumulative measures should be okay
+  \item Photoperiod disfavored due to high year-to-year variation
+\end{compactitem}  & \MPtrue
+\begin{compactitem}
+  \item Extreme case is totally random and should be neutral
+  \item Cumulative measures favored
+  \item Photoperiod disfavored due to high year-to-year variation
+  \item Instantaneous traits disfavored due to high day-to-day variation.
+\end{compactitem}\\
+\hline
+Low year-to-year variation &\MPtrue
+\begin{compactitem}
+  \item In the extreme case, all cues should be informative (neutral case)
+\end{compactitem} &\MPtrue
+\begin{compactitem}
+  \item Photoperiod should be favored
+  \item Cumulative measures should be okay
+  \item Instantaneous traits disfavored due to high day-to-day variation
+\end{compactitem}\\
+\hline
+\end{tabular}
+\caption*{The table caption goes here.}
+\end{table}
+
+\begin{itemize}
+\item Year-to-year variation – (early+late) vs normal phenologies – if day-to-day variation is low, annual variation is informative about phenology, so cumulative temp and temp will be favored, while photoperiod will be disfavored. Cumulative precip may be informative of seasonal patterns, while instantaneous precip will be disfavored. 
+\item Day-to-day variation – smooth vs rough variation – with very noisy variation, photoperiod and cumulative temp will be favored as a long-term approximation of season trends and a way to avoid false starts. Instantaneous temps and precip will be disfavored as too noisy. 
+\item Spatial variation – Depends on the balance of inter-annual and intra-annual variation in the locations being compared. General prediction is that day-to-day variation creates seasonal noise, and will favor photoperiod and cumulative measures and disfavor instantaneous measures, while year-to-year variation is informative about phenological windows, and plastic phenotypes that are able to track this variation will be favored – so maybe cumulative temp will be most favored, but photoperiod will be disfavored. 
+\item Simulated variation – we should be able to create histories that independently manipulate year-to-year variation independently of day-to-day variation. 
+\end{itemize}
+
+\subsection{Q2: Which cueing phenotypes are more resilient to climate change?}
+
+\begin{itemize}
+\item Low year-to-year variation to high year-to-year variation sequence: photoperiod will be depreciated, phenotypes that relied on photoperiod will be selected against. Flexible phenotypes that are able to track year-to-year variation will be favored.
+\item Late phenology to early phenology sequence: if climate change is directional, phenotypes that can track change will be favored; however, if the rate of change is slow, photoperiod might be able to keep up. During the lag phase, phenotypes that use direct metrics of the climate will do better at tracking climate change than phenotypes that track photoperiod. (Importantly, this means that they will maximize their fitness relative to abiotic conditions, but not necessarily to biotic conditions.)
+\end{itemize}
+
+
+\section{Underlying model}
+Organisms collect fitness for a number of days (default 10) starting \textit{lag} days after they decide to emerge (default is one day). In the simulation model, a set population size for the next generation is populated using a multinomial distribution with probabilities based on the relative fitnesses of each parent. Fitness is a function of the climate, with the default function being the product of two gaussians -- one based on rainfall, the other on temperature, centered on biologically realistic ``optimal'' values.
+
+Organisms decide to emerge based on a linear combination of their individual traits and environmental cues. Each individual has a set of traits, corresponding to cues, which can be any real number. Every day the organism calculates their `emergence metric' E by the linear combination of cues and traits:
+
+\[E = (day)\;b.day\; + \;(daily\; temp)\;b.temp+\dots\] 
+
+where the traits like $b.day$ can differ between individuals, and the cues like $day$ are based on that day's cues. The first day that the organism experiences an E value above 100, the organism decides to emerge. It then emerges \textit{lag} days later (default is one), and begins collecting fitness for \textit{duration} days (default is 10). Organisms sum up the fitness across all days emerged to get their total fitness. 
+
+For simplicity of other operations (mainly unbiased mutation rates), we actually used a slightly different formulation of the traits, such that our linear combination was
+
+\[E = (day)\frac{100}{b.day} + (daily\; temp)\frac{100}{b.temp}+\dots\] 
+
+In this interpretation, a trait value represents the value of a cue necessary for the organism to emerge if it only used that cue. For example, an organism with a $b.day$ trait value of 65 and all other traits set to zero would emerge on the 65th day.
+
+Cues (which have corresponding traits) include \textit{day} (which is a proxy for photoperiod), \textit{temperature}, \textit{precipitation}, \textit{cumulative temperature}, \textit{cumulative precipitation}, and the square of each of those (we have focused on the non-squared traits). 
+
+\section{Climate}
+We took two approaches to choosing the climates our organisms experience. 
+\subsection{Natural approach}\label{sec:climate1}
+In the `natural' approach, we took climate data from weather stations that provided many years of daily data. Mostly we have focused on 100 years of daily weather data from Davis. As some years have missing measurements on individual days, we used a system of imputations to fill in missing data points in a reasonable way. With these complete years of data, we generated simulated climates by resampling the entire set of years, or some subset of years with properties of interest (variable or consistent years, for example). 
+
+\subsection{Constructed approach}\label{sec:climate2}
+For situations where we wanted more control, we created a baseline by taking the the daily mean temperature and precipitation from the 100 years of davis data. We then smoothed this, ensuring that the smoothing ``wrapped around'' such that the last day of the year connected smoothly to the first day. From this smooth baseline year, we generated climatic regimes with more or less day-to-day variance (by adding to each day a random value of temperature and/or precipitation drawn from a normal distribution with mean 0 and variance of our choice) and year-to-year variance (by offsetting the phenology by a number drawn from a normal distribution with mean 0 and variance of our choice, subsequently rounded). 
+
+\textit{It occurs to me we could consider also giving each year a baseline temperature offset - one year might have all temperatures increased by 5 degrees, the next year decreased by 3, or what have you. This could be interesting, but seems like its effect would be largely dependent on our choice of optimal temperature/precipitation for the fitness function, where as the other sources of variance should be fairly robust}
+
+\section{Analysis}
+We have taken two approaches to using our model to answer questions.
+
+\subsection{Simulation}
+We generate a climate by the methods described in \ref{sec:climate1} or \ref{sec:climate2}. We generate a starting population of size \textit{N}, assigning random trait values within the given range, for whichever traits the organisms are allowed to use. We then simulate the population through time, determining offspring of each generation based on their parent's fitness (assuming clonal reproduction) (parents are selected using a multinomial distribution to keep the population size at N), and add mutations randomly (occurrence of mutation is random and based on given mutation probabilities, size of mutation is random and based on given mutation variances). Because of the inherent stochasticity of this approach, we carry out multiple runs with the same parameter values to look at the general patterns across many runs.
+\subsection{Fitness optimization}
+When we're interested in what the optimal trait combination is for a given climate, we can solve this explicitly by optimizing the allowed traits for the maximum the geometric fitness. This is dramatically faster and does a better job of finding the optimum, but sacrifices the realism of mechanistically simulating biological processes. Currently our optimization is implemented by testing the geometric fitness in a large number of points in traitspace, and using the best 10-20 as starting points for runs of R's optim() function with fairly loose criterion. The final results of the best 5-10 of those optim() runs are used as the starting points for more stringent optim() runs, and we take the resulting locations in traitspace to be near to the actual optimal point. 
+
+\section{Validation}
+We tested our simulation on some key baseline climates:
+\begin{itemize}
+  \item Completely random fitness: traits appear to drift
+  \item Completely static years: organisms rapidly begin to emerge at the optimal time of year, relying on any trait that can provide that information.
+\end{itemize}
+I believe we have also compared simulation results with fitness optimization results, and found that they matched. But that may have just been fitness optimization results with heatmaps of fitness through traitspace.
+
+\clearpage
+
+\section{Examples of citation using bibtex}
+In 
+
+\end{document}

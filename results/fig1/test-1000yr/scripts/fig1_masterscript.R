@@ -1,0 +1,34 @@
+rm(list=ls())
+runFiles=c("test_1000yr.R")
+
+set_wrkdir<-function(){
+  #function for setting working directory to the right place given the current computer/user
+  if(Sys.getenv("USERNAME")=="Collin" || Sys.getenv("USERNAME")=="collin" || Sys.getenv("USERNAME")=="Collin.work"){ #If it's collin
+    if(Sys.info()["nodename"]=="DESKTOP-D6QSU8F"){
+      setwd("G:\\Repos\\phenology-cues") #desktop
+    }else{
+      setwd("C:\\Repos\\phenology-cues") #desktop
+    }
+  }else{
+    if(Sys.getenv("COMPUTERNAME")=="ENT-YANG01"){
+      setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")#desktop
+    }else{
+      setwd("C:\\Users\\louie\\Documents\\GitHub\\phenology-cues")} #laptop
+  }
+}
+set_wrkdir()
+
+for(runFile in runFiles){
+  source("scripts/var_exper/fig1_calculator_opt.R")
+  tempPath=getwd()
+  set_wrkdir()
+
+  dir.create(paste(tempPath,"/scripts",sep=""))
+  file.copy(from=paste("scripts/var_exper/runfiles/",runFile,sep = ""),
+            to=paste(tempPath,"/scripts/pars-version-",runFile,sep="")
+  )
+  scriptlist=c("fig1_calculator_opt.R","fig1_masterscript.R","fig1_plot_opt.R","prepstuff.R")
+  file.copy(from=paste("scripts/var_exper/",scriptlist,sep = ""),
+            to=paste(tempPath,"/scripts/",scriptlist,sep="")
+  )
+}

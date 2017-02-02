@@ -1,0 +1,94 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{natbib} %For using bibtex to make citations
+%\usepackage{hyperref} % For adding links to document
+\title{Demonstrating the use of bibTeX citation}
+\begin{document}
+\maketitle
+\section{Making a bibliography file}
+BibTeX uses a bibliography file to store information on references which you can then cite easily in your document. The format of these looks like this:
+
+\begin{verbatim}
+ @Article{Ellner1995,
+  author =        {Ellner, S and Turchin, P},
+  title =         {{Chaos in a Noisy World - New Methods and Evidence from Time-Series Analysis}},
+  journal =       {The American Naturalist},
+  year =          {1995},
+  volume =        {145},
+  number =        {3},
+  pages =         {343--375},
+  __markedentry = {[Collin.work:1]},
+  abstract =      {Chaos is usually regarded as a distinct alternative to random effects such as environmental fluctuations or external disturbances. We argue that strict separation between chaotic and stochastic dynamics in ecological systems is unnecessary and misleading, and we present a more comprehensive approach for systems subject to stochastic perturbations. The defining property of chaos is sensitive dependence on initial conditions. Chaotic systems are ''noise amplifiers'' that magnify perturbations; nonchaotic systems are ''noise mufflers'' that dampen perturbations. We also present statistical methods for detecting chaos in time-series data, based on using nonlinear time-series modeling to estimate the Lyapunov exponent lambda, which gives the average rate at which perturbation effects grow (lambda {\textgreater} 0) or decay (lambda {\textless} 0). These methods allow for dynamic noise and can detect low- dimensional chaos with realistic amounts of data. Results for natural and laboratory populations span the entire range from noise-dominated and strongly stable dynamics through weak chaos. The distribution of estimated Lyapunov exponents is concentrated near the transition between stable and chaotic dynamics. In such borderline cases the fluctuations in short- term Lyapunov exponents may be more informative than the average exponent lambda for characterizing nonlinear dynamics.},
+  booktitle =     {American Naturalist},
+  doi =           {10.1086/285744},
+  file =          {:F\:\\Dropbox\\Grad school\\papers\\Ellner, Turchin - 1995 - Chaos in a noisy world methods and evidence from time series analysis.pdf:PDF;Paper:F\:\\Dropbox\\Grad school\\papers\\Ellner, Turchin - 1995 - Chaos in a noisy world methods and evidence from time series analysis.pdf:PDF;:Ellner1995 - Chaos in a Noisy World - New Methods and Evidence from Time- Series Analysis.pdf:PDF},
+  issn =          {0003-0147},
+  keywords =      {coli,cycles,density dependence,ecological-,escherichia-,local lyapunov exponents,models,population-dynamics,prediction,strange attractors,systems},
+  url =           {{\textless}Go to ISI{\textgreater}://A1995QL57300002}
+}
+\end{verbatim}
+
+The collection of entries like the above are put in a text file which is saved with a .bib file extension.
+
+This format can easily be obtained from journal archives of papers, which generally allow you to save citations and invariably include the BibteX format for that. You can also obtain this from Mendeley. The example file I'm using for this document, example.bib, was made by selecting several documents in mendeley,
+right clicking, and choosing `save as' $\rightarrow$ `BibTeX Entry'.
+
+You can certainly edit the .bib file with a text editor - in the past, I would do this every time I cited a new paper. However, as is probably apparent, it's not super human readible. I'm beginning to use jabref (free open-source program) to manage and modify my .bib files - you can add entries, edit them, etc, in a very human-readible interface.
+
+\section{Files you need}
+In order to use BibTeX, we need two additional files in whatever folder our document is in. The first is the .bib file, which I describe in the previous section. The other is a style file, which ends in `.bst'. This tells BibTeX how to format citations. Most journals provide style files on their websites. For this document, I'm using the amnat style file, which is amnatnat.bst (easily found by searching ``amnat bst'' online). Style files for a lot of common ecology journals can be found at
+\begin{verbatim}
+http://kinglab.eeb.lsa.umich.edu/pub/biblios/bst/
+\end{verbatim}
+
+One of the advantages of using bibtex is to change citation style, all we need to do is grab the appropriate style file, save it to the same folder as our document, and then call it within our document (see the next section).
+\section{Commands you need in document}
+First, we need to tell LaTeX we want it to use the bibtex package when compiling the document. We do that by including
+\begin{verbatim}
+\usepackage{natbib}
+\end{verbatim}
+in the preamble (the bit at the top).
+
+Second, we need to tell LaTeX what bibliography file to use. We do that by including
+\begin{verbatim}
+\bibliography{filename}
+\end{verbatim}
+somewhere in the document (wherever we want the bibliography to be produced). `filename' should be the name of the .bib file, without the .bib extension.
+
+Third, we need to tell LaTeX how we want our citations formated (by telling it which style file to use). We do that by including
+\begin{verbatim}
+\bibliographystyle{stylefilename}
+\end{verbatim}
+somewhere in the document (I usually put it near the bibliography line just for simplicity). Again, `stylefilename' should be the name of the .bst file, without the .bst extension.
+
+\section{How to compile}
+In order for use to actually use bibtex, we need to run a latex compile, then a bibtex compile, then two latex compiles.
+\begin{itemize}
+\item in texmaker, you can do that manually by selecting the appropriate compile options (\LaTeX,bibtex, \LaTeX,\LaTeX), or you can go options $\rightarrow$ configure texmaker, go to the quickbuild tab, and choose the command that includes bibtex.
+\item in texworks, there's a dropdown menu for compiling that includes pdfLaTeX+MakeIndex+BibTeX - this should do the full compile.
+\end{itemize}
+
+\section{How to actually cite things}
+
+There are a lot of different commands that provide slightly different ways of presenting citations. The two most common ones are
+\begin{verbatim}
+\citep{Ellner1995}
+\citep{Fussmann2005}
+\end{verbatim}
+
+This produces the following: \citep{Ellner1995} or like this \cite{Fussmann2005}
+
+The part inside the the cite command is called the `key' - it needs to match the same field in the .bib file. By default, most programs that create keys use the last name of the first author plus the year of publication, adding letters if there is already a key using that pattern. At least in TeXmaker, as soon as you have compiled once using a bibliography file, texmaker add autocomplete options for citing all of the articles in the file.
+
+We can put multiple keys in a single cite{} or citep{} command (separated by commas), giving us something that looks like:  \citep{Pluess2010,Levine2004a}
+
+
+(As an aside, if you include the hyperref package in the preamble, \LaTeX automatically makes each citation a link to the appropriate part of the bibliography).
+
+
+\bibliography{example}
+\bibliographystyle{amnatnat}
+\end{document}
