@@ -1,6 +1,0 @@
-generic stuff in "generic" folder
-systematic stuff in the main folder
-
-format for systematic stuff:
-  All functions found in explore_funs.R. Each file with have default arguments so that it can be called as is.
-  Each function has a script for listing file options and calling it

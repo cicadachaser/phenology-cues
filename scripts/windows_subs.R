@@ -94,7 +94,7 @@ mutation<-function(pop, sds, mutrate, N, fattail){
   }
   colnames(vals.mutate)<-sprintf("b.%s", names(sds))
   poptraits = poptraits+vals.mutate*mat.mutate #Take current population, add mutations only for individuals and traits that mutated.
-  return(cbind(poptraits,select(pop,-starts_with("b."))
+  return(cbind(poptraits,select(pop,-starts_with("b."))))
 }
 
 reproduction<-function(pop){
