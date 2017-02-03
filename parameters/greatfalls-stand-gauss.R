@@ -1,7 +1,7 @@
 #########################
 # Simulation parameters #
 #########################
-runType="davisDat.Rdata" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
+runType="GreatFallsDat.Rdata" ##THIS DETERMINES WHAT KIND OF YEARS WE'RE USING!
 #unitTestConst is for running the population through a unit test with the same gaussian fitness every year
 #and constant environmental conditions
 #unitTestRand will be for running the populations through a

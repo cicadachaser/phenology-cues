@@ -1,0 +1,15 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{fourier}
+\begin{document}
+\section{introduction}
+\section{model}
+We used an individual-based model to explore the consequences of cue integration. In our model, each individual had a series of traits (denoted as b.\textit{cue}) that represented how the individual responded to a specific climatic cue (day, daily temperature, environmental moisture, etc). Every day, each organism took the environmental cues, divided them by the corresponding traits, and emerged if the sum of those fractions was greater than one. That is,
+
+\[ E=\sum_{cues} \frac{cue}{trait} \quad \quad \text{emerge if }E \ge 1\]
+
+Trait values are easily interpretable; in the absence of other cues, an organism will emerge when the cue value equals the trait value (so an organism responding only to the \textit{day} cue emerges on day 131 if their \textit{b.day}=131. This means that organisms are sensitive to cues with small corresponding trait values, and insensitive to cues with large corresponding trait values.
+\end{document}

@@ -15,12 +15,12 @@ set_wrkdir<-function(){
   }
 }
 set_wrkdir()
-runsnames=c("davis-stand-gauss")
+# runsnames=c("davis-stand-gauss")
 # runsnames=c("Davis-stand-gauss")
-# runsnames=c("greatfalls-stand-fat",
-#             "greatfalls-stand-gauss", "Honolulu-stand-fat", "Honolulu-stand-gauss",
-#             "ithaca-stand-fat", "ithaica-stand-gauss", "rapidcity-stand-fat",
-#             "rapidcity-stand-gauss", "davis-stand-fat","davis-stand-gauss")
+runsnames=c("davis-stand-3t-gauss.R","davis-stand-gauss.R","greatfalls-stand-3t-gauss.R",
+            "greatfalls-stand-gauss.R", "honolulu-stand-3t-gauss.R","honolulu-stand-gauss.R",
+            "ithaca-stand-3t-gauss.R", "ithaca-stand-gauss.R", "rapidcity-stand-3t-gauss.R",
+            "rapidcity-stand-gauss.R")
 start.time<-proc.time()
 runsname=runsnames[1]
 # source("scripts/simulation.R")
